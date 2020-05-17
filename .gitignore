@@ -9,7 +9,7 @@ __pycache__/
 .env
 
 #Mac
-*/.DS_STORE
+.DS_STORE
 
 #PyCharm
-*/.idea
+.idea/
