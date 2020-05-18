@@ -36,7 +36,7 @@ class RobotReboot:
             cells = self.maze.cells[0:x, y]
             current_row = x - 1
             for i in np.nditer(cells[::-1], order='C'):
-                if i == Maze.S:
+                if self.is_a_robot_on((current_row, y)) or i == Maze.S:
                     new_x = current_row + 1
                     break
                 elif i == Maze.N:
@@ -52,11 +52,11 @@ class RobotReboot:
             cells = self.maze.cells[x+1:, y]
             current_row = x + 1
             for i in np.nditer(cells, order='C'):
-                if i == Maze.S:
-                    new_x = current_row
-                    break
-                elif i == Maze.N:
+                if self.is_a_robot_on((current_row, y)) or i == Maze.N:
                     new_x = current_row - 1
+                    break
+                elif i == Maze.S:
+                    new_x = current_row
                     break
                 current_row += 1
             self.robots[robot_id] = (new_x, y)
@@ -68,11 +68,11 @@ class RobotReboot:
             cells = self.maze.cells[x, :y]
             current_col = y - 1
             for i in np.nditer(cells[::-1], order='C'):
-                if i == Maze.E:
-                    new_y = current_col
-                    break
-                elif i == Maze.W:
+                if self.is_a_robot_on((x, current_col)) or i == Maze.W:
                     new_y = current_col + 1
+                    break
+                elif i == Maze.E:
+                    new_y = current_col
                     break
                 current_col -= 1
             self.robots[robot_id] = (x, new_y)
@@ -84,14 +84,22 @@ class RobotReboot:
             cells = self.maze.cells[x, y + 1:]
             current_col = y + 1
             for i in np.nditer(cells, order='C'):
+                if self.is_a_robot_on((x, current_col)) or i == Maze.W:
+                    new_y = current_col - 1
+                    break
                 if i == Maze.E:
                     new_y = current_col
                     break
-                elif i == Maze.W:
-                    new_y = current_col - 1
-                    break
                 current_col += 1
             self.robots[robot_id] = (x, new_y)
+
+    def is_a_robot_on(self, pos):
+        for robot_id in self.robots:
+            robot_pos = self.robots[robot_id]
+            if robot_pos == pos:
+                return True
+        return False
+
 
 
     @property

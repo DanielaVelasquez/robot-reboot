@@ -162,6 +162,16 @@ class TestRobotReboot(unittest.TestCase):
         rr.move_robot("A", "W")
         self.assertEqual((0, 0), rr.robots["A"])
 
+    def test_is_a_robot_on_position_on_maze(self):
+        maze_cells = np.array([[0, 0, 0, 0, 0]])
+        maze = Maze(maze_cells)
+        robots = {
+            "A": (0, 2),
+        }
+        rr = RobotReboot(maze, robots)
+        self.assertTrue(rr.is_a_robot_on((0, 2)))
+        self.assertFalse(rr.is_a_robot_on((0,0)))
+
 
 if __name__ == '__main__':
     unittest.main()
