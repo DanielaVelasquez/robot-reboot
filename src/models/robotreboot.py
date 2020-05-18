@@ -1,4 +1,4 @@
-from models.maze import Maze
+from .maze import Maze
 import numpy as np
 
 class RobotReboot:
@@ -37,7 +37,7 @@ class RobotReboot:
             current_row = x - 1
             for i in np.nditer(cells[::-1], order='C'):
                 if i == Maze.S:
-                    new_x = current_row - 1
+                    new_x = current_row + 1
                     break
                 elif i == Maze.N:
                     new_x = current_row
@@ -72,7 +72,7 @@ class RobotReboot:
                     new_y = current_col
                     break
                 elif i == Maze.W:
-                    new_y = current_col - 1
+                    new_y = current_col + 1
                     break
                 current_col -= 1
             self.robots[robot_id] = (x, new_y)
