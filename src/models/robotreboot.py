@@ -1,9 +1,16 @@
 from .maze import Maze
 import numpy as np
 
+
+class Goal:
+    def __init__(self, robot_id, cell):
+        self.robot_id = robot_id
+        self.cell = cell
+
+
 class RobotReboot:
 
-    def __init__(self, maze, robots={}, goal=None):
+    def __init__(self, maze, robots={"A": (0, 0)}, goal=Goal("A", (0, 0))):
         self.maze = maze
         self.robots = robots
         self.goal = goal
@@ -100,9 +107,11 @@ class RobotReboot:
                 return True
         return False
 
+    def is_goal_robot(self, robot_id):
+        return robot_id == self.goal.robot_id
+
 
 
     @property
     def done(self):
-        return self.robots[self.goal.get("robot")] == self.goal.get("position")
-
+        return self.robots[self.goal.robot_id] == self.goal.position

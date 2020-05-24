@@ -11,8 +11,7 @@ class Maze:
         self.cells = cells
         self.size = cells.shape
 
-    @classmethod
-    def get_walls_status(cls, cell):
+    def get_walls_status(self, cell):
         walls = {
             "N": (cell & 0x1) >> 0,
             "E": (cell & 0x2) >> 1,
@@ -23,8 +22,8 @@ class Maze:
 
     @property
     def height(self):
-        return int(self.size[0])
+        return int(self.size[1])
 
     @property
     def width(self):
-        return int(self.size[1])
+        return int(self.size[0])
