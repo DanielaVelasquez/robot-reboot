@@ -1,11 +1,12 @@
 class Maze:
     '''
-    Walls meaning
+    Walls
     '''
     N = 1
     E = 2
     S = 4
     W = 8
+    EMPTY = 0
 
     def __init__(self, cells):
         self.cells = cells

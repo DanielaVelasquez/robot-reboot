@@ -9,6 +9,13 @@ class Goal:
 
 
 class RobotReboot:
+    '''
+    Movements
+    '''
+    N = "N"
+    E = "E"
+    S = "S"
+    W = "W"
 
     def __init__(self, maze, robots={"A": (0, 0)}, goal=Goal("A", (0, 0))):
         self.maze = maze
@@ -24,16 +31,16 @@ class RobotReboot:
             robot_id: robots identifier
             direction: N, S, E, W
         '''
-        if direction == 'N':
+        if direction == self.N:
             self.__move_north(robot_id)
-        elif direction == 'S':
+        elif direction == self.S:
             self.__move_south(robot_id)
-        elif direction == 'E':
+        elif direction == self.E:
             self.__move_east(robot_id)
-        elif direction == 'W':
+        elif direction == self.W:
             self.__move_west(robot_id)
         else:
-            raise Exception("Not valid direction")
+            raise Exception("Not a valid direction")
 
     def __move_north(self, robot_id):
         x, y = self.robots[robot_id]
@@ -49,12 +56,14 @@ class RobotReboot:
                 elif i == Maze.N:
                     new_x = current_row
                     break
+                elif i == Maze.EMPTY:
+                    new_x = current_row
                 current_row -= 1
             self.robots[robot_id] = (new_x, y)
 
     def __move_south(self, robot_id):
-        x,y = self.robots[robot_id]
-        if x != self.maze.height - 1:
+        x, y = self.robots[robot_id]
+        if x != self.maze.width - 1:
             new_x = x
             cells = self.maze.cells[x+1:, y]
             current_row = x + 1
@@ -65,6 +74,8 @@ class RobotReboot:
                 elif i == Maze.S:
                     new_x = current_row
                     break
+                elif i == Maze.EMPTY:
+                    new_x = current_row
                 current_row += 1
             self.robots[robot_id] = (new_x, y)
 
@@ -81,12 +92,14 @@ class RobotReboot:
                 elif i == Maze.E:
                     new_y = current_col
                     break
+                elif i == Maze.EMPTY:
+                    new_y = current_col
                 current_col -= 1
             self.robots[robot_id] = (x, new_y)
 
     def __move_east(self, robot_id):
         x, y = self.robots[robot_id]
-        if y != self.maze.width - 1:
+        if y != self.maze.height - 1:
             new_y = y
             cells = self.maze.cells[x, y + 1:]
             current_col = y + 1
@@ -97,6 +110,8 @@ class RobotReboot:
                 if i == Maze.E:
                     new_y = current_col
                     break
+                elif i == Maze.EMPTY:
+                    new_y = current_col
                 current_col += 1
             self.robots[robot_id] = (x, new_y)
 
@@ -114,4 +129,5 @@ class RobotReboot:
 
     @property
     def done(self):
-        return self.robots[self.goal.robot_id] == self.goal.position
+        return self.robots[self.goal.robot_id] == self.goal.cell
+

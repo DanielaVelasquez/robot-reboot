@@ -1,9 +1,16 @@
 import pygame
 import numpy as np
+from models.robotreboot import RobotReboot
+
+
+class RobotView:
+    def __init__(self, robot_id, colour=(0, 150, 0)):
+        self.id = robot_id
+        self.colour = colour
 
 
 class RobotRebootView:
-    def __init__(self, robotReboot, screen_size=(600, 600)):
+    def __init__(self, robotReboot, screen_size=(600, 600), run=True):
         pygame.init()
         pygame.display.set_caption("Robot Reboot")
         self.robotReboot = robotReboot
@@ -17,12 +24,70 @@ class RobotRebootView:
         self.maze_layer = pygame.Surface(self.screen.get_size()).convert_alpha()
         self.maze_layer.fill((0, 0, 0, 0))
 
+        self.robots_view = {}
+        self.__selected_robot = None
+
         self.__draw_maze()
         self.__draw_robots()
         self.__draw_goal()
         self.screen.blit(self.background, (0, 0))
         self.screen.blit(self.maze_layer, (0, 0))
-        pygame.display.flip()
+        if run:
+            pygame.display.flip()
+            while run:
+                self.update()
+
+    def update(self, mode='human'):
+        self.__view_update(mode)
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self.__select_robot(event.pos)
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_DOWN:
+                    self.__move_robot_on_game(RobotReboot.S)
+                elif event.key == pygame.K_UP:
+                    self.__move_robot_on_game(RobotReboot.N)
+                elif event.key == pygame.K_RIGHT:
+                    self.__move_robot_on_game(RobotReboot.E)
+                elif event.key == pygame.K_LEFT:
+                    self.__move_robot_on_game(RobotReboot.W)
+            elif event.type == pygame.QUIT:
+                self.quit_game()
+
+    def __move_robot_on_game(self, direction):
+        if self.__selected_robot is not None:
+            self.robotReboot.move_robot(self.__selected_robot, direction)
+
+    def __select_robot(self, mouse_position):
+        maze_pos = self.__get_maze_position(mouse_position)
+        self.__selected_robot = self.__find_robot(maze_pos)
+        self.__move_robot = None
+
+    def __find_robot(self, position):
+        for robot_id in self.robotReboot.robots:
+            robot_pos = self.robotReboot.robots[robot_id]
+            if robot_pos == position:
+                return robot_id
+        return None
+
+    def __get_maze_position(self, mouse_position):
+        x = mouse_position[1]
+        y = mouse_position[0]
+        return int(x / self.cell_height), int(y / self.cell_width)
+
+    def __view_update(self, mode='human'):
+        if not self.robotReboot.done:
+            self.maze_layer = pygame.Surface(self.screen.get_size()).convert_alpha()
+            self.maze_layer.fill((0, 0, 0, 0))
+            self.__draw_maze()
+            self.__draw_robots()
+            self.__draw_goal()
+            self.screen.blit(self.background, (0, 0))
+            self.screen.blit(self.maze_layer, (0, 0))
+            if mode == "human":
+                pygame.display.flip()
+
+            return np.flipud(np.rot90(pygame.surfarray.array3d(pygame.display.get_surface())))
 
     def __draw_maze(self):
         line_colour = (0, 0, 255, 15)
@@ -36,7 +101,7 @@ class RobotRebootView:
         for x in range(self.robotReboot.maze.width + 1):
             pygame.draw.line(self.maze_layer, line_colour, (x * self.cell_width, 0),
                              (x * self.cell_width, self.screen_height))
-        #Draw walls
+        # Draw walls
         for x in range(len(self.robotReboot.maze.cells)):
             for y in range(len(self.robotReboot.maze.cells[x])):
                 wall_status = self.robotReboot.maze.get_walls_status(self.robotReboot.maze.cells[x, y])
@@ -71,10 +136,16 @@ class RobotRebootView:
             robot_pos = self.robotReboot.robots[robot_id]
             x = int(robot_pos[1] * self.cell_width + self.cell_width * 0.5 + 0.5)
             y = int(robot_pos[0] * self.cell_height + self.cell_height * 0.5 + 0.5)
-            r = int(min(self.cell_width, self.cell_width)/5 + 0.5)
-            colour = tuple(np.random.choice(range(256), size=3))
+            r = int(min(self.cell_width, self.cell_width) / 5 + 0.5)
+
+            if robot_id in self.robots_view:
+                colour = self.robots_view[robot_id].colour
+            else:
+                colour = tuple(np.random.choice(range(256), size=3))
+                self.robots_view[robot_id] = RobotView(robot_id, colour)
             if self.robotReboot.is_goal_robot(robot_id):
                 self.__goal_color = colour
+
             pygame.draw.circle(self.maze_layer, colour + (transparency,), (x, y), r)
 
     def __draw_goal(self, transparency=235):
@@ -84,7 +155,7 @@ class RobotRebootView:
         x = int(cell[1] * self.cell_width + 0.5 + 1)
         y = int(cell[0] * self.cell_height + 0.5 + 1)
         w = int(self.cell_width + 0.5 - 1)
-        h = int(self.cell_height + 0.5 -1)
+        h = int(self.cell_height + 0.5 - 1)
         pygame.draw.rect(self.maze_layer, colour + (transparency,), (x, y, w, h))
 
     def quit_game(self):
