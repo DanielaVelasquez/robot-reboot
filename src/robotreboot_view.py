@@ -1,6 +1,9 @@
 import pygame
 import numpy as np
+
 from models.robotreboot import RobotReboot
+from models.maze import Maze
+from models.robotreboot import Goal
 
 
 class RobotView:
@@ -54,6 +57,9 @@ class RobotRebootView:
             elif event.type == pygame.QUIT:
                 self.quit_game()
 
+            if self.robotReboot.done:
+                self.quit_game()
+
     def __move_robot_on_game(self, direction):
         if self.__selected_robot is not None:
             self.robotReboot.move_robot(self.__selected_robot, direction)
@@ -101,10 +107,12 @@ class RobotRebootView:
         for x in range(self.robotReboot.maze.width + 1):
             pygame.draw.line(self.maze_layer, line_colour, (x * self.cell_width, 0),
                              (x * self.cell_width, self.screen_height))
+
         # Draw walls
-        for x in range(len(self.robotReboot.maze.cells)):
-            for y in range(len(self.robotReboot.maze.cells[x])):
-                wall_status = self.robotReboot.maze.get_walls_status(self.robotReboot.maze.cells[x, y])
+        cells = self.robotReboot.maze.cells.transpose()
+        for x in range(len(cells)):
+            for y in range(len(cells[x])):
+                wall_status = self.robotReboot.maze.get_walls_status(cells[x, y])
                 dirs = ""
                 for dir, open in wall_status.items():
                     if open:
@@ -177,3 +185,13 @@ class RobotRebootView:
     @property
     def cell_height(self):
         return float(self.screen_height) / float(self.robotReboot.maze.height)
+
+
+if __name__ == "__main__":
+    data = np.load('./data/maze.npy')  # .transpose()
+    np.random.seed(0)
+    maze = Maze(data)
+    goal = Goal("A", (0, 4))
+    robots = {"A": (0, 0), "B": (4, 1), "C": (2, 2)}
+    rr = RobotReboot(maze, robots, goal)
+    rrView = RobotRebootView(rr)
