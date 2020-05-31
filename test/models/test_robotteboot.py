@@ -333,7 +333,7 @@ class TestRobotReboot(unittest.TestCase):
         self.assertTrue(rr.is_a_robot_on((0, 2)))
         self.assertFalse(rr.is_a_robot_on((0, 0)))
 
-    def test_observation(self):
+    def test_state(self):
         maze_cells = np.array([
             [Maze.EMPTY, Maze.S, Maze.EMPTY, Maze.E, Maze.EMPTY],
             [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
@@ -349,7 +349,7 @@ class TestRobotReboot(unittest.TestCase):
         }
         rr = RobotReboot(maze, robots, Goal("B", (3, 4)))
 
-        obs = rr.observation
+        obs = rr.state
         rows, cols, layers = obs.shape
 
         self.assertEqual(obs.shape, (5, 5, 4))
@@ -367,6 +367,30 @@ class TestRobotReboot(unittest.TestCase):
                     if not rr.is_a_robot_on((i, j)) and rr.goal.cell != (i, j) and layer != 2:
                         self.assertEqual(obs[i, j, layer], 0)
 
+    def test_reset(self):
+        maze_cells = np.array([
+            [Maze.EMPTY, Maze.S, Maze.EMPTY, Maze.E, Maze.EMPTY],
+            [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
+            [Maze.N, Maze.N, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
+            [Maze.EMPTY, Maze.EMPTY, Maze.S, Maze.EMPTY, Maze.EMPTY],
+            [Maze.E, Maze.E, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY]
+        ])
+        maze = Maze(maze_cells)
+        robots = {
+            "A": (0, 2),
+            "B": (0, 2),
+            "C": (4, 2)
+        }
+        rr = RobotReboot(maze, robots, Goal("B", (3, 4)))
+
+        for i in range(2):
+            rr.move_robot("A", RobotReboot.S)
+            rr.move_robot("B", RobotReboot.E)
+            rr.move_robot("C", RobotReboot.N)
+
+            self.assertNotEqual(rr.robots, robots)
+            rr.reset_robots()
+            self.assertEqual(rr.robots, robots)
 
 if __name__ == '__main__':
     unittest.main()

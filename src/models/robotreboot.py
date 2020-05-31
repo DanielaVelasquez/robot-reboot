@@ -21,7 +21,8 @@ class RobotReboot:
 
     def __init__(self, maze, robots={"A": (0, 0)}, goal=Goal("A", (0, 0))):
         self.maze = maze
-        self.robots = robots
+        self.robots = robots.copy()
+        self.robots_initial = robots.copy()
         self.goal = goal
 
     def add_robot(self, robot_id, robot_position):
@@ -127,8 +128,17 @@ class RobotReboot:
     def is_goal_robot(self, robot_id):
         return robot_id == self.goal.robot_id
 
+    def reset_robots(self):
+        self.robots = self.robots_initial.copy()
+
     @property
-    def observation(self):
+    def state(self):
+        """
+        An observation is a three dimensional array.
+        First layer represents the maze's structure (i.e its walls)
+        For each robot on the game there is an extra layer. Each layer will have a 1 wherever the robot is located
+            in the maze. On the goal robot's layer, the goal cell is set to the GOAL value.
+        """
         total_robots = len(dict.keys(self.robots))
         rows, cols = self.maze.cells.shape
         obs = np.zeros((rows, cols, total_robots + 1))
