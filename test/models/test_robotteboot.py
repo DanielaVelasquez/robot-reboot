@@ -2,6 +2,7 @@ import unittest
 import numpy as np
 from src.models.maze import Maze
 from src.models.robotreboot import RobotReboot
+from src.models.robotreboot import Goal
 
 
 class TestRobotReboot(unittest.TestCase):
@@ -346,21 +347,24 @@ class TestRobotReboot(unittest.TestCase):
             "B": (0, 2),
             "C": (4, 2)
         }
-        rr = RobotReboot(maze, robots)
+        rr = RobotReboot(maze, robots, Goal("B", (3, 4)))
 
         obs = rr.observation
         rows, cols, layers = obs.shape
 
         self.assertEqual(obs.shape, (5, 5, 4))
         np.testing.assert_equal(obs[:, :, 0], maze_cells)
+        # Checking robots on each layer
         self.assertEqual(obs[0, 2, 1], 1)
         self.assertEqual(obs[0, 2, 2], 1)
         self.assertEqual(obs[4, 2, 3], 1)
+        # Checking goal on the target robot
+        self.assertEqual(obs[3, 4, 2], RobotReboot.GOAL)
 
         for i in range(rows):
             for j in range(cols):
                 for layer in range(1, layers):
-                    if not rr.is_a_robot_on((i, j)):
+                    if not rr.is_a_robot_on((i, j)) and rr.goal.cell != (i, j) and layer != 2:
                         self.assertEqual(obs[i, j, layer], 0)
 
 

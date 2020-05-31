@@ -17,6 +17,8 @@ class RobotReboot:
     S = "S"
     W = "W"
 
+    GOAL = 100
+
     def __init__(self, maze, robots={"A": (0, 0)}, goal=Goal("A", (0, 0))):
         self.maze = maze
         self.robots = robots
@@ -135,10 +137,17 @@ class RobotReboot:
         for robot_id in self.robots:
             x, y = self.robots[robot_id]
             obs[x, y, layer] = 1
+            if robot_id == self.goal.robot_id:
+                x_goal, y_goal = self.goal.cell
+                obs[x_goal, y_goal, layer] = self.GOAL
             layer += 1
         return obs
 
     @property
     def done(self):
         return self.robots[self.goal.robot_id] == self.goal.cell
+
+    @property
+    def count_robots(self):
+        return len(self.robots)
 
