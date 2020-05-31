@@ -56,7 +56,7 @@ class RobotReboot:
                 elif i == Maze.N:
                     new_x = current_row
                     break
-                elif i == Maze.EMPTY:
+                else:
                     new_x = current_row
                 current_row -= 1
             self.robots[robot_id] = (new_x, y)
@@ -74,7 +74,7 @@ class RobotReboot:
                 elif i == Maze.S:
                     new_x = current_row
                     break
-                elif i == Maze.EMPTY:
+                else:
                     new_x = current_row
                 current_row += 1
             self.robots[robot_id] = (new_x, y)
@@ -92,7 +92,7 @@ class RobotReboot:
                 elif i == Maze.E:
                     new_y = current_col
                     break
-                elif i == Maze.EMPTY:
+                else:
                     new_y = current_col
                 current_col -= 1
             self.robots[robot_id] = (x, new_y)
@@ -107,10 +107,10 @@ class RobotReboot:
                 if self.is_a_robot_on((x, current_col)) or i == Maze.W:
                     new_y = current_col - 1
                     break
-                if i == Maze.E:
+                elif i == Maze.E:
                     new_y = current_col
                     break
-                elif i == Maze.EMPTY:
+                else:
                     new_y = current_col
                 current_col += 1
             self.robots[robot_id] = (x, new_y)
@@ -125,7 +125,18 @@ class RobotReboot:
     def is_goal_robot(self, robot_id):
         return robot_id == self.goal.robot_id
 
-
+    @property
+    def observation(self):
+        total_robots = len(dict.keys(self.robots))
+        rows, cols = self.maze.cells.shape
+        obs = np.zeros((rows, cols, total_robots + 1))
+        obs[:, :, 0] = self.maze.cells
+        layer = 1
+        for robot_id in self.robots:
+            x, y = self.robots[robot_id]
+            obs[x, y, layer] = 1
+            layer += 1
+        return obs
 
     @property
     def done(self):

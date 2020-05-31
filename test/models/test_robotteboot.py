@@ -16,7 +16,7 @@ class TestRobotReboot(unittest.TestCase):
         ])
         maze = Maze(maze_cells)
         robots = {
-            "A": (4,0)
+            "A": (4, 0)
         }
         rr = RobotReboot(maze, robots)
         rr.move_robot("A", "N")
@@ -32,7 +32,7 @@ class TestRobotReboot(unittest.TestCase):
         ])
         maze = Maze(maze_cells)
         robots = {
-            "A": (4,0)
+            "A": (4, 0)
         }
         rr = RobotReboot(maze, robots)
         rr.move_robot("A", "N")
@@ -48,7 +48,7 @@ class TestRobotReboot(unittest.TestCase):
         ])
         maze = Maze(maze_cells)
         robots = {
-            "A": (4,0)
+            "A": (4, 0)
         }
         rr = RobotReboot(maze, robots)
         rr.move_robot("A", "N")
@@ -80,7 +80,7 @@ class TestRobotReboot(unittest.TestCase):
         ])
         maze = Maze(maze_cells)
         robots = {
-            "A": (0,0)
+            "A": (0, 0)
         }
         rr = RobotReboot(maze, robots)
         rr.move_robot("A", "N")
@@ -96,7 +96,7 @@ class TestRobotReboot(unittest.TestCase):
         ])
         maze = Maze(maze_cells)
         robots = {
-            "A": (4,0),
+            "A": (4, 0),
             "B": (2, 0)
         }
         rr = RobotReboot(maze, robots)
@@ -161,7 +161,7 @@ class TestRobotReboot(unittest.TestCase):
         ])
         maze = Maze(maze_cells)
         robots = {
-            "A": (0,0)
+            "A": (0, 0)
         }
         rr = RobotReboot(maze, robots)
         rr.move_robot("A", "S")
@@ -177,7 +177,7 @@ class TestRobotReboot(unittest.TestCase):
         ])
         maze = Maze(maze_cells)
         robots = {
-            "A": (4,0)
+            "A": (4, 0)
         }
         rr = RobotReboot(maze, robots)
         rr.move_robot("A", "S")
@@ -193,7 +193,7 @@ class TestRobotReboot(unittest.TestCase):
         ])
         maze = Maze(maze_cells)
         robots = {
-            "A": (0,0),
+            "A": (0, 0),
             "B": (2, 0)
         }
         rr = RobotReboot(maze, robots)
@@ -224,7 +224,7 @@ class TestRobotReboot(unittest.TestCase):
         maze_cells = np.array([[0, 0, Maze.E, 0, 0]])
         maze = Maze(maze_cells)
         robots = {
-            "A": (0,0)
+            "A": (0, 0)
         }
         rr = RobotReboot(maze, robots)
         rr.move_robot("A", "E")
@@ -234,7 +234,7 @@ class TestRobotReboot(unittest.TestCase):
         maze_cells = np.array([[0, 0, Maze.W, 0, 0]])
         maze = Maze(maze_cells)
         robots = {
-            "A": (0,0)
+            "A": (0, 0)
         }
         rr = RobotReboot(maze, robots)
         rr.move_robot("A", "E")
@@ -244,7 +244,7 @@ class TestRobotReboot(unittest.TestCase):
         maze_cells = np.array([[0, 0, 0, 0, 0]])
         maze = Maze(maze_cells)
         robots = {
-            "A": (0,4)
+            "A": (0, 4)
         }
         rr = RobotReboot(maze, robots)
         rr.move_robot("A", "E")
@@ -254,8 +254,8 @@ class TestRobotReboot(unittest.TestCase):
         maze_cells = np.array([[0, 0, 0, 0, 0]])
         maze = Maze(maze_cells)
         robots = {
-            "A": (0,0),
-            "B": (0,2)
+            "A": (0, 0),
+            "B": (0, 2)
         }
         rr = RobotReboot(maze, robots)
         rr.move_robot("A", "E")
@@ -265,7 +265,7 @@ class TestRobotReboot(unittest.TestCase):
         maze_cells = np.array([[0, 0, 0, 0, 0]])
         maze = Maze(maze_cells)
         robots = {
-            "A": (0,4)
+            "A": (0, 4)
         }
         rr = RobotReboot(maze, robots)
         rr.move_robot("A", "W")
@@ -275,7 +275,7 @@ class TestRobotReboot(unittest.TestCase):
         maze_cells = np.array([[0, 0, Maze.N, Maze.S, 0]])
         maze = Maze(maze_cells)
         robots = {
-            "A": (0,4)
+            "A": (0, 4)
         }
         rr = RobotReboot(maze, robots)
         rr.move_robot("A", "W")
@@ -285,7 +285,7 @@ class TestRobotReboot(unittest.TestCase):
         maze_cells = np.array([[0, 0, Maze.W, 0, 0]])
         maze = Maze(maze_cells)
         robots = {
-            "A": (0,4)
+            "A": (0, 4)
         }
         rr = RobotReboot(maze, robots)
         rr.move_robot("A", "W")
@@ -295,7 +295,7 @@ class TestRobotReboot(unittest.TestCase):
         maze_cells = np.array([[0, 0, Maze.E, 0, 0]])
         maze = Maze(maze_cells)
         robots = {
-            "A": (0,4)
+            "A": (0, 4)
         }
         rr = RobotReboot(maze, robots)
         rr.move_robot("A", "W")
@@ -305,7 +305,7 @@ class TestRobotReboot(unittest.TestCase):
         maze_cells = np.array([[0, 0, 0, 0, 0]])
         maze = Maze(maze_cells)
         robots = {
-            "A": (0,0)
+            "A": (0, 0)
         }
         rr = RobotReboot(maze, robots)
         rr.move_robot("A", "W")
@@ -315,8 +315,8 @@ class TestRobotReboot(unittest.TestCase):
         maze_cells = np.array([[0, 0, 0, 0, 0]])
         maze = Maze(maze_cells)
         robots = {
-            "A": (0,4),
-            "B": (0,2)
+            "A": (0, 4),
+            "B": (0, 2)
         }
         rr = RobotReboot(maze, robots)
         rr.move_robot("A", "W")
@@ -330,7 +330,38 @@ class TestRobotReboot(unittest.TestCase):
         }
         rr = RobotReboot(maze, robots)
         self.assertTrue(rr.is_a_robot_on((0, 2)))
-        self.assertFalse(rr.is_a_robot_on((0,0)))
+        self.assertFalse(rr.is_a_robot_on((0, 0)))
+
+    def test_observation(self):
+        maze_cells = np.array([
+            [Maze.EMPTY, Maze.S, Maze.EMPTY, Maze.E, Maze.EMPTY],
+            [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
+            [Maze.N, Maze.N, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
+            [Maze.EMPTY, Maze.EMPTY, Maze.S, Maze.EMPTY, Maze.EMPTY],
+            [Maze.E, Maze.E, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY]
+        ])
+        maze = Maze(maze_cells)
+        robots = {
+            "A": (0, 2),
+            "B": (0, 2),
+            "C": (4, 2)
+        }
+        rr = RobotReboot(maze, robots)
+
+        obs = rr.observation
+        rows, cols, layers = obs.shape
+
+        self.assertEqual(obs.shape, (5, 5, 4))
+        np.testing.assert_equal(obs[:, :, 0], maze_cells)
+        self.assertEqual(obs[0, 2, 1], 1)
+        self.assertEqual(obs[0, 2, 2], 1)
+        self.assertEqual(obs[4, 2, 3], 1)
+
+        for i in range(rows):
+            for j in range(cols):
+                for layer in range(1, layers):
+                    if not rr.is_a_robot_on((i, j)):
+                        self.assertEqual(obs[i, j, layer], 0)
 
 
 if __name__ == '__main__':
