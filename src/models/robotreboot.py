@@ -128,7 +128,7 @@ class RobotReboot:
     def is_goal_robot(self, robot_id):
         return robot_id == self.goal.robot_id
 
-    def reset_robots(self):
+    def reset(self):
         self.robots = self.robots_initial.copy()
 
     @property

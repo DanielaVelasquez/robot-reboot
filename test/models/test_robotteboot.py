@@ -389,7 +389,7 @@ class TestRobotReboot(unittest.TestCase):
             rr.move_robot("C", RobotReboot.N)
 
             self.assertNotEqual(rr.robots, robots)
-            rr.reset_robots()
+            rr.reset()
             self.assertEqual(rr.robots, robots)
 
 if __name__ == '__main__':
