@@ -187,10 +187,10 @@ class RobotRebootView:
 
 
 if __name__ == "__main__":
-    data = np.load('./data/maze.npy')  # .transpose()
+    data = np.load('./data/maze_v1.npy')  # .transpose()
     np.random.seed(0)
     maze = Maze(data)
     goal = Goal("A", (0, 4))
-    robots = {"A": (0, 0), "B": (4, 1), "C": (2, 2)}
+    robots = {"A": (0, 0), "B": (0, 15), "C": (0, 9)}
     rr = RobotReboot(maze, robots, goal)
     rrView = RobotRebootView(rr)

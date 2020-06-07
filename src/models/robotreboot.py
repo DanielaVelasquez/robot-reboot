@@ -89,10 +89,10 @@ class RobotReboot:
             cells = self.maze.cells[x, :y]
             current_col = y - 1
             for i in np.nditer(cells[::-1], order='C'):
-                if self.is_a_robot_on((x, current_col)) or i == Maze.W:
+                if self.is_a_robot_on((x, current_col)) or i == Maze.E:
                     new_y = current_col + 1
                     break
-                elif i == Maze.E:
+                elif i == Maze.W:
                     new_y = current_col
                     break
                 else:
@@ -147,6 +147,7 @@ class RobotReboot:
         for robot_id in self.robots:
             x, y = self.robots[robot_id]
             obs[x, y, layer] = 1
+            # Robot will 'disappear' when it gets to the goal cell
             if robot_id == self.goal.robot_id:
                 x_goal, y_goal = self.goal.cell
                 obs[x_goal, y_goal, layer] = self.GOAL

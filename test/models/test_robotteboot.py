@@ -290,7 +290,7 @@ class TestRobotReboot(unittest.TestCase):
         }
         rr = RobotReboot(maze, robots)
         rr.move_robot("A", "W")
-        self.assertEqual((0, 3), rr.robots["A"])
+        self.assertEqual((0, 2), rr.robots["A"])
 
     def test_move_robot_west_with_wall_at_east(self):
         maze_cells = np.array([[0, 0, Maze.E, 0, 0]])
@@ -300,7 +300,7 @@ class TestRobotReboot(unittest.TestCase):
         }
         rr = RobotReboot(maze, robots)
         rr.move_robot("A", "W")
-        self.assertEqual((0, 2), rr.robots["A"])
+        self.assertEqual((0, 3), rr.robots["A"])
 
     def test_move_robot_west_when_robot_at_border(self):
         maze_cells = np.array([[0, 0, 0, 0, 0]])
