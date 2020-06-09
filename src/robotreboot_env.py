@@ -1,11 +1,10 @@
-import numpy as np
 import gym
+import numpy as np
 from gym import spaces
 from gym.utils import seeding
-
-from models.robotreboot import RobotReboot
 from models.maze import Maze
 from models.robotreboot import Goal
+from models.robotreboot import RobotReboot
 
 
 class RobotRebootEnv(gym.Env):

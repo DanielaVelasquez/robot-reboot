@@ -1,8 +1,10 @@
+import queue
+
+import numpy as np
+
 from .maze import Maze
 from .util import copy_queue
-import numpy as np
-import queue
-import copy
+
 
 class Goal:
     def __init__(self, robot_id, cell):
