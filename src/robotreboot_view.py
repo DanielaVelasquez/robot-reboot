@@ -1,5 +1,6 @@
 import pygame
 import numpy as np
+import queue
 
 from models.robotreboot import RobotReboot
 from models.maze import Maze
@@ -57,7 +58,7 @@ class RobotRebootView:
                 self.quit_game()
 
             if self.robot_reboot.done:
-                self.quit_game()
+                self.robot_reboot.next_round()
 
     def __move_robot_on_game(self, direction):
         if self.__selected_robot is not None:
@@ -190,7 +191,23 @@ if __name__ == "__main__":
     data = np.load('./data/maze_v1.npy')  # .transpose()
     np.random.seed(0)
     maze = Maze(data)
-    goal = Goal("A", (0, 4))
-    robots = {"A": (0, 0), "B": (0, 15), "C": (0, 9)}
-    rr = RobotReboot(maze, robots, goal)
+    goals = queue.Queue()
+    goals.put(Goal("A", (5, 10)))
+    goals.put(Goal("G", (4, 14)))
+    goals.put(Goal("B", (9, 13)))
+    goals.put(Goal("R", (1, 12)))
+    goals.put(Goal("G", (14, 10)))
+    goals.put(Goal("A", (9, 3)))
+    goals.put(Goal("B", (11, 6)))
+    goals.put(Goal("A", (3, 1)))
+    goals.put(Goal("G", (12, 1)))
+    goals.put(Goal("R", (5, 2)))
+    goals.put(Goal("A", (11, 9)))
+    goals.put(Goal("R", (13, 14)))
+    goals.put(Goal("B", (3, 9)))
+    goals.put(Goal("R", (14, 4)))
+    goals.put(Goal("G", (4, 5)))
+    goals.put(Goal("B", (1, 6)))
+
+    rr = RobotReboot(maze, goals)
     rrView = RobotRebootView(rr)

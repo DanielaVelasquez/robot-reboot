@@ -1,6 +1,8 @@
 from .maze import Maze
+from .util import copy_queue
 import numpy as np
-
+import queue
+import copy
 
 class Goal:
     def __init__(self, robot_id, cell):
@@ -19,11 +21,45 @@ class RobotReboot:
 
     GOAL = 100
 
-    def __init__(self, maze, robots={"A": (0, 0)}, goal=Goal("A", (0, 0))):
+    def __init__(self, maze, goals=queue.Queue()):
         self.maze = maze
-        self.robots = robots.copy()
-        self.robots_initial = robots.copy()
-        self.goal = goal
+        self.goals = copy_queue(goals)
+        self.goals_initial = copy_queue(goals)
+
+        self.goal = {}
+        self.robots = {}
+
+        self.__locate_goals()
+        self.__start_game()
+
+    def __start_game(self):
+        """
+        Randomize robots on the maze
+        """
+        for goal in self.goals.queue:
+            self.robots[goal.robot_id] = self.__get_random_position_robot()
+        self.robots_initial = self.robots.copy()
+        self.next_round()
+
+    def __get_random_position_robot(self):
+        x = np.random.randint(0, self.maze.width, size=1)[0]
+        y = np.random.randint(0, self.maze.height, size=1)[0]
+
+        while (x, y) in self.location_goals or self.is_a_robot_on((x, y)):
+            x = np.random.randint(0, self.maze.width, size=1)[0]
+            y = np.random.randint(0, self.maze.height, size=1)[0]
+
+        return x, y
+
+    def __locate_goals(self):
+        self.location_goals = list()
+        for goal in self.goals.queue:
+            self.location_goals.append(goal.cell)
+
+    def next_round(self):
+        if self.goals.empty():
+            self.goals = copy_queue(self.goals_initial.copy())
+        self.goal = self.goals.get()
 
     def add_robot(self, robot_id, robot_position):
         self.robots[robot_id] = robot_position
@@ -130,6 +166,7 @@ class RobotReboot:
 
     def reset(self):
         self.robots = self.robots_initial.copy()
+
 
     @property
     def state(self):
