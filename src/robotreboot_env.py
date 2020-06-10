@@ -1,9 +1,7 @@
 import gym
-import numpy as np
 from gym import spaces
 from gym.utils import seeding
-from models.maze import Maze
-from models.robotreboot import Goal
+from models.instance_game import get_robot_reboot
 from models.robotreboot import RobotReboot
 
 
@@ -58,10 +56,6 @@ class RobotRebootEnv(gym.Env):
 
 
 if __name__ == "__main__":
-    data = np.load('./data/maze.npy')  # .transpose()
-    np.random.seed(0)
-    maze = Maze(data)
-    goal = Goal("A", (0, 4))
-    robots = {"A": (0, 0), "B": (4, 1), "C": (2, 2)}
-    rr = RobotReboot(maze, robots, goal)
-    env = RobotRebootEnv(rr)
+    robot_reboot = get_robot_reboot()
+    print(robot_reboot.state)
+    env = RobotRebootEnv(robot_reboot)

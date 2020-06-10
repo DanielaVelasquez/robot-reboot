@@ -1,5 +1,4 @@
 import queue
-
 import numpy as np
 
 from .maze import Maze
@@ -10,6 +9,15 @@ class Goal:
     def __init__(self, robot_id, cell):
         self.robot_id = robot_id
         self.cell = cell
+
+
+class GameState:
+    def __init__(self, state):
+        self.initial_state = state
+        self.movements = list()
+
+    def add_movement(self, robot_id, direction):
+        self.movements.append((robot_id, direction))
 
 
 class RobotReboot:
@@ -30,6 +38,7 @@ class RobotReboot:
 
         self.goal = {}
         self.robots = {}
+        self.games = queue.LifoQueue()
 
         self.__locate_goals()
         self.__start_game()
@@ -62,16 +71,21 @@ class RobotReboot:
         if self.goals.empty():
             self.goals = copy_queue(self.goals_initial.copy())
         self.goal = self.goals.get()
+        self.games.put(GameState(self.state))
 
     def add_robot(self, robot_id, robot_position):
         self.robots[robot_id] = robot_position
 
     def move_robot(self, robot_id, direction):
-        '''
+        """
         Moves a robot on the maze
             robot_id: robots identifier
             direction: N, S, E, W
-        '''
+        """
+        current_game = self.games.get()
+        current_game.add_movement(robot_id, direction)
+        self.games.put(current_game)
+
         if direction == self.N:
             self.__move_north(robot_id)
         elif direction == self.S:
@@ -85,7 +99,7 @@ class RobotReboot:
 
     def __move_north(self, robot_id):
         x, y = self.robots[robot_id]
-        #Robot is not at the border of the maze
+        # Robot is not at the border of the maze
         if x != 0:
             new_x = x
             cells = self.maze.cells[0:x, y]
@@ -106,7 +120,7 @@ class RobotReboot:
         x, y = self.robots[robot_id]
         if x != self.maze.width - 1:
             new_x = x
-            cells = self.maze.cells[x+1:, y]
+            cells = self.maze.cells[x + 1:, y]
             current_row = x + 1
             for i in np.nditer(cells, order='C'):
                 if self.is_a_robot_on((current_row, y)) or i == Maze.N:
@@ -169,7 +183,6 @@ class RobotReboot:
     def reset(self):
         self.robots = self.robots_initial.copy()
 
-
     @property
     def state(self):
         """
@@ -200,4 +213,3 @@ class RobotReboot:
     @property
     def count_robots(self):
         return len(self.robots)
-
