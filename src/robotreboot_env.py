@@ -38,7 +38,8 @@ class RobotRebootEnv(gym.Env):
         return state, reward, done, info
 
     def reset(self):
-        self.robot_reboot.reset()
+        self.robot_reboot.next_round()
+        return self.robot_reboot.state
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
@@ -53,6 +54,10 @@ class RobotRebootEnv(gym.Env):
             actions.append(f'{robot_id}_E')
             actions.append(f'{robot_id}_W')
         return actions
+
+    @property
+    def state(self):
+        return self.robot_reboot.state
 
 
 if __name__ == "__main__":

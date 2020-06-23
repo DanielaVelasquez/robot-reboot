@@ -69,7 +69,7 @@ class RobotReboot:
 
     def next_round(self):
         if self.goals.empty():
-            self.goals = copy_queue(self.goals_initial.copy())
+            self.goals = copy_queue(self.goals_initial)
         self.goal = self.goals.get()
         self.games.put(GameState(self.state))
 
@@ -213,3 +213,9 @@ class RobotReboot:
     @property
     def count_robots(self):
         return len(self.robots)
+
+    @property
+    def current_game(self):
+        current_game = self.games.get()
+        self.games.put(current_game)
+        return current_game
