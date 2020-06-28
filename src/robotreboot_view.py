@@ -45,13 +45,13 @@ class RobotRebootView:
                 self.__select_robot(event.pos)
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_DOWN:
-                    self.__move_robot_on_game(RobotReboot.S)
+                    self.__move_robot_on_game(RobotReboot.MOVE_SOUTH)
                 elif event.key == pygame.K_UP:
-                    self.__move_robot_on_game(RobotReboot.N)
+                    self.__move_robot_on_game(RobotReboot.MOVE_NORTH)
                 elif event.key == pygame.K_RIGHT:
-                    self.__move_robot_on_game(RobotReboot.E)
+                    self.__move_robot_on_game(RobotReboot.MOVE_EAST)
                 elif event.key == pygame.K_LEFT:
-                    self.__move_robot_on_game(RobotReboot.W)
+                    self.__move_robot_on_game(RobotReboot.MOVE_WEST)
             elif event.type == pygame.QUIT:
                 self.quit_game()
 
