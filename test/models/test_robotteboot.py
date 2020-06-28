@@ -538,7 +538,9 @@ class TestRobotReboot(unittest.TestCase):
         another_rr = RobotReboot(Maze(np.array([[0, 0, 0, 0, 0]])), other_goals)
         another_rr.set_game(["A", "B", "C"], rr.state, rr.current_game.movements)
 
-        # another_rr = RobotReboot(["A", "B", "C"], rr.state, rr.current_game.movements)
+        self.assertEqual(rr.robots, another_rr.robots)
+        self.assertEqual(rr.state.all(), another_rr.state.all())
+        self.assertListEqual(rr.current_game.movements, another_rr.current_game.movements)
 
 
 if __name__ == '__main__':

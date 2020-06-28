@@ -53,7 +53,7 @@ class RobotReboot:
         self.robots = {}
         self.goal = {}
         self.goals = queue.Queue()
-        self.maze = state[:, :, 0]
+        self.maze = Maze(state[:, :, 0])
 
         robot_layer = 1
         for robot in robots:
