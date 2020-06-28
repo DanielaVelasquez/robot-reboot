@@ -3,6 +3,7 @@ import numpy as np
 from src.models.maze import Maze
 from src.models.robotreboot import RobotReboot
 from src.models.robotreboot import Goal
+import queue
 
 
 class TestRobotReboot(unittest.TestCase):
@@ -19,8 +20,13 @@ class TestRobotReboot(unittest.TestCase):
         robots = {
             "A": (4, 0)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "N")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+
+        rr.move_robot("A", RobotReboot.MOVE_NORTH)
         self.assertEqual((0, 0), rr.robots["A"])
 
     def test_move_robot_north_when_wall_at_west_and_east(self):
@@ -35,8 +41,12 @@ class TestRobotReboot(unittest.TestCase):
         robots = {
             "A": (4, 0)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "N")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_NORTH)
         self.assertEqual((0, 0), rr.robots["A"])
 
     def test_move_robot_north_with_wall_at_north(self):
@@ -51,8 +61,12 @@ class TestRobotReboot(unittest.TestCase):
         robots = {
             "A": (4, 0)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "N")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_NORTH)
         self.assertEqual((2, 0), rr.robots["A"])
 
     def test_move_robot_north_with_wall_at_south(self):
@@ -67,8 +81,12 @@ class TestRobotReboot(unittest.TestCase):
         robots = {
             "A": (4, 0)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "N")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_NORTH)
         self.assertEqual((3, 0), rr.robots["A"])
 
     def test_move_robot_north_when_robot_at_border(self):
@@ -83,8 +101,12 @@ class TestRobotReboot(unittest.TestCase):
         robots = {
             "A": (0, 0)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "N")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_NORTH)
         self.assertEqual((0, 0), rr.robots["A"])
 
     def test_move_robot_north_when_another_robot_on_the_way(self):
@@ -100,8 +122,13 @@ class TestRobotReboot(unittest.TestCase):
             "A": (4, 0),
             "B": (2, 0)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "N")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+        goals.put(Goal("B", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_NORTH)
         self.assertEqual((3, 0), rr.robots["A"])
 
     def test_move_robot_south(self):
@@ -116,8 +143,12 @@ class TestRobotReboot(unittest.TestCase):
         robots = {
             "A": (0, 0)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "S")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_SOUTH)
         self.assertEqual((4, 0), rr.robots["A"])
 
     def test_move_robot_south_when_wall_at_west_and_east(self):
@@ -132,8 +163,12 @@ class TestRobotReboot(unittest.TestCase):
         robots = {
             "A": (0, 0)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "S")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_SOUTH)
         self.assertEqual((4, 0), rr.robots["A"])
 
     def test_move_robot_south_with_wall_at_north(self):
@@ -148,8 +183,12 @@ class TestRobotReboot(unittest.TestCase):
         robots = {
             "A": (0, 0)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "S")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_SOUTH)
         self.assertEqual((1, 0), rr.robots["A"])
 
     def test_move_robot_south_with_wall_at_south(self):
@@ -164,8 +203,12 @@ class TestRobotReboot(unittest.TestCase):
         robots = {
             "A": (0, 0)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "S")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_SOUTH)
         self.assertEqual((2, 0), rr.robots["A"])
 
     def test_move_robot_south_when_robot_at_border(self):
@@ -180,8 +223,12 @@ class TestRobotReboot(unittest.TestCase):
         robots = {
             "A": (4, 0)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "S")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_SOUTH)
         self.assertEqual((4, 0), rr.robots["A"])
 
     def test_move_robot_south_when_another_robot_on_the_way(self):
@@ -197,8 +244,13 @@ class TestRobotReboot(unittest.TestCase):
             "A": (0, 0),
             "B": (2, 0)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "S")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+        goals.put(Goal("B", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_SOUTH)
         self.assertEqual((1, 0), rr.robots["A"])
 
     def test_move_robot_east(self):
@@ -207,8 +259,12 @@ class TestRobotReboot(unittest.TestCase):
         robots = {
             "A": (0, 0)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "E")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_EAST)
         self.assertEqual((0, 4), rr.robots["A"])
 
     def test_move_robot_east_when_wall_at_north_and_south(self):
@@ -217,8 +273,12 @@ class TestRobotReboot(unittest.TestCase):
         robots = {
             "A": (0, 0)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "E")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_EAST)
         self.assertEqual((0, 4), rr.robots["A"])
 
     def test_move_robot_east_with_wall_at_east(self):
@@ -227,8 +287,12 @@ class TestRobotReboot(unittest.TestCase):
         robots = {
             "A": (0, 0)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "E")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_EAST)
         self.assertEqual((0, 2), rr.robots["A"])
 
     def test_move_robot_east_with_wall_at_west(self):
@@ -237,8 +301,12 @@ class TestRobotReboot(unittest.TestCase):
         robots = {
             "A": (0, 0)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "E")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_EAST)
         self.assertEqual((0, 1), rr.robots["A"])
 
     def test_move_robot_east_when_robot_at_border(self):
@@ -247,8 +315,12 @@ class TestRobotReboot(unittest.TestCase):
         robots = {
             "A": (0, 4)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "E")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_EAST)
         self.assertEqual((0, 4), rr.robots["A"])
 
     def test_move_robot_east_when_another_robot_on_the_way(self):
@@ -258,8 +330,13 @@ class TestRobotReboot(unittest.TestCase):
             "A": (0, 0),
             "B": (0, 2)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "E")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+        goals.put(Goal("B", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_EAST)
         self.assertEqual((0, 1), rr.robots["A"])
 
     def test_move_robot_west(self):
@@ -268,8 +345,12 @@ class TestRobotReboot(unittest.TestCase):
         robots = {
             "A": (0, 4)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "W")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_WEST)
         self.assertEqual((0, 0), rr.robots["A"])
 
     def test_move_robot_west_when_wall_at_north_and_south(self):
@@ -278,8 +359,12 @@ class TestRobotReboot(unittest.TestCase):
         robots = {
             "A": (0, 4)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "W")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_WEST)
         self.assertEqual((0, 0), rr.robots["A"])
 
     def test_move_robot_west_with_wall_at_west(self):
@@ -288,8 +373,12 @@ class TestRobotReboot(unittest.TestCase):
         robots = {
             "A": (0, 4)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "W")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_WEST)
         self.assertEqual((0, 2), rr.robots["A"])
 
     def test_move_robot_west_with_wall_at_east(self):
@@ -298,8 +387,12 @@ class TestRobotReboot(unittest.TestCase):
         robots = {
             "A": (0, 4)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "W")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_WEST)
         self.assertEqual((0, 3), rr.robots["A"])
 
     def test_move_robot_west_when_robot_at_border(self):
@@ -308,8 +401,12 @@ class TestRobotReboot(unittest.TestCase):
         robots = {
             "A": (0, 0)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "W")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_WEST)
         self.assertEqual((0, 0), rr.robots["A"])
 
     def test_move_robot_west_when_another_robot_on_the_way(self):
@@ -319,8 +416,13 @@ class TestRobotReboot(unittest.TestCase):
             "A": (0, 4),
             "B": (0, 2)
         }
-        rr = RobotReboot(maze, robots)
-        rr.move_robot("A", "W")
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+        goals.put(Goal("B", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_WEST)
         self.assertEqual((0, 3), rr.robots["A"])
 
     def test_is_a_robot_on_position_on_maze(self):
@@ -329,7 +431,11 @@ class TestRobotReboot(unittest.TestCase):
         robots = {
             "A": (0, 2),
         }
-        rr = RobotReboot(maze, robots)
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 1)))
+        rr = RobotReboot(maze, goals)
+
+        rr.set_robots(robots)
         self.assertTrue(rr.is_a_robot_on((0, 2)))
         self.assertFalse(rr.is_a_robot_on((0, 0)))
 
@@ -347,7 +453,14 @@ class TestRobotReboot(unittest.TestCase):
             "B": (0, 2),
             "C": (4, 2)
         }
-        rr = RobotReboot(maze, robots, Goal("B", (3, 4)))
+        goals = queue.Queue()
+        # Order here matters, first robot is B, next robot is A, last robot is C
+        goals.put(Goal("B", (3, 4)))
+        goals.put(Goal("A", (0, 0)))
+        goals.put(Goal("C", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
 
         obs = rr.state
         rows, cols, layers = obs.shape
@@ -359,7 +472,7 @@ class TestRobotReboot(unittest.TestCase):
         self.assertEqual(obs[0, 2, 2], 1)
         self.assertEqual(obs[4, 2, 3], 1)
         # Checking goal on the target robot
-        self.assertEqual(obs[3, 4, 2], RobotReboot.GOAL)
+        self.assertEqual(obs[3, 4, 1], RobotReboot.GOAL)
 
         for i in range(rows):
             for j in range(cols):
@@ -376,21 +489,53 @@ class TestRobotReboot(unittest.TestCase):
             [Maze.E, Maze.E, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY]
         ])
         maze = Maze(maze_cells)
+
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 1)))
+        goals.put(Goal("B", (3, 4)))
+        goals.put(Goal("C", (0, 5)))
+
+        rr = RobotReboot(maze, goals)
+
+        init_robots = rr.robots_initial.copy()
+
+        rr.move_robot("A", RobotReboot.MOVE_SOUTH)
+        rr.move_robot("B", RobotReboot.MOVE_EAST)
+        rr.move_robot("C", RobotReboot.MOVE_NORTH)
+
+        self.assertNotEqual(rr.robots, init_robots)
+        rr.reset()
+        self.assertEqual(rr.robots, init_robots)
+
+    def test_set_state(self):
+        maze_cells = np.array([
+            [Maze.EMPTY, Maze.S, Maze.EMPTY, Maze.E, Maze.EMPTY],
+            [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
+            [Maze.N, Maze.N, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
+            [Maze.EMPTY, Maze.EMPTY, Maze.S, Maze.EMPTY, Maze.EMPTY],
+            [Maze.E, Maze.E, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY]
+        ])
+        maze = Maze(maze_cells)
         robots = {
             "A": (0, 2),
             "B": (0, 2),
             "C": (4, 2)
         }
-        rr = RobotReboot(maze, robots, Goal("B", (3, 4)))
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+        goals.put(Goal("B", (0, 0)))
+        goals.put(Goal("C", (0, 0)))
 
-        for i in range(2):
-            rr.move_robot("A", RobotReboot.S)
-            rr.move_robot("B", RobotReboot.E)
-            rr.move_robot("C", RobotReboot.N)
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
 
-            self.assertNotEqual(rr.robots, robots)
-            rr.reset()
-            self.assertEqual(rr.robots, robots)
+        rr.move_robot("A", RobotReboot.MOVE_NORTH)
+        rr.move_robot("B", RobotReboot.MOVE_EAST)
+
+        print(rr.state)
+
+        # another_rr = RobotReboot(["A", "B", "C"], rr.state, rr.current_game.movements)
+
 
 if __name__ == '__main__':
     unittest.main()

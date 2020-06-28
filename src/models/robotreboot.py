@@ -24,14 +24,17 @@ class RobotReboot:
     '''
     Movements
     '''
-    N = "N"
-    E = "E"
-    S = "S"
-    W = "W"
+    MOVE_NORTH = "N"
+    MOVE_EAST = "E"
+    MOVE_SOUTH = "S"
+    MOVE_WEST = "W"
 
     GOAL = 100
+    ROBOT = 1
+    # TODO: should we use this when creating the state??
+    GOAL_ROBOT = 200
 
-    def __init__(self, maze, goals=queue.Queue()):
+    def __init__(self, maze, goals):
         self.maze = maze
         self.goals = copy_queue(goals)
         self.goals_initial = copy_queue(goals)
@@ -42,6 +45,34 @@ class RobotReboot:
 
         self.__locate_goals()
         self.__start_game()
+
+    def set_game(self, robots, state: np.ndarray, movements):
+        _, _, total_robots = state.shape
+        assert total_robots == len(robots)
+
+        self.robots = {}
+        self.goal = {}
+        self.goals = queue.Queue()
+        self.maze = state[:, :, 0]
+
+        robot_layer = 1
+        for robot in robots:
+            robot_maze = state[:, :, robot_layer]
+            x, y = np.where(robot_maze == self.ROBOT)
+            self.robots[robot] = (x[0], y[0])
+            goal_x, goal_y = np.where(robot_maze == self.GOAL)
+            if goal_x.size != 0 and goal_y.size != 0:
+                self.goals.put(Goal(robot, (goal_x[0], goal_y[0])))
+            robot_layer += 1
+
+        self.goals_initial = copy_queue(self.goals)
+        self.games = queue.LifoQueue()
+
+        self.__locate_goals()
+        self.next_round()
+
+        for robot_id, direction in movements:
+            self.current_game.add_movement(robot_id, direction)
 
     def __start_game(self):
         """
@@ -86,13 +117,13 @@ class RobotReboot:
         current_game.add_movement(robot_id, direction)
         self.games.put(current_game)
 
-        if direction == self.N:
+        if direction == self.MOVE_NORTH:
             self.__move_north(robot_id)
-        elif direction == self.S:
+        elif direction == self.MOVE_SOUTH:
             self.__move_south(robot_id)
-        elif direction == self.E:
+        elif direction == self.MOVE_EAST:
             self.__move_east(robot_id)
-        elif direction == self.W:
+        elif direction == self.MOVE_WEST:
             self.__move_west(robot_id)
         else:
             raise Exception("Not a valid direction")
@@ -183,6 +214,19 @@ class RobotReboot:
     def reset(self):
         self.robots = self.robots_initial.copy()
 
+    def add_robot(self, robot_id, robot_position):
+        if robot_id not in self.robots:
+            self.robots[robot_id] = robot_position
+
+    def add_robots(self, robots):
+        for robot_id in robots:
+            self.add_robot(robot_id, robots[robot_id])
+
+    def set_robots(self, robots):
+        for robot_id in robots:
+            if robot_id in self.robots:
+                self.robots[robot_id] = robots[robot_id]
+
     @property
     def state(self):
         """
@@ -198,7 +242,7 @@ class RobotReboot:
         layer = 1
         for robot_id in self.robots:
             x, y = self.robots[robot_id]
-            obs[x, y, layer] = 1
+            obs[x, y, layer] = self.ROBOT
             # Robot will 'disappear' when it gets to the goal cell
             if robot_id == self.goal.robot_id:
                 x_goal, y_goal = self.goal.cell
