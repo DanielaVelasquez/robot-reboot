@@ -532,7 +532,11 @@ class TestRobotReboot(unittest.TestCase):
         rr.move_robot("A", RobotReboot.MOVE_NORTH)
         rr.move_robot("B", RobotReboot.MOVE_EAST)
 
-        print(rr.state)
+        other_goals = queue.Queue()
+        other_goals.put(Goal("A", (0, 1)))
+
+        another_rr = RobotReboot(Maze(np.array([[0, 0, 0, 0, 0]])), other_goals)
+        another_rr.set_game(["A", "B", "C"], rr.state, rr.current_game.movements)
 
         # another_rr = RobotReboot(["A", "B", "C"], rr.state, rr.current_game.movements)
 

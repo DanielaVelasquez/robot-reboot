@@ -48,7 +48,7 @@ class RobotReboot:
 
     def set_game(self, robots, state: np.ndarray, movements):
         _, _, total_robots = state.shape
-        assert total_robots == len(robots)
+        assert total_robots - 1 == len(robots)
 
         self.robots = {}
         self.goal = {}
@@ -67,9 +67,10 @@ class RobotReboot:
 
         self.goals_initial = copy_queue(self.goals)
         self.games = queue.LifoQueue()
+        self.games.put(GameState(state))
 
         self.__locate_goals()
-        self.next_round()
+        self.goal = self.goals.get()
 
         for robot_id, direction in movements:
             self.current_game.add_movement(robot_id, direction)
