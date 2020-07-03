@@ -1,5 +1,6 @@
 import numpy as np
 import pygame
+from time import sleep
 import queue
 import json
 from models.robotreboot import RobotReboot
@@ -55,35 +56,18 @@ class RobotRebootGameView:
         if run:
             pygame.display.flip()
             while run:
+                sleep(1)
                 self.update()
 
-    # def set_up_robot_reboot(self, robots: list, state: np.ndarray):
-    #     self.movements
-    #     other_goals = queue.Queue()
-    #     other_goals.put(Goal("A", (0, 1)))
-    #
-    #     another_rr = RobotReboot(Maze(np.array([[0, 0, 0, 0, 0]])), other_goals)
-    #     another_rr.set_game(robots, state, self.movements)
-    #     self.robot_reboot = another_rr
-
     def update(self, mode='human'):
-        print(self.robot_reboot.robots)
-        print(self.robot_reboot.goal.cell)
-        print(self.movements_index)
         self.__view_update(mode)
-        done_first = False
+        if self.movements_index < len(self.movements):
+            m = self.movements.__getitem__(self.movements_index)
+            self.robot_reboot.move_robot(m[0], m[1])
+            self.movements_index += 1
+
         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT:
-                    m = self.movements.__getitem__(self.movements_index)
-                    self.robot_reboot.move_robot(m[0], m[1])
-                    print(m)
-                    self.movements_index = (self.movements_index + 1) % len(self.movements)
-                if self.robot_reboot.done and not done_first:
-                    print("DONE")
-                    done_first = True
-                    # self.robot_reboot.reset()
-            elif event.type == pygame.QUIT:
+            if event.type == pygame.QUIT:
                 self.quit_game()
 
     def __move_robot_on_game(self, direction):
@@ -108,18 +92,17 @@ class RobotRebootGameView:
         return int(x / self.cell_height), int(y / self.cell_width)
 
     def __view_update(self, mode='human'):
-        if not self.robot_reboot.done:
-            self.maze_layer = pygame.Surface(self.screen.get_size()).convert_alpha()
-            self.maze_layer.fill((0, 0, 0, 0))
-            self.__draw_maze()
-            self.__draw_robots()
-            self.__draw_goal()
-            self.screen.blit(self.background, (0, 0))
-            self.screen.blit(self.maze_layer, (0, 0))
-            if mode == "human":
-                pygame.display.flip()
+        self.maze_layer = pygame.Surface(self.screen.get_size()).convert_alpha()
+        self.maze_layer.fill((0, 0, 0, 0))
+        self.__draw_maze()
+        self.__draw_robots()
+        self.__draw_goal()
+        self.screen.blit(self.background, (0, 0))
+        self.screen.blit(self.maze_layer, (0, 0))
+        if mode == "human":
+            pygame.display.flip()
 
-            return np.flipud(np.rot90(pygame.surfarray.array3d(pygame.display.get_surface())))
+        return np.flipud(np.rot90(pygame.surfarray.array3d(pygame.display.get_surface())))
 
     def __draw_maze(self):
         line_colour = (0, 0, 255, 15)
