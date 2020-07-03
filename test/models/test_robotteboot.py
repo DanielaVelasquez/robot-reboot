@@ -541,6 +541,7 @@ class TestRobotReboot(unittest.TestCase):
         self.assertEqual(rr.robots, another_rr.robots)
         self.assertEqual(rr.state.all(), another_rr.state.all())
         self.assertListEqual(rr.current_game.movements, another_rr.current_game.movements)
+        self.assertIsNotNone(rr.maze)
 
 
 if __name__ == '__main__':

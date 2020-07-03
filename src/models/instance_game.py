@@ -1,5 +1,6 @@
 import numpy as np
 import queue
+import json
 
 from .robotreboot import RobotReboot
 from .maze import Maze
@@ -30,3 +31,22 @@ def get_robot_reboot(seed=26):
 
     robot_reboot = RobotReboot(maze, goals)
     return robot_reboot;
+
+
+def load_game(results, index=0):
+    with open(results) as f:
+        results = json.load(f)
+    robots = results['robots']
+    game = results['games'][index]
+    state_file = game['state_file']
+    state = np.load(state_file)
+
+    fake_goals = queue.Queue()
+
+    for r in robots:
+        fake_goals.put(Goal(r, (0, 0)))
+
+    rr = RobotReboot(Maze(np.array([[0, 0, 0, 0, 0]])), fake_goals)
+    movements_ = game['movements']
+    rr.set_game(robots, state.astype(int), movements_)
+    return rr, movements_

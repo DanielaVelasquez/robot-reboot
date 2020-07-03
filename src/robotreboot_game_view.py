@@ -1,8 +1,11 @@
 import numpy as np
 import pygame
+import queue
+import json
 from models.robotreboot import RobotReboot
-
-from models.instance_game import get_robot_reboot
+from models.robotreboot import Goal
+from models.maze import Maze
+from models.instance_game import load_game
 
 
 class RobotView:
@@ -24,11 +27,13 @@ def get_color_based_on_name(robot_id):
         return tuple(np.random.choice(range(256), size=3))
 
 
-class RobotRebootView:
-    def __init__(self, robot_reboot, screen_size=(600, 600), run=True):
+class RobotRebootGameView:
+    def __init__(self, robot_reboot: RobotReboot, movements: list, screen_size=(600, 600), run=True):
         pygame.init()
         pygame.display.set_caption("Robot Reboot")
         self.robot_reboot = robot_reboot
+        self.movements = movements
+        # self.set_up_robot_reboot(robots, state)
         # Setting up screen
         self.screen_size = screen_size
         self.screen = pygame.display.set_mode(screen_size)
@@ -51,11 +56,20 @@ class RobotRebootView:
             while run:
                 self.update()
 
+    # def set_up_robot_reboot(self, robots: list, state: np.ndarray):
+    #     self.movements
+    #     other_goals = queue.Queue()
+    #     other_goals.put(Goal("A", (0, 1)))
+    #
+    #     another_rr = RobotReboot(Maze(np.array([[0, 0, 0, 0, 0]])), other_goals)
+    #     another_rr.set_game(robots, state, self.movements)
+    #     self.robot_reboot = another_rr
+
     def update(self, mode='human'):
+        print(self.robot_reboot.robots)
+        print(self.robot_reboot.goal.cell)
         self.__view_update(mode)
         for event in pygame.event.get():
-            print(self.robot_reboot.robots)
-            print(self.robot_reboot.goal.cell)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.__select_robot(event.pos)
             elif event.type == pygame.KEYDOWN:
@@ -201,4 +215,5 @@ class RobotRebootView:
 
 
 if __name__ == "__main__":
-    rrView = RobotRebootView(get_robot_reboot())
+    rr, movements = load_game('data/done_games/result.json', index=0)
+    rrView = RobotRebootGameView(rr, movements)
