@@ -74,6 +74,7 @@ class RobotReboot:
 
         for robot_id, direction in movements:
             self.current_game.add_movement(robot_id, direction)
+        self.robots_initial = self.robots.copy()
 
     def __start_game(self):
         """
@@ -214,6 +215,8 @@ class RobotReboot:
 
     def reset(self):
         self.robots = self.robots_initial.copy()
+        self.goals = copy_queue(self.goals_initial)
+        self.goal = self.goals.get()
 
     def add_robot(self, robot_id, robot_position):
         if robot_id not in self.robots:

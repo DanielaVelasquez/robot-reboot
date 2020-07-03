@@ -33,6 +33,7 @@ class RobotRebootGameView:
         pygame.display.set_caption("Robot Reboot")
         self.robot_reboot = robot_reboot
         self.movements = movements
+        self.movements_index = 0
         # self.set_up_robot_reboot(robots, state)
         # Setting up screen
         self.screen_size = screen_size
@@ -68,24 +69,22 @@ class RobotRebootGameView:
     def update(self, mode='human'):
         print(self.robot_reboot.robots)
         print(self.robot_reboot.goal.cell)
+        print(self.movements_index)
         self.__view_update(mode)
+        done_first = False
         for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                self.__select_robot(event.pos)
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_DOWN:
-                    self.__move_robot_on_game(RobotReboot.MOVE_SOUTH)
-                elif event.key == pygame.K_UP:
-                    self.__move_robot_on_game(RobotReboot.MOVE_NORTH)
-                elif event.key == pygame.K_RIGHT:
-                    self.__move_robot_on_game(RobotReboot.MOVE_EAST)
-                elif event.key == pygame.K_LEFT:
-                    self.__move_robot_on_game(RobotReboot.MOVE_WEST)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RIGHT:
+                    m = self.movements.__getitem__(self.movements_index)
+                    self.robot_reboot.move_robot(m[0], m[1])
+                    print(m)
+                    self.movements_index = (self.movements_index + 1) % len(self.movements)
+                if self.robot_reboot.done and not done_first:
+                    print("DONE")
+                    done_first = True
+                    # self.robot_reboot.reset()
             elif event.type == pygame.QUIT:
                 self.quit_game()
-
-            if self.robot_reboot.done:
-                self.robot_reboot.next_round()
 
     def __move_robot_on_game(self, direction):
         if self.__selected_robot is not None:
