@@ -132,13 +132,15 @@ class RobotReboot:
 
     def __move_north(self, robot_id):
         x, y = self.robots[robot_id]
-        # Robot is not at the border of the maze
+        if self.maze.cells[x, y] == Maze.N:
+            return
+            # Robot is not at the border of the maze
         if x != 0:
             new_x = x
-            cells = self.maze.cells[0:x + 1, y]
-            current_row = x
+            cells = self.maze.cells[0:x, y]
+            current_row = x - 1
             for i in np.nditer(cells[::-1], order='C'):
-                if self.is_there_a_robot_except_me((current_row, y), robot_id) or i == Maze.S:
+                if self.is_a_robot_on((current_row, y)) or i == Maze.S:
                     new_x = current_row + 1
                     break
                 elif i == Maze.N:
@@ -151,12 +153,14 @@ class RobotReboot:
 
     def __move_south(self, robot_id):
         x, y = self.robots[robot_id]
+        if self.maze.cells[x, y] == Maze.S:
+            return
         if x != self.maze.width - 1:
             new_x = x
-            cells = self.maze.cells[x:, y]
-            current_row = x
+            cells = self.maze.cells[x + 1:, y]
+            current_row = x + 1
             for i in np.nditer(cells, order='C'):
-                if self.is_there_a_robot_except_me((current_row, y), robot_id)or i == Maze.N:
+                if self.is_a_robot_on((current_row, y)) or i == Maze.N:
                     new_x = current_row - 1
                     break
                 elif i == Maze.S:
@@ -169,12 +173,14 @@ class RobotReboot:
 
     def __move_west(self, robot_id):
         x, y = self.robots[robot_id]
+        if self.maze.cells[x, y] == Maze.W:
+            return
         if y != 0:
             new_y = y
-            cells = self.maze.cells[x, :y + 1]
-            current_col = y
+            cells = self.maze.cells[x, :y]
+            current_col = y - 1
             for i in np.nditer(cells[::-1], order='C'):
-                if self.is_there_a_robot_except_me((x, current_col), robot_id) or i == Maze.E:
+                if self.is_a_robot_on((x, current_col)) or i == Maze.E:
                     new_y = current_col + 1
                     break
                 elif i == Maze.W:
@@ -187,12 +193,14 @@ class RobotReboot:
 
     def __move_east(self, robot_id):
         x, y = self.robots[robot_id]
+        if self.maze.cells[x, y] == Maze.E:
+            return
         if y != self.maze.height - 1:
             new_y = y
-            cells = self.maze.cells[x, y:]
-            current_col = y
+            cells = self.maze.cells[x, y + 1:]
+            current_col = y + 1
             for i in np.nditer(cells, order='C'):
-                if self.is_there_a_robot_except_me((x, current_col), robot_id) or i == Maze.W:
+                if self.is_a_robot_on((x, current_col)) or i == Maze.W:
                     new_y = current_col - 1
                     break
                 elif i == Maze.E:

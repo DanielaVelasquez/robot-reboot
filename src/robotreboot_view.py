@@ -1,6 +1,7 @@
 import numpy as np
 import pygame
 from models.robotreboot import RobotReboot
+from models.instance_game import load_game
 
 from models.instance_game import get_robot_reboot
 
@@ -201,4 +202,6 @@ class RobotRebootView:
 
 
 if __name__ == "__main__":
-    rrView = RobotRebootView(get_robot_reboot())
+    rr, movements = load_game('data/done_games/result.json', index=2)
+    rrView = RobotRebootView(rr)
+    # rrView = RobotRebootView(get_robot_reboot())

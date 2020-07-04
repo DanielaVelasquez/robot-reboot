@@ -1,12 +1,9 @@
+from time import sleep
+
 import numpy as np
 import pygame
-from time import sleep
-import queue
-import json
-from models.robotreboot import RobotReboot
-from models.robotreboot import Goal
-from models.maze import Maze
 from models.instance_game import load_game
+from models.robotreboot import RobotReboot
 
 
 class RobotView:
@@ -56,13 +53,14 @@ class RobotRebootGameView:
         if run:
             pygame.display.flip()
             while run:
-                sleep(1)
                 self.update()
+                sleep(1)
 
     def update(self, mode='human'):
         self.__view_update(mode)
         if self.movements_index < len(self.movements):
             m = self.movements.__getitem__(self.movements_index)
+            print(m)
             self.robot_reboot.move_robot(m[0], m[1])
             self.movements_index += 1
 
@@ -197,5 +195,5 @@ class RobotRebootGameView:
 
 
 if __name__ == "__main__":
-    rr, movements = load_game('data/done_games/result.json', index=0)
+    rr, movements = load_game('data/done_games/result.json', index=1)
     rrView = RobotRebootGameView(rr, movements)
