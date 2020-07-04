@@ -29,6 +29,27 @@ class TestRobotReboot(unittest.TestCase):
         rr.move_robot("A", RobotReboot.MOVE_NORTH)
         self.assertEqual((0, 0), rr.robots["A"])
 
+    def test_move_robot_north_when_wall_on_robot_pos(self):
+        maze_cells = np.array([
+            [0],
+            [0],
+            [0],
+            [0],
+            [Maze.N]
+        ])
+        maze = Maze(maze_cells)
+        robots = {
+            "A": (4, 0)
+        }
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+
+        rr.move_robot("A", RobotReboot.MOVE_NORTH)
+        self.assertEqual((4, 0), rr.robots["A"])
+
     def test_move_robot_north_when_wall_at_west_and_east(self):
         maze_cells = np.array([
             [0],
@@ -151,6 +172,26 @@ class TestRobotReboot(unittest.TestCase):
         rr.move_robot("A", RobotReboot.MOVE_SOUTH)
         self.assertEqual((4, 0), rr.robots["A"])
 
+    def test_move_robot_south_when_wall_on_robot_pos(self):
+        maze_cells = np.array([
+            [Maze.S],
+            [0],
+            [0],
+            [0],
+            [0]
+        ])
+        maze = Maze(maze_cells)
+        robots = {
+            "A": (0, 0)
+        }
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_SOUTH)
+        self.assertEqual((0, 0), rr.robots["A"])
+
     def test_move_robot_south_when_wall_at_west_and_east(self):
         maze_cells = np.array([
             [0],
@@ -267,6 +308,20 @@ class TestRobotReboot(unittest.TestCase):
         rr.move_robot("A", RobotReboot.MOVE_EAST)
         self.assertEqual((0, 4), rr.robots["A"])
 
+    def test_move_robot_east_when_wall_on_robot_pos(self):
+        maze_cells = np.array([[Maze.E, 0, 0, 0, 0]])
+        maze = Maze(maze_cells)
+        robots = {
+            "A": (0, 0)
+        }
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_EAST)
+        self.assertEqual((0, 0), rr.robots["A"])
+
     def test_move_robot_east_when_wall_at_north_and_south(self):
         maze_cells = np.array([[0, 0, Maze.N, Maze.S, 0]])
         maze = Maze(maze_cells)
@@ -352,6 +407,20 @@ class TestRobotReboot(unittest.TestCase):
         rr.set_robots(robots)
         rr.move_robot("A", RobotReboot.MOVE_WEST)
         self.assertEqual((0, 0), rr.robots["A"])
+
+    def test_move_robot_west_when_wall_on_robot_pos(self):
+        maze_cells = np.array([[0, 0, 0, 0, Maze.W]])
+        maze = Maze(maze_cells)
+        robots = {
+            "A": (0, 4)
+        }
+        goals = queue.Queue()
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_WEST)
+        self.assertEqual((0, 4), rr.robots["A"])
 
     def test_move_robot_west_when_wall_at_north_and_south(self):
         maze_cells = np.array([[0, 0, Maze.N, Maze.S, 0]])
