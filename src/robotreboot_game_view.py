@@ -61,6 +61,7 @@ class RobotRebootGameView:
         if self.movements_index < len(self.movements):
             m = self.movements.__getitem__(self.movements_index)
             print(m)
+            print(f'Movement {self.movements_index}/{len(self.movements)}')
             self.robot_reboot.move_robot(m[0], m[1])
             self.movements_index += 1
 
