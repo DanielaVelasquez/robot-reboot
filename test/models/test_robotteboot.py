@@ -600,15 +600,15 @@ class TestRobotReboot(unittest.TestCase):
         rr = RobotReboot(maze, goals)
         rr.set_robots(robots)
 
-        obs = rr.state
+        obs = rr.state()
         rows, cols, layers = obs.shape
 
         self.assertEqual(obs.shape, (5, 5, 4))
         np.testing.assert_equal(obs[:, :, 0], maze_cells)
         # Checking robots on each layer
-        self.assertEqual(obs[0, 2, 1], 1)
-        self.assertEqual(obs[0, 2, 2], 1)
-        self.assertEqual(obs[4, 2, 3], 1)
+        self.assertEqual(obs[0, 2, 1], RobotReboot.ROBOT)
+        self.assertEqual(obs[0, 2, 2], RobotReboot.ROBOT)
+        self.assertEqual(obs[4, 2, 3], RobotReboot.ROBOT)
         # Checking goal on the target robot
         self.assertEqual(obs[3, 4, 1], RobotReboot.GOAL)
 
@@ -617,6 +617,28 @@ class TestRobotReboot(unittest.TestCase):
                 for layer in range(1, layers):
                     if not rr.is_a_robot_on((i, j)) and rr.goal.cell != (i, j) and layer != 2:
                         self.assertEqual(obs[i, j, layer], 0)
+
+    def test_state_win_game(self):
+        maze_cells = np.array([
+            [Maze.EMPTY, Maze.S, Maze.EMPTY, Maze.S, Maze.EMPTY]
+        ])
+        maze = Maze(maze_cells)
+        robots = {
+            "A": (0, 4),
+        }
+        goals = queue.Queue()
+        # Order here matters, first robot is B, next robot is A, last robot is C
+        goals.put(Goal("A", (0, 0)))
+
+        rr = RobotReboot(maze, goals)
+        rr.set_robots(robots)
+        rr.move_robot("A", RobotReboot.MOVE_WEST)
+
+        obs = rr.state()
+
+        self.assertEqual(obs[0, 0, 1], RobotReboot.GOAL_ROBOT)
+
+
 
     def test_reset(self):
         maze_cells = np.array([
@@ -674,10 +696,10 @@ class TestRobotReboot(unittest.TestCase):
         other_goals.put(Goal("A", (0, 1)))
 
         another_rr = RobotReboot(Maze(np.array([[0, 0, 0, 0, 0]])), other_goals)
-        another_rr.set_game(["A", "B", "C"], rr.state, rr.current_game.movements)
+        another_rr.set_game(["A", "B", "C"], rr.state(), rr.current_game.movements)
 
         self.assertEqual(rr.robots, another_rr.robots)
-        self.assertEqual(rr.state.all(), another_rr.state.all())
+        self.assertEqual(rr.state().all(), another_rr.state().all())
         self.assertListEqual(rr.current_game.movements, another_rr.current_game.movements)
         self.assertIsNotNone(rr.maze)
 

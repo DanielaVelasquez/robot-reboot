@@ -29,10 +29,9 @@ class RobotReboot:
     MOVE_SOUTH = "S"
     MOVE_WEST = "W"
 
-    GOAL = 100
-    ROBOT = 1
-    # TODO: should we use this when creating the state??
-    GOAL_ROBOT = 200
+    GOAL = 9
+    ROBOT = 5
+    GOAL_ROBOT = 10
 
     def __init__(self, maze, goals):
         self.maze = maze
@@ -243,8 +242,7 @@ class RobotReboot:
             if robot_id in self.robots:
                 self.robots[robot_id] = robots[robot_id]
 
-    @property
-    def state(self):
+    def state(self, normalize=False):
         """
         An observation is a three dimensional array.
         First layer represents the maze's structure (i.e its walls)
@@ -259,11 +257,15 @@ class RobotReboot:
         for robot_id in self.robots:
             x, y = self.robots[robot_id]
             obs[x, y, layer] = self.ROBOT
-            # Robot will 'disappear' when it gets to the goal cell
             if robot_id == self.goal.robot_id:
                 x_goal, y_goal = self.goal.cell
                 obs[x_goal, y_goal, layer] = self.GOAL
+                # Game is finished
+                if self.robots[robot_id] == self.goal.cell:
+                    obs[x_goal, y_goal, layer] = self.GOAL_ROBOT
             layer += 1
+        if normalize:
+            obs = obs/self.GOAL_ROBOT
         return obs
 
     @property

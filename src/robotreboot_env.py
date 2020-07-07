@@ -18,20 +18,20 @@ class RobotRebootEnv(gym.Env):
         self.action_space = spaces.Discrete(len(self.actions))
 
         # Observation is a three dimensional array
-        obs = self.robot_reboot.state
+        obs = self.robot_reboot.state(normalize=True)
         # low = np.zeros(len(obs_shape), dtype=int)
         # high = np.array(obs_shape, dtype=int) - np.ones(len(obs_shape), dtype=int)
         # self.observation_space = spaces.Box(low, high, dtype=int)
-        self.observation_space = spaces.Box(0, RobotReboot.GOAL, shape=obs.shape, dtype=int)
+        self.observation_space = spaces.Box(0, RobotReboot.GOAL, shape=obs.shape, dtype=float)
 
         self.seed()
         self.reset()
 
     def step(self, action):
         robot_id, direction = action.split("_")
-        prev_state = self.robot_reboot.state
+        prev_state = self.robot_reboot.state(normalize=True)
         self.robot_reboot.move_robot(robot_id, direction)
-        state = self.robot_reboot.state
+        state = self.robot_reboot.state(normalize=True)
 
         done = self.robot_reboot.done
         reward = 0
@@ -48,7 +48,7 @@ class RobotRebootEnv(gym.Env):
 
     def reset(self):
         self.robot_reboot.next_round()
-        return self.robot_reboot.state
+        return self.robot_reboot.state(normalize=True)
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
@@ -66,7 +66,7 @@ class RobotRebootEnv(gym.Env):
 
     @property
     def state(self):
-        return self.robot_reboot.state
+        return self.robot_reboot.state(normalize=True)
 
 
 if __name__ == "__main__":
