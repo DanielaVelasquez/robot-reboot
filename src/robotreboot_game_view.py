@@ -2,7 +2,7 @@ from time import sleep
 
 import numpy as np
 import pygame
-from models.instance_game import load_game
+from models.instance_game import load_game, results_stats
 from models.robotreboot import RobotReboot
 
 
@@ -196,5 +196,6 @@ class RobotRebootGameView:
 
 
 if __name__ == "__main__":
-    rr, movements = load_game('data/done_games/result.json', index=1)
+    results_stats('data/done_games/result.json')
+    rr, movements = load_game('data/done_games/result.json', index=94)
     rrView = RobotRebootGameView(rr, movements)

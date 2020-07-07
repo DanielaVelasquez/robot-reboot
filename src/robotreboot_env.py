@@ -6,12 +6,14 @@ from models.robotreboot import RobotReboot
 
 
 class RobotRebootEnv(gym.Env):
-    REWARD = 100
-    PUNISHMENT = -1
+    DONE_REWARD = 100
+    MOVING_GOAL_ROBOT_REWARD = 2
+    MOVEMENT_PUNISHMENT = -1
+    SAME_STATE_PUNISHMENT = -10
 
-    def __init__(self, robot_reboot):
+    def __init__(self, robot_reboot:RobotReboot):
         self.robot_reboot = robot_reboot
-        self.reward_range = (RobotRebootEnv.PUNISHMENT, RobotRebootEnv.REWARD)
+        self.reward_range = (RobotRebootEnv.MOVEMENT_PUNISHMENT, RobotRebootEnv.DONE_REWARD)
         # North, South, East or West for each robot
         self.action_space = spaces.Discrete(len(self.actions))
 
@@ -27,13 +29,20 @@ class RobotRebootEnv(gym.Env):
 
     def step(self, action):
         robot_id, direction = action.split("_")
+        prev_state = self.robot_reboot.state
         self.robot_reboot.move_robot(robot_id, direction)
-        done = self.robot_reboot.done
-        if done:
-            reward = RobotRebootEnv.REWARD
-        else:
-            reward = RobotRebootEnv.PUNISHMENT
         state = self.robot_reboot.state
+
+        done = self.robot_reboot.done
+        reward = 0
+        if done:
+            reward += RobotRebootEnv.DONE_REWARD
+        else:
+            if (prev_state == state).all():
+                reward += RobotRebootEnv.SAME_STATE_PUNISHMENT
+            elif robot_id == self.robot_reboot.goal.robot_id:
+                reward += RobotRebootEnv.MOVING_GOAL_ROBOT_REWARD
+            reward += RobotRebootEnv.MOVEMENT_PUNISHMENT
         info = {}
         return state, reward, done, info
 

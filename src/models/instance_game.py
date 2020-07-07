@@ -33,6 +33,19 @@ def get_robot_reboot(seed=26):
     return robot_reboot;
 
 
+def results_stats(results):
+    with open(results) as f:
+        results = json.load(f)
+    games = results['games']
+    i = 0
+    total_movements = 0
+    for g in games:
+        print(f'Game {i}: ' + str(len(g['movements'])))
+        total_movements += len(g['movements'])
+        i += 1
+    print(f'Average {total_movements / i}')
+
+
 def load_game(results, index=0):
     with open(results) as f:
         results = json.load(f)
