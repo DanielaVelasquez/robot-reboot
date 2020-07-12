@@ -197,5 +197,5 @@ class RobotRebootGameView:
 
 if __name__ == "__main__":
     results_stats('data/done_games/result.json')
-    rr, movements = load_game('data/done_games/result.json', index=4)
+    rr, movements = load_game('data/done_games/result.json', index=0)
     rrView = RobotRebootGameView(rr, movements)
