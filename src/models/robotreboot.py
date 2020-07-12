@@ -103,7 +103,7 @@ class RobotReboot:
         if self.goals.empty():
             self.goals = copy_queue(self.goals_initial)
         self.goal = self.goals.get()
-        self.games.put(GameState(self.state))
+        self.games.put(GameState(self.state()))
 
     def add_robot(self, robot_id, robot_position):
         self.robots[robot_id] = robot_position
