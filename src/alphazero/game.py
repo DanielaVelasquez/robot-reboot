@@ -48,7 +48,7 @@ class Game(ABC):
         self.move()
 
     @abstractmethod
-    def execute_move(self, action):
+    def __execute_move(self, action):
         """Executes a move on the game
 
         Args:
@@ -60,10 +60,10 @@ class Game(ABC):
         """Undo the last action executed on the gamr and remove it from the queue
         """
         last_action = self.actions.get()
-        self.execute_undo_move(last_action)
+        self.__execute_undo_move(last_action)
 
     @abstractmethod
-    def execute_undo_move(self, action):
+    def __execute_undo_move(self, action):
         """Returns the game to the previous state before the action was executed
 
         Args:
