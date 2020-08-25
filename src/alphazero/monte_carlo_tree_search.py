@@ -43,7 +43,7 @@ class MonteCarloTreeSearch(ABC):
             return game.score()
 
         actions = {}
-        for best_action in game.valid_actions():
+        for best_action in game.get_valid_actions():
             game.move(best_action)
             actions[best_action] = self.__heuristic_value(game)
             game.undo_move()
@@ -77,7 +77,7 @@ class MonteCarloTreeSearch(ABC):
 
         """
         actions = {}
-        for action in game.valid_actions():
+        for action in game.get_valid_actions():
             game.move(action)
             actions[action] = self.monte_carlo_value(game)
             game.undo_move()

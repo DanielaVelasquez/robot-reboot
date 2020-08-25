@@ -3,6 +3,12 @@ import queue
 from abc import ABC, abstractmethod
 
 
+class GameAction:
+    @abstractmethod
+    def __init__(self):
+        pass
+
+
 class Game(ABC):
 
     def __init__(self):
@@ -27,7 +33,7 @@ class Game(ABC):
         pass
 
     @abstractmethod
-    def valid_actions(self, state):
+    def get_valid_actions(self):
         """Gets valid actions based on the current game state
 
         Args:
@@ -38,7 +44,15 @@ class Game(ABC):
         """
         pass
 
-    def move(self, action):
+    def get_all_actions(self):
+        """Gets all actions allowed in the game regardless of current state
+
+        Returns:
+            list: All possible actions allowed in the game
+        """
+        pass
+
+    def move(self, action: GameAction):
         """Executes a move on the game and record the action on a queue
 
         Args:
@@ -48,7 +62,7 @@ class Game(ABC):
         self.move()
 
     @abstractmethod
-    def __execute_move(self, action):
+    def execute_move(self, action: GameAction):
         """Executes a move on the game
 
         Args:
@@ -63,7 +77,7 @@ class Game(ABC):
         self.__execute_undo_move(last_action)
 
     @abstractmethod
-    def __execute_undo_move(self, action):
+    def execute_undo_move(self, action: GameAction):
         """Returns the game to the previous state before the action was executed
 
         Args:
