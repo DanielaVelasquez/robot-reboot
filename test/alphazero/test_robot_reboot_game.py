@@ -1,7 +1,8 @@
 import unittest
 import numpy as np
 from src.alphazero.robot_reboot_game import RobotRebootGame, RobotRebootAction, Maze
-from src.util.util import get_movement_same_direction_for_wall
+from src.alphazero.util import get_movement_same_direction_for_wall, get_cell_at, get_wall_at_direction, \
+    get_opposite_direction
 from src.models.robotreboot import Goal
 
 
@@ -32,3 +33,18 @@ class TestRobotRebootGame(unittest.TestCase):
             movement = get_movement_same_direction_for_wall(wall)
             self.assertFalse(game.can_move(RobotRebootAction(0, movement)),
                              f'Movement {movement} should NOT be allowed, there is a wall in the way')
+
+    def test_can_move_when_wall_on_next_cell_of_the_movement(self):
+        maze = Maze(np.array([
+            [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
+            [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
+            [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY]
+        ]))
+        robot = (1, 1)
+        for movement_direction in RobotRebootGame.MOVEMENTS:
+            cell = get_cell_at(movement_direction, robot, 3, 3)
+            wall = get_wall_at_direction(get_opposite_direction(movement_direction))
+            maze.cells[cell] = wall
+            game = RobotRebootGame(maze, [robot], Goal(0, (0, 0)))
+            self.assertFalse(game.can_move(RobotRebootAction(0, movement_direction)),
+                             f'Movement {movement_direction} should NOT be allowed, there is a wall in the way')

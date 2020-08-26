@@ -615,7 +615,7 @@ class TestRobotReboot(unittest.TestCase):
         for i in range(rows):
             for j in range(cols):
                 for layer in range(1, layers):
-                    if not rr.is_a_robot_on((i, j)) and rr.goal.cell != (i, j) and layer != 2:
+                    if not rr.is_a_robot_on((i, j)) and rr.goal.position != (i, j) and layer != 2:
                         self.assertEqual(obs[i, j, layer], 0)
 
     def test_state_win_game(self):

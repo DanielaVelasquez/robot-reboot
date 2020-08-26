@@ -1,4 +1,4 @@
-from src.alphazero.robot_reboot_game import Maze, RobotRebootGame
+import numpy as np
 from enum import Enum
 
 
@@ -9,28 +9,61 @@ class Direction(Enum):
     WEST = 4
 
 
+class Maze:
+    NORTH_WALL = 1
+    EAST_WALL = 2
+    SOUTH_WALL = 4
+    WEST_WALL = 8
+    EMPTY = 0
+
+    WALLS = [NORTH_WALL, EAST_WALL, SOUTH_WALL, WEST_WALL]
+
+    def __init__(self, cells: np.array):
+        self.cells = cells
+        self.size = cells.shape
+
+    @property
+    def height(self):
+        return int(self.size[1])
+
+    @property
+    def width(self):
+        return int(self.size[0])
+
+
 def get_movement_same_direction_for_wall(wall):
     if wall == Maze.NORTH_WALL:
-        return RobotRebootGame.NORTH_MOVE
+        return Direction.NORTH
     elif wall == Maze.SOUTH_WALL:
-        return RobotRebootGame.SOUTH_MOVE
+        return Direction.SOUTH
     elif wall == Maze.EAST_WALL:
-        return RobotRebootGame.EAST_MOVE
+        return Direction.EAST
     elif wall == Maze.WEST_WALL:
-        return RobotRebootGame.WEST_MOVE
+        return Direction.EAST
     else:
         raise Exception("Invalid wall value")
 
 
-def get_opposite_direction(movement):
-    if movement == RobotRebootGame.NORTH_MOVE:
-        return RobotRebootGame.SOUTH_MOVE
-    elif movement == RobotRebootGame.SOUTH_MOVE:
-        return RobotRebootGame.NORTH_MOVE
-    elif movement == RobotRebootGame.EAST_MOVE:
-        return RobotRebootGame.WEST_MOVE
-    elif movement == RobotRebootGame.WEST_MOVE:
-        return RobotRebootGame.EAST_MOVE
+def get_wall_at_direction(direction: Direction):
+    if direction == direction.NORTH:
+        return Maze.NORTH_WALL
+    elif direction == direction.SOUTH:
+        return Maze.SOUTH_WALL
+    elif direction == direction.WEST:
+        return Maze.WEST_WALL
+    elif direction == direction.EAST:
+        return Maze.EAST_WALL
+
+
+def get_opposite_direction(movement: Direction):
+    if movement == Direction.NORTH:
+        return Direction.SOUTH
+    elif movement == Direction.SOUTH:
+        return Direction.NORTH
+    elif movement == Direction.EAST:
+        return Direction.WEST
+    elif movement == Direction.WEST:
+        return Direction.EAST
     else:
         raise Exception("Invalid movement")
 

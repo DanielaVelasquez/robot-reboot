@@ -1,5 +1,5 @@
 import unittest
-from src.util.util import get_cell_at, Direction
+from src.alphazero.util import get_cell_at, Direction
 
 
 class TestUtil(unittest.TestCase):

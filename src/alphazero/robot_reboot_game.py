@@ -1,13 +1,13 @@
 import numpy as np
 
-from enum import Enum
 from .game import Game, GameAction
+from src.alphazero.util import Direction, Maze
 
 
 class RobotRebootAction(GameAction):
-    def __init__(self, robot, movement):
+    def __init__(self, robot, movement_direction: Direction):
         self.robot = robot
-        self.movement = movement
+        self.movement_direction = movement_direction
 
 
 class RobotRebootGoal:
@@ -17,36 +17,8 @@ class RobotRebootGoal:
         self.position = pos
 
 
-class Maze:
-    NORTH_WALL = 1
-    EAST_WALL = 2
-    SOUTH_WALL = 4
-    WEST_WALL = 8
-    EMPTY = 0
-
-    WALLS = [NORTH_WALL, EAST_WALL, SOUTH_WALL, WEST_WALL]
-
-    def __init__(self, cells: np.array):
-        self.cells = cells
-        self.size = cells.shape
-
-    @property
-    def height(self):
-        return int(self.size[1])
-
-    @property
-    def width(self):
-        return int(self.size[0])
-
-
-
 class RobotRebootGame(Game):
-    NORTH_MOVE = 'N'
-    EAST_MOVE = 'E'
-    SOUTH_MOVE = 'S'
-    WEST_MOVE = 'W'
-
-    MOVEMENTS = [NORTH_MOVE, EAST_MOVE, SOUTH_MOVE, WEST_MOVE]
+    MOVEMENTS = [Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST]
 
     def __init__(self, maze: Maze, robots: list, goal: RobotRebootGoal, max_movements=20):
         self.maze = maze
@@ -69,25 +41,25 @@ class RobotRebootGame(Game):
                 range(len(self.robots))]
 
     def execute_move(self, action: RobotRebootAction):
-        if action.movement == self.NORTH_MOVE:
+        if action.movement_direction == Direction.NORTH:
             self.__move_north(action.robot)
-        elif action.movement == self.SOUTH_MOVE:
+        elif action.movement_direction == Direction.SOUTH:
             self.__move_south(action.robot)
-        elif action.movement == self.EAST_MOVE:
+        elif action.movement_direction == Direction.EAST:
             self.__move_east(action.robot)
-        elif action.movement == self.WEST_MOVE:
+        elif action.movement_direction == Direction.WEST:
             self.__move_west(action.robot)
         else:
             raise Exception("Invalid movement")
 
     def execute_undo_move(self, action: RobotRebootAction):
-        if action.movement == self.NORTH_MOVE:
+        if action.movement_direction == Direction.NORTH:
             self.__move_south(action.robot)
-        elif action.movement == self.SOUTH_MOVE:
+        elif action.movement_direction == Direction.SOUTH:
             self.__move_north(action.robot)
-        elif action.movement == self.EAST_MOVE:
+        elif action.movement_direction == Direction.EAST:
             self.__move_west(action.robot)
-        elif action.movement == self.WEST_MOVE:
+        elif action.movement_direction == Direction.WEST:
             self.__move_east(action.robot)
         else:
             raise Exception("Invalid movement")
