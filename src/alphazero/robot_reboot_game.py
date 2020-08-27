@@ -8,7 +8,7 @@ class RobotRebootAction(GameAction):
     def __init__(self, robot_id, movement_direction: Direction):
         self.robot = robot_id
         self.movement_direction = movement_direction
-        self.position_before_move = (-1, -1)
+        self.position_before_move = tuple()
 
     def __eq__(self, other):
         if not isinstance(other, RobotRebootAction):
@@ -31,10 +31,6 @@ class RobotRebootGame(Game):
         self.robots = robots
         self.goal = goal
         self.max_movements = max_movements
-        self.robots_position_history = []
-        for robot_initial_position in self.robots:
-            history = []
-            self.robots_position_history.append(history)
 
     def __add_robot_position_history(self, robot_index, previous_position):
         q = self.robots_position_history[robot_index]
@@ -55,7 +51,8 @@ class RobotRebootGame(Game):
                 range(len(self.robots))]
 
     def execute_move(self, action: RobotRebootAction):
-        previous_position = self.robots[action.robot]
+        current_position = self.robots[action.robot]
+        action.__setattr__("position_before_move", current_position)
         if action.movement_direction == Direction.NORTH:
             self.__move_north(action.robot)
         elif action.movement_direction == Direction.SOUTH:
@@ -66,11 +63,9 @@ class RobotRebootGame(Game):
             self.__move_west(action.robot)
         else:
             raise Exception("Invalid movement")
-        self.__add_robot_position_history(action.robot, previous_position)
 
     def execute_undo_move(self, action: RobotRebootAction):
-        previous_pos = self.robots_position_history[action.robot].pop()
-        self.robots[action.robot] = previous_pos
+        self.robots[action.robot] = action.__getattribute__("position_before_move")
 
     def __move_north(self, robot):
         x, y = self.robots[robot]

@@ -39,7 +39,7 @@ def get_movement_same_direction_for_wall(wall):
     elif wall == Maze.EAST_WALL:
         return Direction.EAST
     elif wall == Maze.WEST_WALL:
-        return Direction.EAST
+        return Direction.WEST
     else:
         raise Exception("Invalid wall value")
 
