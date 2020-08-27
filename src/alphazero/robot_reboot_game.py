@@ -1,13 +1,19 @@
 import numpy as np
 
 from .game import Game, GameAction
-from src.alphazero.util import Direction, Maze
+from src.alphazero.util import Direction, Maze, get_opposite_direction
 
 
 class RobotRebootAction(GameAction):
-    def __init__(self, robot, movement_direction: Direction):
-        self.robot = robot
+    def __init__(self, robot_id, movement_direction: Direction):
+        self.robot = robot_id
         self.movement_direction = movement_direction
+        self.position_before_move = (-1, -1)
+
+    def __eq__(self, other):
+        if not isinstance(other, RobotRebootAction):
+            return NotImplemented
+        return self.robot == other.robot and self.movement_direction == other.movement_direction
 
 
 class RobotRebootGoal:
@@ -25,6 +31,14 @@ class RobotRebootGame(Game):
         self.robots = robots
         self.goal = goal
         self.max_movements = max_movements
+        self.robots_position_history = []
+        for robot_initial_position in self.robots:
+            history = []
+            self.robots_position_history.append(history)
+
+    def __add_robot_position_history(self, robot_index, previous_position):
+        q = self.robots_position_history[robot_index]
+        q.append(previous_position)
 
     def score(self):
         return self.max_movements - self.movements
@@ -33,14 +47,15 @@ class RobotRebootGame(Game):
         return self.actions.qsize() > self.max_movements or self.robots[self.goal.robot] == self.goal.position
 
     def get_valid_actions(self):
-        return [RobotRebootAction(robot, movement) for movement in self.__MOVEMENTS for robot in
+        return [RobotRebootAction(robot, movement) for movement in self.MOVEMENTS for robot in
                 range(len(self.robots)) if self.can_move(RobotRebootAction(robot, movement))]
 
     def get_all_actions(self):
-        return [RobotRebootAction(robot, movement) for movement in self.__MOVEMENTS for robot in
+        return [RobotRebootAction(robot, movement) for movement in self.MOVEMENTS for robot in
                 range(len(self.robots))]
 
     def execute_move(self, action: RobotRebootAction):
+        previous_position = self.robots[action.robot]
         if action.movement_direction == Direction.NORTH:
             self.__move_north(action.robot)
         elif action.movement_direction == Direction.SOUTH:
@@ -51,18 +66,11 @@ class RobotRebootGame(Game):
             self.__move_west(action.robot)
         else:
             raise Exception("Invalid movement")
+        self.__add_robot_position_history(action.robot, previous_position)
 
     def execute_undo_move(self, action: RobotRebootAction):
-        if action.movement_direction == Direction.NORTH:
-            self.__move_south(action.robot)
-        elif action.movement_direction == Direction.SOUTH:
-            self.__move_north(action.robot)
-        elif action.movement_direction == Direction.EAST:
-            self.__move_west(action.robot)
-        elif action.movement_direction == Direction.WEST:
-            self.__move_east(action.robot)
-        else:
-            raise Exception("Invalid movement")
+        previous_pos = self.robots_position_history[action.robot].pop()
+        self.robots[action.robot] = previous_pos
 
     def __move_north(self, robot):
         x, y = self.robots[robot]
