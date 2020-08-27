@@ -51,7 +51,7 @@ class TestRobotRebootGame(unittest.TestCase):
             self.assertFalse(game.can_move(RobotRebootAction(0, movement_direction)),
                              f'Movement {movement_direction} should NOT be allowed, there is a wall in the way')
 
-    def test_execute_move_and_execute_undo_move_on_north_direction(self):
+    def test_move_and_undo_move_on_north_direction(self):
         maze = Maze(np.array([
             [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
             [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
@@ -60,12 +60,12 @@ class TestRobotRebootGame(unittest.TestCase):
         robot_initial_position = (1, 1)
         game = RobotRebootGame(maze, [robot_initial_position], Goal(0, (0, 0)))
         action = RobotRebootAction(0, Direction.NORTH)
-        game.execute_move(action)
+        game.move(action)
         self.assertEqual([(0, 1)], game.robots)
-        game.execute_undo_move(action)
+        game.undo_move()
         self.assertEqual([robot_initial_position], game.robots)
 
-    def test_execute_move_and_execute_undo_move_on_south_direction(self):
+    def test_move_and_undo_move_on_south_direction(self):
         maze = Maze(np.array([
             [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
             [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
@@ -74,12 +74,12 @@ class TestRobotRebootGame(unittest.TestCase):
         robot_initial_position = (1, 1)
         game = RobotRebootGame(maze, [robot_initial_position], Goal(0, (0, 0)))
         action = RobotRebootAction(0, Direction.SOUTH)
-        game.execute_move(action)
+        game.move(action)
         self.assertEqual([(2, 1)], game.robots)
-        game.execute_undo_move(action)
+        game.undo_move()
         self.assertEqual([robot_initial_position], game.robots)
 
-    def test_execute_move_and_execute_undo_move_on_west_direction(self):
+    def test_move_and_undo_move_on_west_direction(self):
         maze = Maze(np.array([
             [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
             [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
@@ -88,12 +88,12 @@ class TestRobotRebootGame(unittest.TestCase):
         robot_initial_position = (1, 1)
         game = RobotRebootGame(maze, [robot_initial_position], Goal(0, (0, 0)))
         action = RobotRebootAction(0, Direction.WEST)
-        game.execute_move(action)
+        game.move(action)
         self.assertEqual([(1, 0)], game.robots)
-        game.execute_undo_move(action)
+        game.undo_move()
         self.assertEqual([robot_initial_position], game.robots)
 
-    def test_execute_move_and_execute_undo_move_on_east_direction(self):
+    def test_move_and_undo_move_on_east_direction(self):
         maze = Maze(np.array([
             [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
             [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
@@ -102,12 +102,12 @@ class TestRobotRebootGame(unittest.TestCase):
         robot_initial_position = (1, 1)
         game = RobotRebootGame(maze, [robot_initial_position], Goal(0, (0, 0)))
         action = RobotRebootAction(0, Direction.EAST)
-        game.execute_move(action)
+        game.move(action)
         self.assertEqual([(1, 2)], game.robots)
-        game.execute_undo_move(action)
+        game.undo_move()
         self.assertEqual([robot_initial_position], game.robots)
 
-    def test_execute_undo_move_after_three_movements(self):
+    def test_undo_move_after_three_movements(self):
         maze = Maze(np.array([
             [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
             [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
@@ -115,13 +115,13 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robot_initial_position = (1, 1)
         game = RobotRebootGame(maze, [robot_initial_position], Goal(0, (0, 0)))
-        game.execute_move(RobotRebootAction(0, Direction.NORTH))
-        game.execute_move(RobotRebootAction(0, Direction.WEST))
-        game.execute_move(RobotRebootAction(0, Direction.SOUTH))
+        game.move(RobotRebootAction(0, Direction.NORTH))
+        game.move(RobotRebootAction(0, Direction.WEST))
+        game.move(RobotRebootAction(0, Direction.SOUTH))
         expected_positions = game.robots.copy()
         action = RobotRebootAction(0, Direction.EAST)
-        game.execute_move(action)
-        game.execute_undo_move(action)
+        game.move(action)
+        game.undo_move()
         self.assertEqual(expected_positions, game.robots)
 
     def test_get_all_actions_with_two_robots(self):
@@ -227,5 +227,5 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(4, 0)]
         game = RobotRebootGame(maze, robots, Goal(0, (0, 0)))
-        game.execute_move(RobotRebootAction(0, Direction.NORTH))
+        game.move(RobotRebootAction(0, Direction.NORTH))
         self.assertEqual([(0,0)], game.robots)

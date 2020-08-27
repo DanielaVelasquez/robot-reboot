@@ -27,6 +27,7 @@ class RobotRebootGame(Game):
     MOVEMENTS = [Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST]
 
     def __init__(self, maze: Maze, robots: list, goal: RobotRebootGoal, max_movements=20):
+        super().__init__()
         self.maze = maze
         self.robots = robots
         self.goal = goal
@@ -164,7 +165,7 @@ class RobotRebootGame(Game):
 
     def can_move(self, action: RobotRebootAction):
         current_pos = self.robots[action.robot]
-        self.execute_move(action)
+        self.move(action)
         after_pos = self.robots[action.robot]
-        self.execute_undo_move(action)
+        self.undo_move()
         return current_pos != after_pos

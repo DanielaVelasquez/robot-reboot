@@ -59,7 +59,7 @@ class Game(ABC):
             action: action to execute
         """
         self.actions.put(action)
-        self.move()
+        self.execute_move(action)
 
     @abstractmethod
     def execute_move(self, action: GameAction):
@@ -74,7 +74,7 @@ class Game(ABC):
         """Undo the last action executed on the gamr and remove it from the queue
         """
         last_action = self.actions.get()
-        self.__execute_undo_move(last_action)
+        self.execute_undo_move(last_action)
 
     @abstractmethod
     def execute_undo_move(self, action: GameAction):
