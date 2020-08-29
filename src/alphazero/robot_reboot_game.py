@@ -38,7 +38,7 @@ class RobotRebootGame(Game):
         q.append(previous_position)
 
     def score(self):
-        return self.max_movements - self.movements
+        return self.max_movements - self.actions.qsize()
 
     def is_over(self):
         return self.actions.qsize() > self.max_movements or self.robots[self.goal.robot] == self.goal.position

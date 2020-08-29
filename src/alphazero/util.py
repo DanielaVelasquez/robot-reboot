@@ -96,3 +96,7 @@ def get_cell_at(direction: Direction, position: tuple, max_rows, max_cols):
         return x, y + 1
     else:
         raise Exception("Not cell available")
+
+
+def get_not_blocking_walls_when_robot_on_cell_moving_to(direction: Direction):
+    return [wall for wall in Maze.WALLS if wall != get_wall_at_direction(direction)]
