@@ -6,8 +6,11 @@ from .game import Game
 
 class MonteCarloTreeSearch(ABC):
 
+    def __init__(self, game: Game):
+        self.game = game
+
     @abstractmethod
-    def __record(self, game: Game, score):
+    def record(self, game: Game, score):
         """Stores data to learn heuristic values
 
         Args:
@@ -17,7 +20,7 @@ class MonteCarloTreeSearch(ABC):
         pass
 
     @abstractmethod
-    def __heuristic_value(self, game: Game):
+    def heuristic_value(self, game: Game):
         """Computes a heuristic value that determines how worthy a state is
 
         Args:
