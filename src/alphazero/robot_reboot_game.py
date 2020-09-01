@@ -26,6 +26,11 @@ class RobotRebootGoal:
 class RobotRebootGame(Game):
     MOVEMENTS = [Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST]
 
+    GOAL = 9
+    ROBOT = 5
+    GOAL_ROBOT = 10
+    EMPTY = 0
+
     def __init__(self, maze: Maze, robots: list, goal: RobotRebootGoal, max_movements=20):
         super().__init__()
         self.maze = maze
@@ -169,3 +174,28 @@ class RobotRebootGame(Game):
         after_pos = self.robots[action.robot]
         self.undo_move()
         return current_pos != after_pos
+
+    def state(self):
+        """
+        An observation is a three dimensional array.
+        First layer represents the maze's structure (i.e its walls)
+        For each robot on the game there is an extra layer. Each layer will have a 1 wherever the robot is located
+            in the maze. On the goal robot's layer, the goal cell is set to the GOAL value.
+        """
+
+        total_robots = len(self.robots)
+        rows, cols = self.maze.cells.shape
+        obs = np.full((rows, cols, total_robots + 1), self.EMPTY)
+        obs[:, :, total_robots] = self.maze.cells
+        for robot_id in range(0, len(self.robots)):
+            x, y = self.robots[robot_id]
+            obs[x, y, robot_id] = self.ROBOT
+            if robot_id == self.goal.robot:
+                x_goal, y_goal = self.goal.position
+                obs[x_goal, y_goal, robot_id] = self.GOAL
+                # Game is finished
+                if self.robots[robot_id] == self.goal.position:
+                    obs[x_goal, y_goal, robot_id] = self.GOAL_ROBOT
+        # if normalize:
+        #     obs = obs / self.GOAL_ROBOT
+        return obs

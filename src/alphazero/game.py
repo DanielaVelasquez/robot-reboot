@@ -36,9 +36,6 @@ class Game(ABC):
     def get_valid_actions(self):
         """Gets valid actions based on the current game state
 
-        Args:
-             state: Current game state
-
         Returns:
             list: List with all the valid actions from current state
         """
@@ -83,4 +80,8 @@ class Game(ABC):
         Args:
             action: last action executed on the game
         """
+        pass
+
+    @abstractmethod
+    def state(self):
         pass

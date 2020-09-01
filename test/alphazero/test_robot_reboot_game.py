@@ -538,3 +538,43 @@ class TestRobotRebootGame(unittest.TestCase):
         game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)), max_movements=20)
         game.move(RobotRebootAction(0, Direction.WEST))
         self.assertEqual(game.max_movements - 1, game.score())
+
+    def test_state_when_game_not_over(self):
+        maze = Maze(np.array([
+            [Maze.EMPTY, Maze.SOUTH_WALL, Maze.EMPTY, Maze.EAST_WALL, Maze.EMPTY],
+            [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
+            [Maze.NORTH_WALL, Maze.NORTH_WALL, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
+            [Maze.EMPTY, Maze.EMPTY, Maze.SOUTH_WALL, Maze.EMPTY, Maze.EMPTY],
+            [Maze.EAST_WALL, Maze.EAST_WALL, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY]
+        ]))
+        maze_cells = maze.cells.copy()
+        robots = [(0, 2), (0, 2), (4, 2)]
+        game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(1, (3, 4)))
+        obs = game.state()
+
+        rows, cols, layers = obs.shape
+
+        self.assertEqual(obs.shape, (5, 5, 4))
+        np.testing.assert_equal(obs[:, :, layers - 1], maze_cells)
+        # Checking robots on each layer
+        self.assertEqual(obs[0, 2, 0], RobotRebootGame.ROBOT)
+        self.assertEqual(obs[0, 2, 1], RobotRebootGame.ROBOT)
+        self.assertEqual(obs[4, 2, 2], RobotRebootGame.ROBOT)
+        # Checking goal on the target robot
+        self.assertEqual(obs[3, 4, 1], RobotRebootGame.GOAL)
+
+        for i in range(len(robots)):
+            robot_layer = obs[:, :, i]
+            maze_positions_not_empty = np.argwhere(robot_layer != RobotRebootGame.EMPTY)[0]
+            robot_pos = np.array(robots[i])
+            np.testing.assert_equal(robot_pos, maze_positions_not_empty)
+
+    def test_state_when_game_won(self):
+        maze = Maze(np.array([
+            [Maze.EMPTY, Maze.SOUTH_WALL, Maze.EMPTY, Maze.SOUTH_WALL, Maze.EMPTY]
+        ]))
+        robots = [(0, 0)]
+        game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
+        obs = game.state()
+        self.assertEqual(RobotRebootGame.GOAL_ROBOT, obs[0, 0, 0])
+
