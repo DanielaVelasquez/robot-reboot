@@ -1,6 +1,7 @@
 import numpy as np
 
-from .game import Game, GameAction
+from src.alphazero.deep_heuristic import DeepHeuristic
+from src.alphazero.game import Game, GameAction
 from src.alphazero.util import Direction, Maze, get_opposite_direction
 
 
@@ -14,6 +15,23 @@ class RobotRebootAction(GameAction):
         if not isinstance(other, RobotRebootAction):
             return NotImplemented
         return self.robot == other.robot and self.movement_direction == other.movement_direction
+
+    def __hash__(self):
+        return self.robot + self.movement_direction.value
+
+    def __str__(self):
+        direction = ""
+        if self.movement_direction == Direction.NORTH:
+            direction = "North"
+        elif self.movement_direction == Direction.SOUTH:
+            direction = "South"
+        elif self.movement_direction == Direction.EAST:
+            direction = "East"
+        elif self.movement_direction == Direction.WEST:
+            direction = "West"
+        else:
+            raise Exception("Missing string value for "+self.movement_direction)
+        return f'Move robot {self.robot} in {direction} direction'
 
 
 class RobotRebootGoal:
@@ -31,7 +49,7 @@ class RobotRebootGame(Game):
     GOAL_ROBOT = 10
     EMPTY = 0
 
-    def __init__(self, maze: Maze, robots: list, goal: RobotRebootGoal, max_movements=20):
+    def __init__(self, maze: Maze, robots: list, goal: RobotRebootGoal, max_movements=4):
         super().__init__()
         self.maze = maze
         self.robots = robots
@@ -199,3 +217,37 @@ class RobotRebootGame(Game):
         # if normalize:
         #     obs = obs / self.GOAL_ROBOT
         return obs
+
+
+if __name__ == "__main__":
+    # goals = list()
+    # goals.put(RobotRebootGoal(0, (5, 10)))
+    # goals.put(RobotRebootGoal(1, (4, 14)))
+    # goals.put(RobotRebootGoal(2, (9, 13)))
+    # goals.put(RobotRebootGoal(3, (1, 12)))
+    # goals.put(RobotRebootGoal(1, (14, 10)))
+    # goals.put(RobotRebootGoal(0, (9, 3)))
+    # goals.put(RobotRebootGoal(2, (11, 6)))
+    # goals.put(RobotRebootGoal(0, (3, 1)))
+    # goals.put(RobotRebootGoal(1, (12, 1)))
+    # goals.put(RobotRebootGoal(3, (5, 2)))
+    # goals.put(RobotRebootGoal(0, (11, 9)))
+    # goals.put(RobotRebootGoal(3, (13, 14)))
+    # goals.put(RobotRebootGoal(2, (3, 9)))
+    # goals.put(RobotRebootGoal(3, (14, 4)))
+    # goals.put(RobotRebootGoal(1, (4, 5)))
+    # goals.put(RobotRebootGoal(2, (1, 6)))
+    goal = RobotRebootGoal(0, (0, 0))
+    maze = Maze(np.full((2, 2), Maze.EMPTY))
+    robots = [(1, 1)]
+    game = RobotRebootGame(maze, robots.copy(), goal)
+    state = game.state()
+    deep_heuristic = DeepHeuristic((2, 2, 2), 1)# len(game.get_valid_actions()))
+    action = deep_heuristic.best_action(game)
+    print(str(action))
+    print(game.can_move(action))
+    game.move(action)
+    action = deep_heuristic.best_action(game)
+    print(str(action))
+    print(game.can_move(action))
+

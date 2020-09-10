@@ -6,8 +6,8 @@ from .game import Game
 
 class MonteCarloTreeSearch(ABC):
 
-    def __init__(self, game: Game):
-        self.game = game
+    def __init__(self):
+        pass
 
     @abstractmethod
     def record(self, game: Game, score):
@@ -31,7 +31,7 @@ class MonteCarloTreeSearch(ABC):
         """
         pass
 
-    def __playout_value(self, game: Game):
+    def playout_value(self, game: Game):
         """Final game result after a set of actions taken on the current game
 
         Args:
@@ -42,15 +42,17 @@ class MonteCarloTreeSearch(ABC):
 
         """
         if game.is_over():
-            self.__record(game, game.score())
+            self.record(game, game.score())
             return game.score()
 
         actions = {}
-        for best_action in game.get_valid_actions():
-            game.move(best_action)
-            actions[best_action] = self.__heuristic_value(game)
+        actions_heuristic_value = {}
+        for action in game.get_valid_actions():
+            game.move(action)
+            actions[action] = action
+            actions_heuristic_value[action] = self.heuristic_value(game)
             game.undo_move()
-        best_action = max(actions, key=actions.get())
+        best_action = actions[max(actions_heuristic_value, key=actions_heuristic_value.get)]
         game.move(best_action)
         value = self.playout_value(game)
         game.undo_move()
@@ -84,4 +86,4 @@ class MonteCarloTreeSearch(ABC):
             game.move(action)
             actions[action] = self.monte_carlo_value(game)
             game.undo_move()
-        return max(actions, key=actions.get())
+        return max(actions, key=actions.get)
