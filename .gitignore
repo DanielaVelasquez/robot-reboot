@@ -16,7 +16,4 @@ __pycache__/
 
 
 # Others
-**/**/bin/**/*
-**/**/lib/**/*
-**/robotenv
-**/ignored/*
+/src/robotenv/
