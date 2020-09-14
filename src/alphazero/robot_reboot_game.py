@@ -2,7 +2,7 @@ import numpy as np
 
 from src.alphazero.deep_heuristic import DeepHeuristic
 from src.alphazero.game import Game, GameAction
-from src.alphazero.util import Direction, Maze, get_opposite_direction
+from src.alphazero.util import Direction, Maze
 
 
 class RobotRebootAction(GameAction):
@@ -30,7 +30,7 @@ class RobotRebootAction(GameAction):
         elif self.movement_direction == Direction.WEST:
             direction = "West"
         else:
-            raise Exception("Missing string value for "+self.movement_direction)
+            raise Exception("Missing string value for " + self.movement_direction)
         return f'Move robot {self.robot} in {direction} direction'
 
 
@@ -219,35 +219,77 @@ class RobotRebootGame(Game):
         return obs
 
 
-if __name__ == "__main__":
-    # goals = list()
-    # goals.put(RobotRebootGoal(0, (5, 10)))
-    # goals.put(RobotRebootGoal(1, (4, 14)))
-    # goals.put(RobotRebootGoal(2, (9, 13)))
-    # goals.put(RobotRebootGoal(3, (1, 12)))
-    # goals.put(RobotRebootGoal(1, (14, 10)))
-    # goals.put(RobotRebootGoal(0, (9, 3)))
-    # goals.put(RobotRebootGoal(2, (11, 6)))
-    # goals.put(RobotRebootGoal(0, (3, 1)))
-    # goals.put(RobotRebootGoal(1, (12, 1)))
-    # goals.put(RobotRebootGoal(3, (5, 2)))
-    # goals.put(RobotRebootGoal(0, (11, 9)))
-    # goals.put(RobotRebootGoal(3, (13, 14)))
-    # goals.put(RobotRebootGoal(2, (3, 9)))
-    # goals.put(RobotRebootGoal(3, (14, 4)))
-    # goals.put(RobotRebootGoal(1, (4, 5)))
-    # goals.put(RobotRebootGoal(2, (1, 6)))
-    goal = RobotRebootGoal(0, (0, 0))
-    maze = Maze(np.full((2, 2), Maze.EMPTY))
-    robots = [(1, 1)]
-    game = RobotRebootGame(maze, robots.copy(), goal)
-    state = game.state()
-    deep_heuristic = DeepHeuristic((2, 2, 2), 1)# len(game.get_valid_actions()))
-    action = deep_heuristic.best_action(game)
-    print(str(action))
-    print(game.can_move(action))
-    game.move(action)
-    action = deep_heuristic.best_action(game)
-    print(str(action))
-    print(game.can_move(action))
+class RobotRebootConfiguration:
+    def __init__(self, maze_size: tuple, robots: int, goals: list, max_movements=20):
+        self.maze_size = maze_size
+        self.robots = robots
+        self.goals = goals
+        self.max_movements = max_movements
 
+
+class RobotRebootFactory:
+    __MAZE_8_X_8 = 8
+
+    __CONF = {
+        __MAZE_8_X_8: RobotRebootConfiguration((8, 8), 2, [(0, 5), (2, 2), (5, 4), (6, 6)])
+    }
+
+    def __init__(self, size=8, seed=26):
+        self.size = size
+        np.random.seed(seed)
+
+    def build(self):
+        maze = self.__generate_maze()
+        goal = self.__generate_goal()
+        robots = self.__generate_robots(goal)
+        return RobotRebootGame(Maze(maze), robots, goal, self.__CONF[self.size].max_movements)
+
+    def __generate_maze(self):
+        if self.size in self.__CONF:
+            maze = np.full(self.__CONF[self.size].maze_size, Maze.EMPTY)
+            maze[0, 5] = Maze.SOUTH_WALL
+            maze[0, 6] = Maze.WEST_WALL
+            maze[2, 1] = Maze.EAST_WALL
+            maze[2, 2] = Maze.NORTH_WALL
+            maze[3, 0] = Maze.SOUTH_WALL
+            maze[5, 3] = Maze.EAST_WALL
+            maze[5, 4] = Maze.NORTH_WALL
+            maze[6, 5] = Maze.EAST_WALL
+            maze[6, 6] = Maze.SOUTH_WALL
+            maze[7, 5] = Maze.WEST_WALL
+            return maze
+        else:
+            raise Exception(f'No defined configuration for size {self.size}')
+
+    def __generate_goal(self):
+        if self.size in self.__CONF:
+            goals = self.__CONF[self.size].goals
+            selected_goal = np.random.randint(len(goals))
+            robot = np.random.randint(self.__CONF[self.size].robots)
+            return RobotRebootGoal(robot, goals[selected_goal])
+        else:
+            raise Exception(f'No defined configuration for size {self.size}')
+
+    def __generate_robots(self, goal: RobotRebootGoal):
+        if self.size in self.__CONF:
+            robots = list()
+            for i in range(self.__CONF[self.size].robots):
+                x, y = np.random.randint(self.size), np.random.randint(self.size)
+                while (x, y) == goal.position and i == goal.robot:
+                    x, y = np.random.randint(self.size), np.random.randint(self.size)
+                robots.append((x, y))
+            return robots
+        else:
+            raise Exception(f'No defined configuration for size {self.size}')
+
+
+if __name__ == "__main__":
+    factory = RobotRebootFactory(size=8)
+    deep_heuristic = DeepHeuristic((8, 8, 3), 1)  # len(game.get_valid_actions()))
+    # Generate 10 games
+    for i in range(10):
+        game = factory.build()
+        # Play that game until it is over
+        while not game.is_over():
+            action = deep_heuristic.best_action(game)
+            game.move(action)
