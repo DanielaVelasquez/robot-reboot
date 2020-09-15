@@ -1,5 +1,6 @@
 import numpy as np
 
+from datetime import datetime
 from src.alphazero.deep_heuristic import DeepHeuristic
 from src.alphazero.game import Game, GameAction
 from src.alphazero.util import Direction, Maze
@@ -231,7 +232,7 @@ class RobotRebootFactory:
     __MAZE_8_X_8 = 8
 
     __CONF = {
-        __MAZE_8_X_8: RobotRebootConfiguration((8, 8), 2, [(0, 5), (2, 2), (5, 4), (6, 6)])
+        __MAZE_8_X_8: RobotRebootConfiguration((8, 8), 2, [(0, 5), (2, 2), (5, 4), (6, 6)], max_movements=10)
     }
 
     def __init__(self, size=8, seed=26):
@@ -286,10 +287,15 @@ class RobotRebootFactory:
 if __name__ == "__main__":
     factory = RobotRebootFactory(size=8)
     deep_heuristic = DeepHeuristic((8, 8, 3), 1)  # len(game.get_valid_actions()))
+    deep_heuristic.load_model()
+    print(f'Start time: {datetime.now()}')
     # Generate 10 games
-    for i in range(10):
+    for i in range(5):
+        print(f'Game {i}')
         game = factory.build()
         # Play that game until it is over
         while not game.is_over():
             action = deep_heuristic.best_action(game)
+            print(f'Game {i} with action {action}')
             game.move(action)
+    print(f'End time: {datetime.now()}')
