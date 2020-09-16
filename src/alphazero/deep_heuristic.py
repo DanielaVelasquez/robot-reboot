@@ -20,7 +20,7 @@ class DeepHeuristic(MonteCarloTreeSearch):
             keras.layers.Dropout(0.5),
             keras.layers.Dense(64, activation='relu'),
             keras.layers.Dropout(0.5),
-            keras.layers.Dense(n_outputs, activation='softmax')
+            keras.layers.Dense(n_outputs)
         ])
         self.model.compile(loss='mean_squared_error', optimizer='adam')
         self.checkpoint_cb = keras.callbacks.ModelCheckpoint("my_model.h5")
@@ -35,7 +35,8 @@ class DeepHeuristic(MonteCarloTreeSearch):
         state = game.state()
         rows, cols, layers = state.shape
         dataset = state.reshape(1, rows, cols, layers)
-        return np.max(self.model.predict(dataset))
+        predict = self.model.predict(dataset)
+        return np.max(predict)
 
     def save_model(self, model_name="my_model.h5"):
         self.model.save(model_name)
