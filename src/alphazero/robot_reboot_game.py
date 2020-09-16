@@ -290,7 +290,7 @@ if __name__ == "__main__":
     deep_heuristic.load_model()
     print(f'Start time: {datetime.now()}')
     # Generate 10 games
-    for i in range(5):
+    for i in range(10):
         print(f'Game {i}')
         game = factory.build()
         # Play that game until it is over

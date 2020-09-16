@@ -87,3 +87,20 @@ class MonteCarloTreeSearch(ABC):
             actions[action] = self.monte_carlo_value(game)
             game.undo_move()
         return max(actions, key=actions.get)
+
+    def best_action_eval(self, game: Game):
+        """Best action to take based on current game status evaluating, not training anything
+
+        Args:
+            game: Game to evaluate what is the best course of action from its current state
+
+        Returns:
+            Best action to take on current game state based on executions
+
+        """
+        actions = {}
+        for action in game.get_valid_actions():
+            game.move(action)
+            actions[action] = self.heuristic_value(game)
+            game.undo_move()
+        return max(actions, key=actions.get)
