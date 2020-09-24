@@ -3,6 +3,8 @@ import numpy as np
 
 from .game import Game
 
+TREE_VISIT_COUNT = {}
+
 
 class MonteCarloTreeSearch(ABC):
 
@@ -41,25 +43,48 @@ class MonteCarloTreeSearch(ABC):
             number: Determines possible game outcome from its current state
 
         """
+
+        if hash(str(game.state())) in TREE_VISIT_COUNT:
+            TREE_VISIT_COUNT[hash(str(game.state()))] += 1
+        else:
+            TREE_VISIT_COUNT[hash(str(game.state()))] = 1
+
         if game.is_over():
             self.record(game, game.score())
             return game.score()
 
         actions = {}
         actions_heuristic_value = {}
+        action_visit_count = {}
         for action in game.get_valid_actions():
             game.move(action)
             actions[action] = action
             actions_heuristic_value[action] = self.heuristic_value(game)
+            state_after_action = hash(str(game.state()))
+            if state_after_action in TREE_VISIT_COUNT:
+                action_visit_count[action] = TREE_VISIT_COUNT[state_after_action]
+            else:
+                action_visit_count[action] = 0
+
             game.undo_move()
-        best_action = actions[max(actions_heuristic_value, key=actions_heuristic_value.get)]
-        game.move(best_action)
+
+        best_action_heuristic_value = actions[max(actions_heuristic_value, key=actions_heuristic_value.get)]
+        value_heuristic_action = self.execute_action(game, best_action_heuristic_value)
+
+        del action_visit_count[best_action_heuristic_value]
+        best_action_visit_count = actions[min(action_visit_count, key=action_visit_count.get)]
+        value_visit_count_action = self.execute_action(game, best_action_visit_count)
+
+        return np.mean([value_heuristic_action, value_visit_count_action])
+
+    def execute_action(self, game, action):
+        game.move(action)
         value = self.playout_value(game)
         game.undo_move()
         self.record(game, value)
         return value
 
-    def monte_carlo_value(self, game: Game, n=100):
+    def monte_carlo_value(self, game: Game, n=1):
         """Estimated  value of a state based on multiple playouts
 
         Args:

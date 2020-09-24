@@ -21,7 +21,6 @@ class RobotRebootAction(GameAction):
         return self.robot + self.movement_direction.value
 
     def __str__(self):
-        direction = ""
         if self.movement_direction == Direction.NORTH:
             direction = "North"
         elif self.movement_direction == Direction.SOUTH:
@@ -40,6 +39,9 @@ class RobotRebootGoal:
     def __init__(self, robot, pos: tuple):
         self.robot = robot
         self.position = pos
+
+    def __str__(self):
+        return f'Robot {self.robot} on position {self.position}'
 
 
 class RobotRebootGame(Game):
@@ -62,7 +64,7 @@ class RobotRebootGame(Game):
         q.append(previous_position)
 
     def score(self):
-        return self.max_movements - self.actions.qsize()
+        return 1 if self.robots[self.goal.robot] == self.goal.position else 0
 
     def is_over(self):
         return self.actions.qsize() > self.max_movements or self.robots[self.goal.robot] == self.goal.position
@@ -241,8 +243,8 @@ class RobotRebootFactory:
 
     def build(self):
         maze = self.__generate_maze()
-        goal = self.__generate_goal()
-        robots = self.__generate_robots(goal)
+        goal = RobotRebootGoal(0, (2, 2))  # self.__generate_goal()
+        robots = [(6, 0), (1, 6)]  # self.__generate_robots(goal)
         return RobotRebootGame(Maze(maze), robots, goal, self.__CONF[self.size].max_movements)
 
     def __generate_maze(self):
@@ -257,7 +259,6 @@ class RobotRebootFactory:
             maze[5, 4] = Maze.NORTH_WALL
             maze[6, 5] = Maze.EAST_WALL
             maze[6, 6] = Maze.SOUTH_WALL
-            maze[7, 5] = Maze.WEST_WALL
             return maze
         else:
             raise Exception(f'No defined configuration for size {self.size}')
@@ -286,16 +287,30 @@ class RobotRebootFactory:
 
 if __name__ == "__main__":
     factory = RobotRebootFactory(size=8)
-    deep_heuristic = DeepHeuristic((8, 8, 3), 1)  # len(game.get_valid_actions()))
-    deep_heuristic.load_model()
-    print(f'Start time: {datetime.now()}')
-    # Generate 10 games
-    for i in range(10):
-        print(f'Game {i}')
+    deep_heuristic = DeepHeuristic((8, 8, 3), 1, model_name='unvisited_model.h5')  # len(game.get_valid_actions()))
+    # deep_heuristic.load_model()
+    train = False
+    if train:
+        # Generate 10 games
+        for i in range(5):
+            print(f'Game {i}')
+            game = factory.build()
+            # Play that game until it is over
+            while not game.is_over():
+                action = deep_heuristic.best_action(game)
+                print(f'Game {i} with action {action}')
+                game.move(action)
+        print(f'End time: {datetime.now()}')
+    else:
         game = factory.build()
-        # Play that game until it is over
+        # print(f'Robots {game.robots}')
+        # print(f'Goal {game.goal}')
+
         while not game.is_over():
-            action = deep_heuristic.best_action(game)
-            print(f'Game {i} with action {action}')
+            action = deep_heuristic.best_action_eval(game)
             game.move(action)
-    print(f'End time: {datetime.now()}')
+            print(f'Action {action} Robots {game.robots}')
+            # for a in game.get_valid_actions():
+            #     print(a)
+
+        print(f'Score: {game.score()}')
