@@ -101,8 +101,6 @@ class MonteCarloTreeSearch(ABC):
 
         return np.mean(results)
 
-
-
     def execute_action(self, game, action, training):
         game.move(action)
         value = self.playout_value(game, training)
