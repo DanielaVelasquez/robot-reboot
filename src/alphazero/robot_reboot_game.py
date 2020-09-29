@@ -231,10 +231,12 @@ class RobotRebootConfiguration:
 
 
 class RobotRebootFactory:
+    __MAZE_5_X_5 = 5
     __MAZE_8_X_8 = 8
 
     __CONF = {
-        __MAZE_8_X_8: RobotRebootConfiguration((8, 8), 2, [(0, 5), (2, 2), (5, 4), (6, 6)], max_movements=5)
+        __MAZE_5_X_5: RobotRebootConfiguration((5, 5), 2, [(0, 0), (0, 4), (4, 0), (4, 4)], max_movements=5),
+        __MAZE_8_X_8: RobotRebootConfiguration((8, 8), 2, [(0, 5), (2, 2), (5, 4), (6, 6)], max_movements=10)
     }
 
     def __init__(self, size=8, seed=26):
@@ -243,22 +245,23 @@ class RobotRebootFactory:
 
     def build(self):
         maze = self.__generate_maze()
-        goal = RobotRebootGoal(0, (4, 0))  # self.__generate_goal()
-        robots = [(6, 0), (1, 6)]  # self.__generate_robots(goal)
+        goal = self.__generate_goal()
+        robots = self.__generate_robots(goal)
         return RobotRebootGame(Maze(maze), robots, goal, self.__CONF[self.size].max_movements)
 
     def __generate_maze(self):
         if self.size in self.__CONF:
             maze = np.full(self.__CONF[self.size].maze_size, Maze.EMPTY)
-            maze[0, 5] = Maze.SOUTH_WALL
-            maze[0, 6] = Maze.WEST_WALL
-            maze[2, 1] = Maze.EAST_WALL
-            maze[2, 2] = Maze.NORTH_WALL
-            maze[3, 0] = Maze.SOUTH_WALL
-            maze[5, 3] = Maze.EAST_WALL
-            maze[5, 4] = Maze.NORTH_WALL
-            maze[6, 5] = Maze.EAST_WALL
-            maze[6, 6] = Maze.SOUTH_WALL
+            if self.size == self.__MAZE_8_X_8:
+                maze[0, 5] = Maze.SOUTH_WALL
+                maze[0, 6] = Maze.WEST_WALL
+                maze[2, 1] = Maze.EAST_WALL
+                maze[2, 2] = Maze.NORTH_WALL
+                maze[3, 0] = Maze.SOUTH_WALL
+                maze[5, 3] = Maze.EAST_WALL
+                maze[5, 4] = Maze.NORTH_WALL
+                maze[6, 5] = Maze.EAST_WALL
+                maze[6, 6] = Maze.SOUTH_WALL
             return maze
         else:
             raise Exception(f'No defined configuration for size {self.size}')
@@ -286,18 +289,19 @@ class RobotRebootFactory:
 
 
 if __name__ == "__main__":
-    factory = RobotRebootFactory(size=8)
+    size = 5
+    factory = RobotRebootFactory(size=size)
     # Generate 10 games
-    for i in range(1):
+    for i in range(5):
         print(f'Game {i}')
         game = factory.build()
-        deep_heuristic = DeepHeuristic((8, 8, 3), len(game.get_all_actions()),
+        deep_heuristic = DeepHeuristic((size, size, 3), len(game.get_all_actions()),
                                        model_name='model.h5')
         deep_heuristic.load_model()
         # Play that game until it is over
         while not game.is_over():
             action = deep_heuristic.best_action(game, training=True)
-            print(f'Game {i} with action {action}')
+            # print(f'Game {i} with action {action}')
             game.move(action)
         print('Won' if game.score() == 1 else 'Lost')
 
