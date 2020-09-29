@@ -234,7 +234,7 @@ class RobotRebootFactory:
     __MAZE_8_X_8 = 8
 
     __CONF = {
-        __MAZE_8_X_8: RobotRebootConfiguration((8, 8), 2, [(0, 5), (2, 2), (5, 4), (6, 6)], max_movements=10)
+        __MAZE_8_X_8: RobotRebootConfiguration((8, 8), 2, [(0, 5), (2, 2), (5, 4), (6, 6)], max_movements=5)
     }
 
     def __init__(self, size=8, seed=26):
@@ -243,7 +243,7 @@ class RobotRebootFactory:
 
     def build(self):
         maze = self.__generate_maze()
-        goal = RobotRebootGoal(0, (2, 2))  # self.__generate_goal()
+        goal = RobotRebootGoal(0, (4, 0))  # self.__generate_goal()
         robots = [(6, 0), (1, 6)]  # self.__generate_robots(goal)
         return RobotRebootGame(Maze(maze), robots, goal, self.__CONF[self.size].max_movements)
 
@@ -287,30 +287,18 @@ class RobotRebootFactory:
 
 if __name__ == "__main__":
     factory = RobotRebootFactory(size=8)
-    deep_heuristic = DeepHeuristic((8, 8, 3), 1, model_name='unvisited_model.h5')  # len(game.get_valid_actions()))
-    # deep_heuristic.load_model()
-    train = False
-    if train:
-        # Generate 10 games
-        for i in range(5):
-            print(f'Game {i}')
-            game = factory.build()
-            # Play that game until it is over
-            while not game.is_over():
-                action = deep_heuristic.best_action(game)
-                print(f'Game {i} with action {action}')
-                game.move(action)
-        print(f'End time: {datetime.now()}')
-    else:
+    # Generate 10 games
+    for i in range(1):
+        print(f'Game {i}')
         game = factory.build()
-        # print(f'Robots {game.robots}')
-        # print(f'Goal {game.goal}')
-
+        deep_heuristic = DeepHeuristic((8, 8, 3), len(game.get_all_actions()),
+                                       model_name='model.h5')
+        deep_heuristic.load_model()
+        # Play that game until it is over
         while not game.is_over():
-            action = deep_heuristic.best_action_eval(game)
+            action = deep_heuristic.best_action(game, training=True)
+            print(f'Game {i} with action {action}')
             game.move(action)
-            print(f'Action {action} Robots {game.robots}')
-            # for a in game.get_valid_actions():
-            #     print(a)
+        print('Won' if game.score() == 1 else 'Lost')
 
-        print(f'Score: {game.score()}')
+    print(f'End time: {datetime.now()}')
