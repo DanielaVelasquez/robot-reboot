@@ -289,16 +289,16 @@ class RobotRebootFactory:
 
 
 if __name__ == "__main__":
-    size = 5
+    size = 8
     factory = RobotRebootFactory(size=size)
     victories = 0
     # Generate 10 games
-    for i in range(10):
+    for i in range(1):
         print(f'Game {i}')
         game = factory.build()
         deep_heuristic = DeepHeuristic((size, size, 3), len(game.get_all_actions()),
-                                       model_name='model_5_x_5.h5')
-        deep_heuristic.load_model()
+                                       model_name='model_8_x_8.h5')
+        # deep_heuristic.load_model()
         # Play that game until it is over
         while not game.is_over():
             action = deep_heuristic.best_action(game, training=True)
