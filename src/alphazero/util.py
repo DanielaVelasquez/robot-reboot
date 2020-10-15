@@ -100,3 +100,7 @@ def get_cell_at(direction: Direction, position: tuple, max_rows, max_cols):
 
 def get_not_blocking_walls_when_robot_on_cell_moving_to(direction: Direction):
     return [wall for wall in Maze.WALLS if wall != get_wall_at_direction(direction)]
+
+
+def calculate_size_with_walls(size):
+    return 2 * size - 1
