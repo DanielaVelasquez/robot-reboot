@@ -244,7 +244,9 @@ class RobotRebootGame(Game):
         new_size = calculate_size_with_walls(rows)
         obs = np.full((new_size, new_size, total_robots * 2 + 1), self.EMPTY)
 
-        # obs[:, :, total_robots] = self.maze.cells
+        # Maze layer
+        obs[:, :, 0] = self.__get_maze_layer(new_size)
+
         index = 1
         for robot_id in range(0, len(self.robots)):
             robot_layer, goal_layer = self.__get_robot_and_robot_goal_layer(new_size, robot_id)
@@ -252,6 +254,31 @@ class RobotRebootGame(Game):
             obs[:, :, index + 1] = goal_layer
             index += 2
         return obs
+
+    def __get_maze_layer(self, maze_size):
+        maze_layer = np.full((maze_size, maze_size), self.EMPTY)
+        walls = [i for i in range(maze_size) if i % 2 != 0]
+        maze_layer[walls, :] = self.FORBIDDEN
+        maze_layer[:, walls] = self.FORBIDDEN
+
+        rows, cols = self.maze.cells.shape
+        for i in range(rows):
+            for j in range(cols):
+                real_x, real_y = i * 2, j * 2
+                wall = self.maze.cells[i, j]
+                if wall != Maze.EMPTY:
+                    if wall == Maze.NORTH_WALL and real_x - 1 > 0:
+                        maze_layer[real_x - 1, real_y] = self.PRESENCE
+                    elif wall == Maze.SOUTH_WALL and real_x + 1 < maze_size:
+                        maze_layer[real_x + 1, real_y] = self.PRESENCE
+                    elif wall == Maze.WEST_WALL and real_y - 1 > 0:
+                        maze_layer[real_x, real_y - 1] = self.PRESENCE
+                    elif wall == Maze.EAST_WALL and real_y + 1 < maze_size:
+                        maze_layer[real_x, real_y + 1] = self.PRESENCE
+                    else:
+                        raise Exception("Invalid wall value")
+
+        return maze_layer
 
     def __get_robot_and_robot_goal_layer(self, maze_size, robot_id):
         x, y = self.robots[robot_id]

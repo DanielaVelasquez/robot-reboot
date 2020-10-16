@@ -591,10 +591,23 @@ class TestRobotRebootGame(unittest.TestCase):
 
         obs = game.observation()
 
-        self.assertEqual(obs.shape, (9, 9, 7))
-        empty_layer = np.full((9, 9), RobotRebootGame.EMPTY)
-        # First layer is empty TODO: change this
-        np.testing.assert_equal(obs[:, :, 0], empty_layer)
+        maze_size = 9
+        self.assertEqual(obs.shape, (maze_size, maze_size, 7))
+        empty_layer = np.full((maze_size, maze_size), RobotRebootGame.EMPTY)
+        # First layer
+        e, f, P = RobotRebootGame.EMPTY, RobotRebootGame.FORBIDDEN, RobotRebootGame.PRESENCE
+        expected_maze_layer = np.array([
+            [e, f, e, f, e, f, e, P, e],
+            [f, f, P, f, f, f, f, f, f],
+            [e, f, e, f, e, f, e, f, e],
+            [P, f, P, f, f, f, f, f, f],
+            [e, f, e, f, e, f, e, f, e],
+            [f, f, f, f, f, f, f, f, f],
+            [e, f, e, f, e, f, e, f, e],
+            [f, f, f, f, P, f, f, f, f],
+            [e, P, e, P, e, f, e, f, e],
+        ])
+        np.testing.assert_equal(obs[:, :, 0], expected_maze_layer)
         # Robot 0
         robot_0_layer = empty_layer.copy()
         robot_0_layer[0, 4] = RobotRebootGame.PRESENCE
