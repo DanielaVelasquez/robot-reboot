@@ -578,3 +578,38 @@ class TestRobotRebootGame(unittest.TestCase):
         obs = game.state()
         self.assertEqual(RobotRebootGame.GOAL_ROBOT, obs[0, 0, 0])
 
+    def test_observation(self):
+        maze = Maze(np.array([
+            [Maze.EMPTY, Maze.SOUTH_WALL, Maze.EMPTY, Maze.EAST_WALL, Maze.EMPTY],
+            [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
+            [Maze.NORTH_WALL, Maze.NORTH_WALL, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
+            [Maze.EMPTY, Maze.EMPTY, Maze.SOUTH_WALL, Maze.EMPTY, Maze.EMPTY],
+            [Maze.EAST_WALL, Maze.EAST_WALL, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY]
+        ]))
+        robots = [(0, 2), (1, 2), (4, 2)]
+        game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(1, (3, 4)))
+
+        obs = game.observation()
+
+        self.assertEqual(obs.shape, (9, 9, 7))
+        empty_layer = np.full((9, 9), RobotRebootGame.EMPTY)
+        # First layer is empty TODO: change this
+        np.testing.assert_equal(obs[:, :, 0], empty_layer)
+        # Robot 0
+        robot_0_layer = empty_layer.copy()
+        robot_0_layer[0, 4] = RobotRebootGame.PRESENCE
+        np.testing.assert_equal(obs[:, :, 1], robot_0_layer)
+        np.testing.assert_equal(obs[:, :, 2], empty_layer)
+
+        # Robot 1
+        robot_1_layer = empty_layer.copy()
+        robot_1_layer[2, 4] = RobotRebootGame.PRESENCE
+        robot_1_goal_layer = empty_layer.copy()
+        robot_1_goal_layer[6, 8] = RobotRebootGame.PRESENCE
+        np.testing.assert_equal(obs[:, :, 3], robot_1_layer)
+        np.testing.assert_equal(obs[:, :, 4], robot_1_goal_layer)
+
+        # Robot 2
+        robot_2_layer = empty_layer.copy()
+        robot_2_layer[8, 4] = RobotRebootGame.PRESENCE
+        np.testing.assert_equal(obs[:, :, 5], robot_2_layer)

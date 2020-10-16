@@ -1,9 +1,10 @@
 import numpy as np
+import deprecation
 
 from datetime import datetime
 from src.alphazero.deep_heuristic import DeepHeuristic
 from src.alphazero.game import Game, GameAction
-from src.alphazero.util import Direction, Maze
+from src.alphazero.util import Direction, Maze, calculate_size_with_walls
 
 
 class RobotRebootAction(GameAction):
@@ -51,6 +52,8 @@ class RobotRebootGame(Game):
     ROBOT = 5
     GOAL_ROBOT = 10
     EMPTY = 0
+    PRESENCE = 1
+    FORBIDDEN = - 1
 
     def __init__(self, maze: Maze, robots: list, goal: RobotRebootGoal, max_movements=4):
         super().__init__()
@@ -196,6 +199,7 @@ class RobotRebootGame(Game):
         self.undo_move()
         return current_pos != after_pos
 
+    @deprecation.deprecated(deprecated_in="1.0")
     def state(self):
         """
         An observation is a three dimensional array.
@@ -220,6 +224,45 @@ class RobotRebootGame(Game):
         # if normalize:
         #     obs = obs / self.GOAL_ROBOT
         return obs
+
+    def observation(self):
+        """
+        An observation is a three dimensional array.
+        First layer represents the maze's structure (i.e its walls)
+        For each robot's position there is a layer follow by a goal layer, that depict, where the robot is aiming to
+        get to. If the robot doesn't have a goal in the current game, its goal layer is empty.
+
+        Maze layer
+        For each robot
+            Robot position layer
+            Robot goal layer
+        """
+
+        total_robots = len(self.robots)
+        rows, cols = self.maze.cells.shape
+        assert rows == cols
+        new_size = calculate_size_with_walls(rows)
+        obs = np.full((new_size, new_size, total_robots * 2 + 1), self.EMPTY)
+
+        # obs[:, :, total_robots] = self.maze.cells
+        index = 1
+        for robot_id in range(0, len(self.robots)):
+            robot_layer, goal_layer = self.__get_robot_and_robot_goal_layer(new_size, robot_id)
+            obs[:, :, index] = robot_layer
+            obs[:, :, index + 1] = goal_layer
+            index += 2
+        return obs
+
+    def __get_robot_and_robot_goal_layer(self, maze_size, robot_id):
+        x, y = self.robots[robot_id]
+        robot_layer = np.full((maze_size, maze_size), self.EMPTY)
+        robot_layer[x * 2, y * 2] = self.PRESENCE
+
+        goal_layer = np.full((maze_size, maze_size), self.EMPTY)
+        if self.goal.robot == robot_id:
+            goal_x, goal_y = self.goal.position
+            goal_layer[goal_x * 2, goal_y * 2] = self.PRESENCE
+        return robot_layer, goal_layer
 
 
 class RobotRebootConfiguration:
