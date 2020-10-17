@@ -3,8 +3,6 @@ import numpy as np
 from .game import Game
 from .neural_network import NeuralNetwork
 
-TREE_VISIT_COUNT = {}
-
 
 class MonteCarloTreeSearch:
 
@@ -12,6 +10,7 @@ class MonteCarloTreeSearch:
         self.neural_network = neural_network
         self.exploratory_parameter = exploratory_parameter
         self.max_tree_depth = max_tree_depth
+        self.three_visit_count = {}
 
     def playout_value(self, game: Game, depth: int):
         """Final game result after a set of actions taken on the current game
@@ -24,19 +23,27 @@ class MonteCarloTreeSearch:
 
         """
         observation = game.observation()
-        if hash(str(observation)) in TREE_VISIT_COUNT:
-            TREE_VISIT_COUNT[hash(str(observation))] += 1
+        if hash(str(observation)) in self.three_visit_count:
+            self.three_visit_count[hash(str(observation))] += 1
         else:
-            TREE_VISIT_COUNT[hash(str(observation))] = 1
+            self.three_visit_count[hash(str(observation))] = 1
 
         # Leaf
         if game.is_over() or depth >= self.max_tree_depth:
             return game.score()
 
+        best_action, best_action_value = self.get_best_action(game)
+
+        if best_action is None:
+            return game.score()
+
+        v = self.execute_action(game, best_action, depth)
+        return v
+
+    def get_best_action(self, game):
         actions_probabilities = self.neural_network.action_probabilities(game)
         best_action = None
         best_action_value = -1
-
         for action in game.get_all_actions():
             if action in game.get_valid_actions():
                 # Action probability
@@ -46,9 +53,9 @@ class MonteCarloTreeSearch:
                 # State value after executing this action
                 v = self.neural_network.heuristic_value(game)
 
-                state_after_action = hash(str(observation))
-                if state_after_action in TREE_VISIT_COUNT:
-                    visit_count = TREE_VISIT_COUNT[state_after_action]
+                state_after_action = hash(str(game.observation()))
+                if state_after_action in self.three_visit_count:
+                    visit_count = self.three_visit_count[state_after_action]
                 else:
                     visit_count = 0
 
@@ -59,9 +66,7 @@ class MonteCarloTreeSearch:
                     best_action_value = action_value
 
                 game.undo_move()
-
-        v = self.execute_action(game, best_action, depth)
-        return v
+        return best_action, best_action_value
 
     def execute_action(self, game, action, depth):
         game.move(action)
