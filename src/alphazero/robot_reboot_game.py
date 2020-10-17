@@ -1,10 +1,12 @@
 import numpy as np
 import deprecation
+import timeit
 
 from datetime import datetime
 from src.alphazero.deep_heuristic import DeepHeuristic
 from src.alphazero.game import Game, GameAction
 from src.alphazero.util import Direction, Maze, calculate_size_with_walls
+from src.alphazero.monte_carlo_tree_search import MonteCarloTreeSearch
 
 
 class RobotRebootAction(GameAction):
@@ -55,12 +57,11 @@ class RobotRebootGame(Game):
     PRESENCE = 1
     FORBIDDEN = - 1
 
-    def __init__(self, maze: Maze, robots: list, goal: RobotRebootGoal, max_movements=4):
+    def __init__(self, maze: Maze, robots: list, goal: RobotRebootGoal):
         super().__init__()
         self.maze = maze
         self.robots = robots
         self.goal = goal
-        self.max_movements = max_movements
 
     def __add_robot_position_history(self, robot_index, previous_position):
         q = self.robots_position_history[robot_index]
@@ -70,7 +71,7 @@ class RobotRebootGame(Game):
         return 1 if self.robots[self.goal.robot] == self.goal.position else 0
 
     def is_over(self):
-        return self.actions.qsize() > self.max_movements or self.robots[self.goal.robot] == self.goal.position
+        return self.robots[self.goal.robot] == self.goal.position
 
     def get_valid_actions(self):
         return [RobotRebootAction(robot, movement) for movement in self.MOVEMENTS for robot in
@@ -293,11 +294,10 @@ class RobotRebootGame(Game):
 
 
 class RobotRebootConfiguration:
-    def __init__(self, maze_size: tuple, robots: int, goals: list, max_movements=20):
+    def __init__(self, maze_size: tuple, robots: int, goals: list):
         self.maze_size = maze_size
         self.robots = robots
         self.goals = goals
-        self.max_movements = max_movements
 
 
 class RobotRebootFactory:
@@ -305,8 +305,8 @@ class RobotRebootFactory:
     __MAZE_8_X_8 = 8
 
     __CONF = {
-        __MAZE_5_X_5: RobotRebootConfiguration((5, 5), 2, [(0, 0), (0, 4), (4, 0), (4, 4)], max_movements=5),
-        __MAZE_8_X_8: RobotRebootConfiguration((8, 8), 2, [(0, 5), (2, 2), (5, 4), (6, 6)], max_movements=10)
+        __MAZE_5_X_5: RobotRebootConfiguration((5, 5), 2, [(0, 0), (0, 4), (4, 0), (4, 4)]),
+        __MAZE_8_X_8: RobotRebootConfiguration((8, 8), 2, [(0, 5), (2, 2), (5, 4), (6, 6)])
     }
 
     def __init__(self, size=8, seed=26):
@@ -317,7 +317,7 @@ class RobotRebootFactory:
         maze = self.__generate_maze()
         goal = self.__generate_goal()
         robots = self.__generate_robots(goal)
-        return RobotRebootGame(Maze(maze), robots, goal, self.__CONF[self.size].max_movements)
+        return RobotRebootGame(Maze(maze), robots, goal)
 
     def __generate_maze(self):
         if self.size in self.__CONF:
@@ -362,20 +362,29 @@ if __name__ == "__main__":
     size = 8
     factory = RobotRebootFactory(size=size)
     victories = 0
-    # Generate 10 games
-    for i in range(1):
+    runs = 1
+    avg_execution_time = 0
+    for i in range(runs):
         print(f'Game {i}')
         game = factory.build()
-        deep_heuristic = DeepHeuristic((size, size, 3), len(game.get_all_actions()),
-                                       model_name='model_8_x_8.h5')
+        print(f'Robots = {game.robots}')
+        print(f'Goal = {game.goal}')
+        nn = DeepHeuristic((size, size, 3), len(game.get_all_actions()), model_name='model_8_x_8.h5')
+        mcts = MonteCarloTreeSearch(nn, 0.5, 10)
         # deep_heuristic.load_model()
         # Play that game until it is over
-        while not game.is_over():
-            action = deep_heuristic.best_action(game, training=True)
-            # print(f'Game {i} with action {action}')
-            game.move(action)
+        # while not game.is_over():
+        start = timeit.default_timer()
+        action = mcts.best_action(game)
+        stop = timeit.default_timer()
+        execution_time = stop - start
+        print(f'Game {i} with action {action}')
+        print(f'Execution time {execution_time} seconds')
+        avg_execution_time += execution_time
+        #     game.move(action)
         print('Won' if game.score() == 1 else 'Lost')
         victories += game.score()
 
     print(f'Victories total {victories}')
     print(f'End time: {datetime.now()}')
+    print(f'Average execution time {avg_execution_time/runs}')

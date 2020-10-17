@@ -517,27 +517,27 @@ class TestRobotRebootGame(unittest.TestCase):
         game.move(RobotRebootAction(0, Direction.WEST))
         self.assertTrue(game.is_over())
 
-    def test_is_over_max_out_movements(self):
+    def test_score_win(self):
         maze = Maze(np.array([
             [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
             [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
             [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
         ]))
         robots = [(0, 3), [1, 4], [2, 1]]
-        game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)), max_movements=2)
-        [game.move(RobotRebootAction(2, Direction.SOUTH)) for i in range(game.max_movements + 1)]
-        self.assertTrue(game.is_over())
-
-    def test_score(self):
-        maze = Maze(np.array([
-            [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
-            [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
-            [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
-        ]))
-        robots = [(0, 3), [1, 4], [2, 1]]
-        game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)), max_movements=20)
+        game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
         game.move(RobotRebootAction(0, Direction.WEST))
-        self.assertEqual(game.max_movements - 1, game.score())
+        self.assertEqual(1, game.score())
+
+    def test_score_loss(self):
+        maze = Maze(np.array([
+            [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
+            [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
+            [Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY, Maze.EMPTY],
+        ]))
+        robots = [(0, 3), [1, 4], [2, 1]]
+        game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
+        game.move(RobotRebootAction(0, Direction.SOUTH))
+        self.assertEqual(0, game.score())
 
     def test_state_when_game_not_over(self):
         maze = Maze(np.array([

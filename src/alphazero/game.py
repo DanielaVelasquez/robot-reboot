@@ -85,3 +85,7 @@ class Game(ABC):
     @abstractmethod
     def state(self):
         pass
+
+    @abstractmethod
+    def observation(self):
+        pass

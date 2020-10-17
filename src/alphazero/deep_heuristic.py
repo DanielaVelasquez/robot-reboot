@@ -3,16 +3,20 @@ import tensorflow as tf
 from tensorflow import keras
 
 from src.alphazero.game import Game
-from src.alphazero.monte_carlo_tree_search import MonteCarloTreeSearch
+from src.alphazero.neural_network import NeuralNetwork
 
 
-class DeepHeuristic(MonteCarloTreeSearch):
+class DeepHeuristic(NeuralNetwork):
 
-    def __init__(self,  input_shape: tuple, n_outputs: int, model_name="my_model.h5", invalid_action=-1):
-        MonteCarloTreeSearch.__init__(self, invalid_action)
+    def __init__(self,  input_shape: tuple, n_outputs: int, model_name="my_model.h5"):
+        NeuralNetwork.__init__(self)
         self.model_name = model_name
         _input = tf.keras.layers.Input(input_shape, name='input')
         x = tf.keras.layers.Conv2D(64, 4, activation='relu', padding='same')(_input)
+        x = tf.keras.layers.MaxPooling2D(2)(x)
+        x = tf.keras.layers.Conv2D(64, 4, activation='relu', padding='same')(x)
+        x = tf.keras.layers.MaxPooling2D(2)(x)
+        x = tf.keras.layers.Conv2D(64, 4, activation='relu', padding='same')(x)
         x = tf.keras.layers.MaxPooling2D(2)(x)
         x = tf.keras.layers.Flatten()(x)
         x = tf.keras.layers.Dense(128, activation='relu')(x)
@@ -20,18 +24,22 @@ class DeepHeuristic(MonteCarloTreeSearch):
         x = tf.keras.layers.Dense(64, activation='relu')(x)
         x = tf.keras.layers.Dropout(0.5)(x)
 
-        win_output = tf.keras.layers.Dense(1, activation='softmax', name='win_output')(x)
-        actions_output = tf.keras.layers.Dense(n_outputs, activation='softmax', name='actions_output')(x)
+        value_output = tf.keras.layers.Dense(1, activation='sigmoid', name='value_output')(x)
+        probabilities_output = tf.keras.layers.Dense(n_outputs, activation='softmax', name='probabilities_output')(x)
 
-        self.model = tf.keras.Model(inputs=_input, outputs=[win_output, actions_output])
-        self.model.compile(loss=tf.keras.losses.BinaryCrossentropy(), optimizer='adam')
+        self.model = tf.keras.Model(inputs=_input, outputs=[value_output, probabilities_output])
+        losses = {
+            "value_output": 'mean_squared_error',
+            "probabilities_output": tf.keras.losses.BinaryCrossentropy()
+        }
+        self.model.compile(loss=losses, optimizer='adam')
         self.checkpoint_cb = keras.callbacks.ModelCheckpoint(self.model_name)
 
     def record(self, game: Game, score):
         state = game.state()
         rows, cols, layers = state.shape
         dataset = state.reshape(1, rows, cols, layers)
-        probabilities = self.get_actions_probabilities_mtcs_based(game, training=False)
+        probabilities = self.get_actions_probabilities(game, training=False)
         probabilities = [probabilities[i] for i in probabilities]
         self.model.fit(
             {'input': dataset},
@@ -56,8 +64,8 @@ class DeepHeuristic(MonteCarloTreeSearch):
         predict = self.predict(game)
         probabilities = predict[1][0]
         all_actions = game.get_all_actions()
-        actions = {all_actions[i]: probabilities[i] for i in range(len(all_actions))}
-        return actions
+        probabilities = {all_actions[i]: probabilities[i] for i in range(len(all_actions))}
+        return probabilities
 
     def save_model(self, ):
         self.model.save(self.model_name)
