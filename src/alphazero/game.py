@@ -33,6 +33,15 @@ class Game(ABC):
         pass
 
     @abstractmethod
+    def win(self):
+        """Determines if the game was won on current state
+
+        Returns:
+            bool: True to indicate the game is a win on its current state . False otherwise.
+        """
+        pass
+
+    @abstractmethod
     def get_valid_actions(self):
         """Gets valid actions based on the current game state
 

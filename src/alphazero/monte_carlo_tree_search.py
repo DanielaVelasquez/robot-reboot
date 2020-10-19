@@ -4,12 +4,47 @@ from .game import Game
 from .neural_network import NeuralNetwork
 
 
+class Edge:
+    def __init__(self):
+        self.__n = 0  # Number of times action has been taken from state S
+        self.__w = 0  # Total value of the next state
+        self.__q = 0  # Mean value of next state
+        self.__p = 0  # Prior probability to select current action
+
+    @property
+    def n(self):
+        return self.__n
+
+    @property
+    def w(self):
+        return self.__w
+
+    @property
+    def q(self):
+        return self.__q
+
+    @property
+    def p(self):
+        return self.__p
+
+    def count_visit(self):
+        self.__n += 1
+
+    def update_probability(self, p):
+        self.__p = p
+
+    def update_next_state_value(self, v):
+        self.__w += v
+        self.__q = self.__w / self.__n
+
+
 class MonteCarloTreeSearch:
 
     def __init__(self, neural_network: NeuralNetwork, exploratory_parameter: int, max_tree_depth=10):
         self.neural_network = neural_network
         self.exploratory_parameter = exploratory_parameter
         self.max_tree_depth = max_tree_depth
+        self.edges = {}
         self.three_visit_count = {}
 
     def playout_value(self, game: Game, depth: int):
@@ -19,60 +54,54 @@ class MonteCarloTreeSearch:
             game: starting game
             depth: current tree depth exploration
         Returns:
-            number: Determines possible game outcome from its current state
+            number: determines if the game was a win or a loss
 
         """
-        observation = game.observation()
-        if hash(str(observation)) in self.three_visit_count:
-            self.three_visit_count[hash(str(observation))] += 1
-        else:
-            self.three_visit_count[hash(str(observation))] = 1
-
         # Leaf
         if game.is_over() or depth >= self.max_tree_depth:
-            return game.score()
+            value = self.neural_network.heuristic_value(game)
+            return game.score(), value
 
-        best_action, best_action_value = self.get_best_action(game)
+        best_action = self.get_best_action(game)
 
         if best_action is None:
-            return game.score()
+            value = self.neural_network.heuristic_value(game)
+            return game.score(), value
 
-        v = self.execute_action(game, best_action, depth)
-        return v
+        game_score, value = self.execute_action(game, best_action, depth)
+        return game_score, value
 
     def get_best_action(self, game):
         actions_probabilities = self.neural_network.action_probabilities(game)
         best_action = None
         best_action_value = -1
+        current_state = game.observation()
         for action in game.get_all_actions():
-            if action in game.get_valid_actions():
-                # Action probability
-                p = actions_probabilities[action]
+            edge = self.__get_edge(action, current_state)
+            p = actions_probabilities[action]
+            if action not in game.get_valid_actions():
+                p = 0
 
-                game.move(action)
-                # State value after executing this action
-                v = self.neural_network.heuristic_value(game)
+            action_value = edge.q + self.__get_exploration_value(p, edge.n)
 
-                state_after_action = hash(str(game.observation()))
-                if state_after_action in self.three_visit_count:
-                    visit_count = self.three_visit_count[state_after_action]
-                else:
-                    visit_count = 0
+            if best_action is None or best_action_value < action_value:
+                best_action = action
+                best_action_value = action_value
 
-                action_value = v + self.exploratory_parameter * (visit_count + p)
-
-                if best_action is None or best_action_value < action_value:
-                    best_action = action
-                    best_action_value = action_value
-
-                game.undo_move()
-        return best_action, best_action_value
+        return best_action
 
     def execute_action(self, game, action, depth):
+        observation = game.observation()
+        edge = self.__get_edge(action, observation)
+
         game.move(action)
-        value = self.playout_value(game, depth + 1)
+        edge.count_visit()
+
+        game_score, value = self.playout_value(game, depth + 1)
+        edge.update_next_state_value(value)
+
         game.undo_move()
-        return value
+        return game_score, value
 
     def monte_carlo_value(self, game: Game, n):
         """Estimated  value of a state based on multiple playouts
@@ -84,7 +113,8 @@ class MonteCarloTreeSearch:
             number: Estimated value on how good current game is after multiple random games
 
         """
-        return np.mean([self.playout_value(game, depth=0) for i in range(n)])
+        results = [self.playout_value(game, depth=0) for i in range(n)]
+        return np.mean([results[i][0] for i in range(n)]), np.mean([results[i][1] for i in range(n)])
 
     def get_actions_probabilities(self, game: Game, playout_executions=30):
         """Probability of winning when executing each action based on current game status
@@ -98,18 +128,73 @@ class MonteCarloTreeSearch:
         actions_probability = {}
         actions_v = {}
         valid_actions = game.get_valid_actions()
+
+        observation = game.observation()
+
         for action in game.get_all_actions():
             if action in valid_actions:
                 game.move(action)
-                actions_probability[action] = self.monte_carlo_value(game, playout_executions)
-                actions_v[action] = game.score()
+
+                actions_probability[action], avg_value = self.monte_carlo_value(game, playout_executions)
+                self.__update_edge(observation, action, avg_value)
+                edge = self.__get_edge(action, observation)
+                edge.update_probability(actions_probability[action])
+                actions_v[action] = edge.q
                 game.undo_move()
             else:
-                actions_probability[action] = 0
+                actions_probability[action] = -1
                 actions_v[action] = -1
 
         return actions_probability, actions_v
 
     def best_action(self, game):
-        actions, values = self.get_actions_probabilities(game)
-        return max(actions, key=actions.get)
+        actions_probabilities, values = self.get_actions_probabilities(game)
+        best_action = None
+        best_action_value = -1
+        for action in game.get_all_actions():
+            p = actions_probabilities[action]
+            v = values[action]
+            if p == -1:
+                action_value = -1
+            else:
+                action_value = v + self.exploratory_parameter * p
+
+            if best_action is None or best_action_value < action_value:
+                best_action = action
+                best_action_value = action_value
+
+        return best_action
+
+    def __register_visit(self, state, action):
+        edge = self.__get_edge(action, state)
+        edge.count_visit()
+
+    def __update_edge(self, state, action, value):
+        edge = self.__get_edge(action, state)
+        edge.count_visit()
+        edge.update_next_state_value(value)
+
+    def __get_edge(self, action, state):
+        state_edges = self.__get_state_edges(state)
+        if action not in state_edges:
+            state_edges[action] = Edge()
+        return state_edges[action]
+
+    def __get_state_edges(self, state):
+        if hash(str(state)) not in self.edges:
+            self.edges[hash(str(state))] = {}
+        state_edges = self.edges[hash(str(state))]
+        return state_edges
+
+    def __get_exploration_value(self, p, n):
+        """ Function that increases if an edge hasn't been explored much
+
+        Args:
+             p: edge probability
+             n: number of visits for an edge
+        Return:
+            number: value how much exploration is needed
+        """
+        if n == 0:
+            n = 0.01
+        return self.exploratory_parameter * (p / n)

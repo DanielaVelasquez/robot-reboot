@@ -70,6 +70,9 @@ class RobotRebootGame(Game):
     def score(self):
         return 1 if self.robots[self.goal.robot] == self.goal.position else 0
 
+    def win(self):
+        return True if self.score() == 1 else False
+
     def is_over(self):
         return self.robots[self.goal.robot] == self.goal.position
 
@@ -360,28 +363,28 @@ class RobotRebootFactory:
 
 if __name__ == "__main__":
     size = 8
+    extended_size = calculate_size_with_walls(size)
     factory = RobotRebootFactory(size=size)
     victories = 0
     runs = 1
     avg_execution_time = 0
+    nn = DeepHeuristic((size, size, 3), 8, model_name='model_8_x_8.h5')
+    # nn.save_model()
+    nn.load_model()
     for i in range(runs):
         print(f'Game {i}')
         game = factory.build()
         print(f'Robots = {game.robots}')
         print(f'Goal = {game.goal}')
-        nn = DeepHeuristic((size, size, 3), len(game.get_all_actions()), model_name='model_8_x_8.h5')
         mcts = MonteCarloTreeSearch(nn, 0.5, 10)
-        # deep_heuristic.load_model()
         # Play that game until it is over
-        # while not game.is_over():
-        start = timeit.default_timer()
-        action = mcts.best_action(game)
-        stop = timeit.default_timer()
-        execution_time = stop - start
-        print(f'Game {i} with action {action}')
-        print(f'Execution time {execution_time} seconds')
-        avg_execution_time += execution_time
-        #     game.move(action)
+        actions_taken = 0
+        while not game.is_over() and actions_taken < 10:
+            action = mcts.best_action(game)
+            stop = timeit.default_timer()
+            print(f'Game {i} with action {action}')
+            game.move(action)
+            actions_taken += 1
         print('Won' if game.score() == 1 else 'Lost')
         victories += game.score()
 
