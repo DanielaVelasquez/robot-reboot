@@ -36,7 +36,7 @@ class DeepHeuristic(NeuralNetwork):
         self.checkpoint_cb = keras.callbacks.ModelCheckpoint(self.model_name)
 
     def record(self, game: Game, score):
-        state = game.state()
+        state = game.observation()
         rows, cols, layers = state.shape
         dataset = state.reshape(1, rows, cols, layers)
         probabilities = self.get_actions_probabilities(game, training=False)
@@ -51,7 +51,7 @@ class DeepHeuristic(NeuralNetwork):
         )
 
     def predict(self, game):
-        state = game.state()
+        state = game.observation()
         rows, cols, layers = state.shape
         dataset = state.reshape(1, rows, cols, layers)
         return self.model.predict(dataset)
