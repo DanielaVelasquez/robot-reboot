@@ -366,7 +366,7 @@ if __name__ == "__main__":
     extended_size = calculate_size_with_walls(size)
     factory = RobotRebootFactory(size=size)
     victories = 0
-    runs = 1
+    runs = 2
     avg_execution_time = 0
     # nn.save_model()
     for i in range(runs):
@@ -377,15 +377,15 @@ if __name__ == "__main__":
         print(f'Game {i}')
         print(f'Robots = {game.robots}')
         print(f'Goal = {game.goal}')
-        mcts = MonteCarloTreeSearch(nn, 0.5, 10)
-        # Play that game until it is over
-        actions_taken = 0
-        while not game.is_over() and actions_taken < 10:
-            action = mcts.best_action(game)
-            stop = timeit.default_timer()
-            print(f'Game {i} with action {action}')
-            game.move(action)
-            actions_taken += 1
+        # mcts = MonteCarloTreeSearch(nn, 0.5, 10)
+        # # Play that game until it is over
+        # actions_taken = 0
+        # while not game.is_over() and actions_taken < 10:
+        #     action = mcts.best_action(game)
+        #     stop = timeit.default_timer()
+        #     print(f'Game {i} with action {action}')
+        #     game.move(action)
+        #     actions_taken += 1
         print('Won' if game.score() == 1 else 'Lost')
         victories += game.score()
 
