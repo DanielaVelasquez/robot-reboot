@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
-from .game import Game
+from .gamelegacy import GameLegacy
 
 
 class NeuralNetwork(ABC):
     @abstractmethod
-    def record(self, game: Game, score):
+    def record(self, game: GameLegacy, score):
         """Stores data to learn heuristic values
 
         Args:
@@ -14,7 +14,7 @@ class NeuralNetwork(ABC):
         pass
 
     @abstractmethod
-    def heuristic_value(self, game: Game):
+    def heuristic_value(self, game: GameLegacy):
         """Computes a heuristic value that determines how worthy a state is
 
         Args:

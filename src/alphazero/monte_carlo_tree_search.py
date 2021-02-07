@@ -1,6 +1,6 @@
 import numpy as np
 
-from .game import Game
+from .gamelegacy import GameLegacy
 from .neural_network import NeuralNetwork
 from .edge import Edge
 
@@ -13,7 +13,7 @@ class MonteCarloTreeSearch:
         self.max_tree_depth = max_tree_depth
         self.edges = {}
 
-    def playout_value(self, game: Game, depth: int):
+    def playout_value(self, game: GameLegacy, depth: int):
         """Final game result after a set of actions taken on the current game
 
         Args:
@@ -69,7 +69,7 @@ class MonteCarloTreeSearch:
         game.undo_move()
         return game_score, value
 
-    def monte_carlo_value(self, game: Game, n):
+    def monte_carlo_value(self, game: GameLegacy, n):
         """Estimated  value of a state based on multiple playouts
 
         Args:
@@ -82,7 +82,7 @@ class MonteCarloTreeSearch:
         results = [self.playout_value(game, depth=0) for i in range(n)]
         return np.mean([results[i][0] for i in range(n)]), np.mean([results[i][1] for i in range(n)])
 
-    def get_actions_probabilities(self, game: Game, playout_executions=30):
+    def get_actions_probabilities(self, game: GameLegacy, playout_executions=30):
         """Probability of winning when executing each action based on current game status
 
         Args:

@@ -1,11 +1,11 @@
 import deprecation
 import numpy as np
 
-from src.alphazero.game import Game, GameAction
+from src.alphazero.gamelegacy import GameLegacy, GameActionLegacy
 from src.robot_reboot.util import Direction, Maze, calculate_size_with_walls
 
 
-class RobotRebootAction(GameAction):
+class RobotRebootAction(GameActionLegacy):
     def __init__(self, robot_id, movement_direction: Direction):
         self.robot = robot_id
         self.movement_direction = movement_direction
@@ -43,7 +43,7 @@ class RobotRebootGoal:
         return f'Robot {self.robot} on position {self.position}'
 
 
-class RobotRebootGame(Game):
+class RobotRebootGame(GameLegacy):
     MOVEMENTS = [Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST]
 
     GOAL = 9
