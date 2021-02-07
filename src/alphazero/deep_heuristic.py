@@ -44,8 +44,8 @@ class DeepHeuristic(NeuralNetwork):
         self.model.fit(
             {'input': dataset},
             {
-                'win_output': np.array([[score]]),
-                'actions_output': np.array([probabilities])
+                'value_output': np.array([[score]]),
+                'probabilities_output': np.array([probabilities])
             },
             callbacks=[self.checkpoint_cb]
         )
