@@ -1,5 +1,5 @@
 import unittest
-from src.alphazero.util import get_cell_at, Direction, calculate_size_with_walls
+from src.robot_reboot.util import get_cell_at, Direction, calculate_size_with_walls
 
 
 class TestUtil(unittest.TestCase):

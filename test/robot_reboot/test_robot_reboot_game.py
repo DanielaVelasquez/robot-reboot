@@ -2,8 +2,8 @@ import unittest
 
 import numpy as np
 
-from src.alphazero.robot_reboot_game import RobotRebootGame, RobotRebootAction, Maze, RobotRebootGoal
-from src.alphazero.util import get_movement_same_direction_for_wall, get_cell_at, get_wall_at_direction, \
+from src.robot_reboot.robot_reboot_game import RobotRebootGame, RobotRebootAction, Maze, RobotRebootGoal
+from src.robot_reboot.util import get_movement_same_direction_for_wall, get_cell_at, get_wall_at_direction, \
     get_opposite_direction, Direction, get_not_blocking_walls_when_robot_on_cell_moving_to
 
 

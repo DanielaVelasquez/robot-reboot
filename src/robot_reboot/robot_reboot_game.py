@@ -2,7 +2,7 @@ import deprecation
 import numpy as np
 
 from src.alphazero.game import Game, GameAction
-from src.alphazero.util import Direction, Maze, calculate_size_with_walls
+from src.robot_reboot.util import Direction, Maze, calculate_size_with_walls
 
 
 class RobotRebootAction(GameAction):
