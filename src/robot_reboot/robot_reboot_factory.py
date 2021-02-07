@@ -1,9 +1,7 @@
-from abc import ABC
-
 import numpy as np
-from src.alphazero.robot_reboot_game import RobotRebootGame, RobotRebootGoal
+from src.robot_reboot.robot_reboot_game import RobotRebootGame, RobotRebootGoal
 from src.alphazero.game_factory import GameFactory
-from src.alphazero.util import Maze
+from src.robot_reboot.util import Maze
 
 
 class RobotRebootConfiguration:
