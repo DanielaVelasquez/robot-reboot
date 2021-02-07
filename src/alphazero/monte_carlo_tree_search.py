@@ -12,7 +12,6 @@ class MonteCarloTreeSearch:
         self.exploratory_parameter = exploratory_parameter
         self.max_tree_depth = max_tree_depth
         self.edges = {}
-        self.three_visit_count = {}
 
     def playout_value(self, game: Game, depth: int):
         """Final game result after a set of actions taken on the current game

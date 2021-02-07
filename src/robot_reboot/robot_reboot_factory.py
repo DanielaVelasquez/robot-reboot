@@ -1,6 +1,6 @@
 import numpy as np
 from src.robot_reboot.robot_reboot_game import RobotRebootGame, RobotRebootGoal
-from src.alphazero.game_factory import GameFactory
+from src.util.game_factory import GameFactory
 from src.robot_reboot.util import Maze
 
 
