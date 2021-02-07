@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
-from src.alphazero.game import Game
+from src.alphazero.gamelegacy import GameLegacy
 from src.alphazero.neural_network import NeuralNetwork
 
 
@@ -35,7 +35,7 @@ class DeepHeuristic(NeuralNetwork):
         self.model.compile(loss=losses, optimizer='adam')
         self.checkpoint_cb = keras.callbacks.ModelCheckpoint(self.model_name)
 
-    def record(self, game: Game, score):
+    def record(self, game: GameLegacy, score):
         state = game.observation()
         rows, cols, layers = state.shape
         dataset = state.reshape(1, rows, cols, layers)
@@ -56,7 +56,7 @@ class DeepHeuristic(NeuralNetwork):
         dataset = state.reshape(1, rows, cols, layers)
         return self.model.predict(dataset)
 
-    def heuristic_value(self, game: Game):
+    def heuristic_value(self, game: GameLegacy):
         predict = self.predict(game)
         return predict[0][0][0]
 

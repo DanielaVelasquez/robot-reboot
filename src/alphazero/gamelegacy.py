@@ -3,13 +3,13 @@ import queue
 from abc import ABC, abstractmethod
 
 
-class GameAction:
+class GameActionLegacy:
     @abstractmethod
     def __init__(self):
         pass
 
 
-class Game(ABC):
+class GameLegacy(ABC):
 
     def __init__(self):
         self.actions = queue.LifoQueue()
@@ -58,7 +58,7 @@ class Game(ABC):
         """
         pass
 
-    def move(self, action: GameAction):
+    def move(self, action: GameActionLegacy):
         """Executes a move on the game and record the action on a queue
 
         Args:
@@ -68,7 +68,7 @@ class Game(ABC):
         self.execute_move(action)
 
     @abstractmethod
-    def execute_move(self, action: GameAction):
+    def execute_move(self, action: GameActionLegacy):
         """Executes a move on the game
 
         Args:
@@ -83,7 +83,7 @@ class Game(ABC):
         self.execute_undo_move(last_action)
 
     @abstractmethod
-    def execute_undo_move(self, action: GameAction):
+    def execute_undo_move(self, action: GameActionLegacy):
         """Returns the game to the previous state before the action was executed
 
         Args:
