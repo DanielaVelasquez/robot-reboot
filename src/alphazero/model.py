@@ -13,6 +13,12 @@ class Model(ABC):
     """
 
     def __init__(self, model_name, game: Game):
+        """ Initializes a model
+        Args:
+            model_name (string): game for the model
+            game       (Game)  : game where the model makes predictions on
+
+        """
         self.__model_name = model_name
         self.__game = game
 
