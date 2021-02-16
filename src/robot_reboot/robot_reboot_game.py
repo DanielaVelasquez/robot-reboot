@@ -1,7 +1,7 @@
 import deprecation
 import numpy as np
 
-from src.alphazero.gamelegacy import GameLegacy, GameActionLegacy
+from src.alphazero.game_legacy import GameLegacy, GameActionLegacy
 from src.robot_reboot.util import Direction, Maze, calculate_size_with_walls
 
 
