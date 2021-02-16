@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
-from src.alphazero.gamelegacy import GameLegacy
+from src.alphazero.game_legacy import GameLegacy
 from src.alphazero.neural_network import NeuralNetwork
 
 

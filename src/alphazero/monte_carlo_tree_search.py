@@ -1,6 +1,6 @@
 import numpy as np
 
-from .gamelegacy import GameLegacy
+from .game_legacy import GameLegacy
 from .neural_network import NeuralNetwork
 from .edge import Edge
 

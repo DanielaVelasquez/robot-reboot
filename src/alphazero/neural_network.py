@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from .gamelegacy import GameLegacy
+from .game_legacy import GameLegacy
 
 
 class NeuralNetwork(ABC):

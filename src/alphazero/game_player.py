@@ -21,8 +21,16 @@ class GamePlayer(ABC):
             game  (Game):  Game to play
 
         """
-        self.model = model
-        self.game = game
+        self.__model = model
+        self.__game = game
+
+    @property
+    def model(self):
+        return self.__model
+
+    @property
+    def game(self):
+        return self.__game
 
     @abstractmethod
     def play(self, state: State):
