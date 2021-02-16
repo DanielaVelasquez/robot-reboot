@@ -15,7 +15,7 @@ class State(ABC):
     def __init__(self, sequence_i, game: Game):
         """ Initializes a state
         Args:
-            sequence_i (int): Moment in time where the state occurred i.e 0 means it's how the game started
+            sequence_i (int): Moment in time where the state occurred i.e 0  it's how the game started
             game (Game):      Game that the state belongs to
         """
         self.__sequence_i = sequence_i
