@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from .state import State
-from .action import Action
+from src.alphazero.state import State
+from src.alphazero.action import Action
 
 
 class Game(ABC):

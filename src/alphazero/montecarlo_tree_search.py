@@ -1,5 +1,5 @@
-from src.alphazero.GamePlayer import GamePlayer
-from src.alphazero.state import State
+from .game_player import GamePlayer
+# from src.alphazero.state import State
 
 
 class MonteCarloTreeSearch:

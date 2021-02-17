@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from .state import State
-from .model import Model
-from .game import Game
+from src.alphazero.state import State
+from src.alphazero.model import Model
+from src.alphazero.game import Game
 
 
 class GamePlayer(ABC):
