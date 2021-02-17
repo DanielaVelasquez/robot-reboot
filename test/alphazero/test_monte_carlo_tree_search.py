@@ -1,7 +1,7 @@
 import unittest
 
 from unittest.mock import Mock
-from src.alphazero.monte_carlo_tree_search import MonteCarloTreeSearch
+from src.alphazero.monte_carlo_tree_search_legacy import MonteCarloTreeSearchLegacy
 
 
 class TestMonteCarloTreeSearch(unittest.TestCase):
@@ -11,7 +11,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         mock_game.is_over.return_value = True
         mock_game.score.return_value = 20
 
-        mtcs = MonteCarloTreeSearch(Mock(), 0.5, max_tree_depth=10)
+        mtcs = MonteCarloTreeSearchLegacy(Mock(), 0.5, max_tree_depth=10)
         v = mtcs.playout_value(mock_game, 1)
         self.assertEqual(20, v)
 
@@ -20,7 +20,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         mock_game.is_over.return_value = False
         mock_game.score.return_value = 30
 
-        mtcs = MonteCarloTreeSearch(Mock(), 0.5, max_tree_depth=10)
+        mtcs = MonteCarloTreeSearchLegacy(Mock(), 0.5, max_tree_depth=10)
         v = mtcs.playout_value(mock_game, 10)
         self.assertEqual(30, v)
 
@@ -35,7 +35,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         mock_game.get_all_actions.return_value = ['a1']
         mock_game.get_valid_actions.return_value = ['a1']
 
-        mtcs = MonteCarloTreeSearch(mock_neural_network, 0.5, max_tree_depth=10)
+        mtcs = MonteCarloTreeSearchLegacy(mock_neural_network, 0.5, max_tree_depth=10)
         action, value = mtcs.get_best_action(mock_game)
         self.assertEqual('a1', action)
         self.assertEqual(1.3, value)
@@ -52,7 +52,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         mock_game.get_valid_actions.return_value = ['a1']
         mock_game.observation.return_value = 'obs'
 
-        mtcs = MonteCarloTreeSearch(mock_neural_network, 0.5, max_tree_depth=10)
+        mtcs = MonteCarloTreeSearchLegacy(mock_neural_network, 0.5, max_tree_depth=10)
         mtcs.three_visit_count = {hash('obs'): 3}
         action, value = mtcs.get_best_action(mock_game)
         self.assertEqual('a1', action)
@@ -70,7 +70,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         mock_game.get_all_actions.return_value = ['a1', 'a2']
         mock_game.get_valid_actions.return_value = ['a1', 'a2']
 
-        mtcs = MonteCarloTreeSearch(mock_neural_network, 0.5, max_tree_depth=10)
+        mtcs = MonteCarloTreeSearchLegacy(mock_neural_network, 0.5, max_tree_depth=10)
         action, value = mtcs.get_best_action(mock_game)
         self.assertEqual('a2', action)
         self.assertEqual(1.125, value)
