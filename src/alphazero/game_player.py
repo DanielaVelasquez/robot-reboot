@@ -54,8 +54,8 @@ class GamePlayer(ABC):
         Args:
             state (State): state to evaluate
         Returns
-            p (list):   Predicted probability distribution over each action
-            v (number): Predicted value
+            p (np array):   Predicted probability distribution over each action
+            v (number):     Predicted value
         """
         pass
 

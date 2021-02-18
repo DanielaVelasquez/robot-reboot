@@ -1,8 +1,8 @@
 class Edge:
     def __init__(self):
         self.__n = 0  # Number of times action has been taken from state S
-        self.__w = 0  # Total value of the next state
-        self.__q = 0  # Mean value of next state
+        self.__w = 0  # Adds total value of leaves states
+        self.__q = 0  # Mean value of next state TODO: No need to save it as a variable, it can be calculated
         self.__p = 0  # Prior probability to select current action
 
     @property
@@ -15,7 +15,7 @@ class Edge:
 
     @property
     def q(self):
-        return self.__q
+        return self.__w / self.__n
 
     @property
     def p(self):
