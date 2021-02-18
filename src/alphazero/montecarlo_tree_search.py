@@ -12,20 +12,10 @@ class MonteCarloTreeSearch:
         max_depth             (number):     maximum depth for the tree while searching
         game_player           (GamePlayer): player for the game to optimize moves
         playouts              (number):     number of playouts per simulation
-        edges                 (dict):       dictionary mapping visited states to a dictionary of actions taken from that
-                                            state
-                                            {
-                                                s0: {
-                                                    a1: edge
-                                                    a2: edge
-                                                },
-                                                s1: {
-                                                    a2: edge
-                                                }
-                                            }
+        edges                 (dict):       dictionary mapping visited states with its statictis
     """
 
-    def __init__(self, exploratory_parameter, max_depth, game_player: GamePlayer, playouts=100):
+    def __init__(self, heuristic_fn, max_depth, game_player: GamePlayer, playouts=100):
         """
         Initializes a MonteCarlo tree search
         Args:
@@ -34,12 +24,12 @@ class MonteCarloTreeSearch:
             game_player           (GamePlayer): player for the game to optimize moves
             playouts              (number):     number of playouts per simulation (default 100)
         """
-        assert 0 <= exploratory_parameter <= 1, "exploratory parameter must be between [0,1]"
+        assert heuristic_fn is not None, "heuristic_fn must be provided"
         assert max_depth > 0, "Tree depth must be greater than 0"
         assert game_player is not None, "game_player must be provided"
         assert playouts > 0, "playouts must be greater than 0"
 
-        self.__exploratory_parameter = exploratory_parameter
+        self.__heuristic_fn = heuristic_fn
         self.__max_depth = max_depth
         self.__game_player = game_player
         self.__game = self.__game_player.game
