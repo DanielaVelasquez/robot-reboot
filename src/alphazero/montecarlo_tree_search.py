@@ -65,7 +65,7 @@ class MonteCarloTreeSearch:
         for i in range(len(self.__game.actions)):
             a = self.__game.actions[i]
             next_state = self.__game.apply(a, state)
-            p[i] = self.__simulations(next_state)
+            p[i] = self.__simulations(next_state, self.__playouts)
         return p
 
     def __simulations(self, state: State, n):
