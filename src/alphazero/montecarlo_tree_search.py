@@ -37,9 +37,6 @@ class MonteCarloTreeSearch:
         self.__playouts = playouts
         self.__states_statistics = {}
 
-    @property
-    def exploratory_parameter(self):
-        return self.__exploratory_parameter
 
     @property
     def max_depth(self):
@@ -53,6 +50,10 @@ class MonteCarloTreeSearch:
     def playouts(self):
         return self.__playouts
 
+    @property
+    def states_statistics(self):
+        return self.__states_statistics
+
     def search(self, state: State):
         """Creates a tree with a series of simulated self-play games
         from root to leaf.
@@ -61,6 +62,7 @@ class MonteCarloTreeSearch:
         Returns:
             p (numpy array): probability distribution of winning for each action
         """
+        self.__states_statistics = {}
         p = np.zeros(len(self.__game.actions), dtype=float)
         for i in range(len(self.__game.actions)):
             a = self.__game.actions[i]
@@ -79,7 +81,7 @@ class MonteCarloTreeSearch:
         v = np.array([self.__playout(state) for _ in range(n)])
         return v.mean()
 
-    def __playout(self, state: State, depth=0):
+    def __playout(self, state: State, depth=1):
         """Self plays the game from a given state.
         Selects next action to perform based on the probability calculated by the model. It plays until max depth is
         reached or the game is over.
@@ -87,7 +89,7 @@ class MonteCarloTreeSearch:
             state (State): state to start self-playing
             depth (int):   depth in the tree
         """
-        if self.__game.is_over(state) or depth > self.__max_depth:
+        if self.__game.is_over(state) or depth >= self.__max_depth:
             return self.__game.get_value(state)
         p, v = self.__game_player.predict(state)
 
@@ -99,7 +101,7 @@ class MonteCarloTreeSearch:
         next_state = self.__game.apply(a, state)
         state_stats.visit(i_best)
 
-        v = self.__playouts(next_state, depth + 1)
+        v = self.__playout(next_state, depth + 1)
         state_stats.add_value(i_best, v)
 
         return v
@@ -112,6 +114,7 @@ class MonteCarloTreeSearch:
         Returns:
             state_statistics (StateStatistics): statistics for the given state
         """
-        if state not in self.__states_statistics:
-            self.__states_statistics[state] = StateStatistics(len(self.__game.actions))
-        return self.__states_statistics[state]
+        s = str(state)
+        if s not in self.__states_statistics:
+            self.__states_statistics[s] = StateStatistics(len(self.__game.actions))
+        return self.__states_statistics[s]

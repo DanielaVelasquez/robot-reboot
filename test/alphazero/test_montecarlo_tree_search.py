@@ -1,14 +1,13 @@
 import unittest
-
 from unittest.mock import Mock
-from numpy import np
+
+import numpy as np
 
 from src.alphazero.action import Action
-from src.alphazero.model import Model
-from src.alphazero.monte_carlo_tree_search_legacy import MonteCarloTreeSearchLegacy
 from src.alphazero.game import Game
-from src.alphazero.state import State
 from src.alphazero.game_player import GamePlayer
+from src.alphazero.montecarlo_tree_search import MonteCarloTreeSearch
+from src.alphazero.state import State
 
 
 class FakeAction(Action):
@@ -41,18 +40,18 @@ class FakeState(State):
 
 class FakeGame(Game):
     def __init__(self):
-        Game.__init__(self, [FakeAction(i) for i in range(1, 3)])
+        Game.__init__(self, [FakeAction(i + 1) for i in range(4)])
 
     def get_value(self, state: FakeState):
         if state.value == 3:
             return 1
-        elif state.value == 2:
+        elif state.value == 1:
             return 0
         else:
             return -1
 
     def is_over(self, state: FakeState):
-        return state.value == 3 or state.value == 2
+        return state.value == 3
 
     def get_score(self, state: FakeState):
         return state.sequence_i
@@ -66,8 +65,8 @@ class FakeGame(Game):
 
 class FakeGamePlayer(GamePlayer):
 
-    def __init__(self, game: FakeGame):
-        GamePlayer.__init__(self, None, game)
+    def __init__(self):
+        GamePlayer.__init__(self, None, FakeGame())
 
     def play(self, state: State):
         pass
@@ -77,6 +76,12 @@ class FakeGamePlayer(GamePlayer):
         p = np.zeros(actions_size, dtype=float)
         p[state.value % actions_size] = 1
         return p, np.nan
+
+
+def assert_state(mcts, s, n=[], w=[], q=[]):
+    np.testing.assert_equal(mcts.states_statistics[s].n, n)
+    np.testing.assert_equal(mcts.states_statistics[s].w, w)
+    np.testing.assert_equal(mcts.states_statistics[s].q, q)
 
 
 class TestMonteCarloTreeSearch(unittest.TestCase):
@@ -108,19 +113,76 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         mock_game_player = Mock()
         self.assertRaises(AssertionError, lambda: MonteCarloTreeSearch(Mock(), -1, mock_game_player, playouts=-1))
 
-    def test_search(self):
-        mock_heuristic_fn = Mock()
-        """"
-        mock.side_effect = [5, 4, 3, 2, 1]
-        mock(), mock(), mock() //(5, 4, 3)
+    def test_search_with_depth_2(self):
         """
-        mock_game_player = Mock()
-        mock_game = Mock()
-        mock_state = MagicMock()
+                        Tree built
+                            s0
 
-        type(mock_game_player).game = PropertyMock(return_value=mock_game)
-        type(mock_game).actions = PropertyMock(return_value=[f'a{i}' for i in range(10)])
-        mock_state.__str__.return_value = 's0'
+                (a1)    (a2)    (a3)    (a4)
+                 s1      s2      s3      s1
 
-        mcts = MonteCarloTreeSearch(mock_heuristic_fn, 2, mock_game_player, playouts=2)
-        p = mcts.search(mock_state)
+                (a2)    (a3)            (a1)
+                 s2      s3              s1
+
+               v=-1      v=1     v=1     v=0
+
+        """
+        def heuristic_fn(p, _):
+            return p
+
+        fake_game_player = FakeGamePlayer()
+        mcts = MonteCarloTreeSearch(heuristic_fn, 2, fake_game_player, playouts=1)
+        fake_state = FakeState(0, fake_game_player.game, 0)
+        p = mcts.search(fake_state)
+        np.testing.assert_equal(p, [-1, 1, 1, 0])
+        self.assertEqual(list(mcts.states_statistics.keys()), ['s1', 's2', 's4'])
+        assert_state(mcts, 's1', n=[0, 1, 0, 0], w=[0, -1, 0, 0], q=[0, -1, 0, 0])
+        assert_state(mcts, 's2', n=[0, 0, 1, 0], w=[0, 0, 1, 0], q=[0, 0, 1, 0])
+        assert_state(mcts, 's4', n=[1, 0, 0, 0], w=[0, 0, 0, 0], q=[0, 0, 0, 0])
+
+    def test_search_with_all_leaves_win(self):
+        """
+                                Tree built
+                                    s0
+
+                        (a1)    (a2)    (a3)    (a4)
+                         s1      s2      s3      s1
+
+                        (a2)    (a3)            (a1)
+                         s2      s3              s1
+
+                        (a3)                    (a2)
+                         s3                      s2
+
+                                                (a3)
+                                                 s3
+                        v=1      v=1     v=1     v=1
+
+                """
+        def heuristic_fn(p, _):
+            return p
+
+        fake_game_player = FakeGamePlayer()
+        mcts = MonteCarloTreeSearch(heuristic_fn, 4, fake_game_player, playouts=1)
+        fake_state = FakeState(0, fake_game_player.game, 0)
+        p = mcts.search(fake_state)
+        np.testing.assert_equal(p, [1, 1, 1, 1])
+        self.assertEqual(list(mcts.states_statistics.keys()), ['s1', 's2', 's4'])
+        assert_state(mcts, 's1', n=[0, 2, 0, 0], w=[0, 2, 0, 0], q=[0, 1, 0, 0])
+        assert_state(mcts, 's2', n=[0, 0, 3, 0], w=[0, 0, 3, 0], q=[0, 0, 1, 0])
+        assert_state(mcts, 's4', n=[1, 0, 0, 0], w=[1, 0, 0, 0], q=[1, 0, 0, 0])
+
+    def test_search_clean_state_statistics_for_each_search(self):
+        def heuristic_fn(p, _):
+            return p
+
+        fake_game_player = FakeGamePlayer()
+        mcts = MonteCarloTreeSearch(heuristic_fn, 2, fake_game_player, playouts=1)
+        fake_state = FakeState(0, fake_game_player.game, 0)
+        p = mcts.search(fake_state)
+        p = mcts.search(fake_state)
+        np.testing.assert_equal(p, [-1, 1, 1, 0])
+        self.assertEqual(list(mcts.states_statistics.keys()), ['s1', 's2', 's4'])
+        assert_state(mcts, 's1', n=[0, 1, 0, 0], w=[0, -1, 0, 0], q=[0, -1, 0, 0])
+        assert_state(mcts, 's2', n=[0, 0, 1, 0], w=[0, 0, 1, 0], q=[0, 0, 1, 0])
+        assert_state(mcts, 's4', n=[1, 0, 0, 0], w=[0, 0, 0, 0], q=[0, 0, 0, 0])

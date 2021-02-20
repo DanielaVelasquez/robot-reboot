@@ -51,3 +51,6 @@ class StateStatistics:
         assert self.__n[action_i] != 0, f"No visits have been registered for action: {action_i}"
         self.__w[action_i] += v
         self.__q[action_i] = self.__w[action_i] / self.__n[action_i]
+
+    def __str__(self):
+        return f'n = {self.__n}\nw = {self.__w}\nq = {self.__q}'
