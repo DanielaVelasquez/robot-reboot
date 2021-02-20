@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from .state import State
-from .action import Action
+from src.alphazero.state import State
+from src.alphazero.action import Action
 
 
 class Game(ABC):
@@ -53,11 +53,12 @@ class Game(ABC):
 
     @abstractmethod
     def apply(self, action: Action, state: State):
-        """" Applies an action over a state to get to the next state
+        """
+        Applies an action to state
         Args:
-            action (Action): action to perform on the state
-            state (State):  state to apply to the action
+             state  (State):  state
+             action (Action): action to apply to the given state
         Returns:
-            resulting state from applying action on the give state
+            state   (State): next state after action is applied
         """
         pass

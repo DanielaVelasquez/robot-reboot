@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
-from .state import State
-from .model import Model
-from .game import Game
+
+from src.alphazero.game import Game
+from src.alphazero.model import Model
+from src.alphazero.state import State
 
 
 class GamePlayer(ABC):
@@ -52,7 +53,8 @@ class GamePlayer(ABC):
         Args:
             state (State): state to evaluate
         Returns
-            p (list):   Predicted probability distribution over each action
-            v (number): Predicted value
+            p (np array):   Predicted probability distribution over each action
+            v (number):     Predicted value
         """
         pass
+

@@ -25,6 +25,9 @@ class DeepHeuristic(NeuralNetwork):
         x = tf.keras.layers.Dropout(0.5)(x)
 
         value_output = tf.keras.layers.Dense(1, activation='sigmoid', name='value_output')(x)
+        # THIS CAN't BE SOFTMAX, We need sigmad or somerhing
+        # THIS CALCULATES THE PROBABILITY OF WINNING By taking an action
+        ## -1 loss, 0 draw, 1 win
         probabilities_output = tf.keras.layers.Dense(n_outputs, activation='softmax', name='probabilities_output')(x)
 
         self.model = tf.keras.Model(inputs=_input, outputs=[value_output, probabilities_output])

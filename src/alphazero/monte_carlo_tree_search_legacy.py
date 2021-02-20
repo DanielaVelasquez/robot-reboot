@@ -5,7 +5,7 @@ from .neural_network import NeuralNetwork
 from .edge import Edge
 
 
-class MonteCarloTreeSearch:
+class MonteCarloTreeSearchLegacy:
 
     def __init__(self, neural_network: NeuralNetwork, exploratory_parameter: int, max_tree_depth=10):
         self.neural_network = neural_network
