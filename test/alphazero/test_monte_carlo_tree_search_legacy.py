@@ -11,7 +11,7 @@ from src.alphazero.state import State
 from src.alphazero.game_player import GamePlayer
 
 
-class TestAction(Action):
+class FakeAction(Action):
 
     def __init__(self, value):
         Action.__init__(self)
@@ -25,7 +25,7 @@ class TestAction(Action):
         return f'a{self.__value}'
 
 
-class TestState(State):
+class FakeState(State):
 
     def __init__(self, sequence_i, game, value):
         State.__init__(self, sequence_i, game)
@@ -39,11 +39,11 @@ class TestState(State):
         return f's{self.__value}'
 
 
-class TestGame(Game):
+class FakeGame(Game):
     def __init__(self):
-        Game.__init__(self, [TestAction(i) for i in range(1, 3)])
+        Game.__init__(self, [FakeAction(i) for i in range(1, 3)])
 
-    def get_value(self, state: TestState):
+    def get_value(self, state: FakeState):
         if state.value == 3:
             return 1
         elif state.value == 2:
@@ -51,28 +51,28 @@ class TestGame(Game):
         else:
             return -1
 
-    def is_over(self, state: TestState):
+    def is_over(self, state: FakeState):
         return state.value == 3 or state.value == 2
 
-    def get_score(self, state: TestState):
+    def get_score(self, state: FakeState):
         return state.sequence_i
 
-    def apply(self, action: TestAction, state: TestState):
+    def apply(self, action: FakeAction, state: FakeState):
         """It goes to the state with the same action value
         E.g if action.value = 1 then it'll go to state.value =1 regardless of the starting state
         """
-        return TestState(state.sequence_i + 1, self, action.value)
+        return FakeState(state.sequence_i + 1, self, action.value)
 
 
-class TestGamePlayer(GamePlayer):
+class FakeGamePlayer(GamePlayer):
 
-    def __init__(self, game: TestGame):
+    def __init__(self, game: FakeGame):
         GamePlayer.__init__(self, None, game)
 
     def play(self, state: State):
         pass
 
-    def predict(self, state:TestState):
+    def predict(self, state: FakeState):
         actions_size = len(self.game.actions)
         p = np.zeros(actions_size, dtype=float)
         p[state.value % actions_size] = 1
