@@ -30,7 +30,7 @@ class TestStateStatistics(unittest.TestCase):
         obj.visit(0)
         obj.add_value(0, 0)
         np.testing.assert_equal([2, 0], obj.n)
-        np.testing.assert_equal([0.5, 0], obj.q)
+        np.testing.assert_equal([0.5, 0], obj.p)
         np.testing.assert_equal([1, 0], obj.w)
 
     def test_add_value_when_no_visits_registered(self):

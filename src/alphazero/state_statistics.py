@@ -8,7 +8,7 @@ class StateStatistics:
     Attributes:
         n (numpy array): Total visits for each action
         w (numpy array): Sum values(wins, lost and draws) over the leaf states of simulations for each action
-        q (numpy array): Probability of winning for each action
+        p (numpy array): Probability of winning for each action
     """
 
     def __init__(self, n_actions):
@@ -21,7 +21,7 @@ class StateStatistics:
 
         self.__n = np.zeros(n_actions, dtype=float)
         self.__w = np.zeros(n_actions, dtype=float)
-        self.__q = np.zeros(n_actions, dtype=float)
+        self.__p = np.zeros(n_actions, dtype=float)
 
     @property
     def n(self):
@@ -32,8 +32,8 @@ class StateStatistics:
         return self.__w
 
     @property
-    def q(self):
-        return self.__q
+    def p(self):
+        return self.__p
 
     def visit(self, action_i):
         """Register a visit from a state taking one action
@@ -50,7 +50,7 @@ class StateStatistics:
         """
         assert self.__n[action_i] != 0, f"No visits have been registered for action: {action_i}"
         self.__w[action_i] += v
-        self.__q[action_i] = self.__w[action_i] / self.__n[action_i]
+        self.__p[action_i] = self.__w[action_i] / self.__n[action_i]
 
     def __str__(self):
-        return f'n = {self.__n}\nw = {self.__w}\nq = {self.__q}'
+        return f'n = {self.__n}\nw = {self.__w}\np = {self.__p}'

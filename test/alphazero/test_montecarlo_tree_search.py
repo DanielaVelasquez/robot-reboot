@@ -65,23 +65,35 @@ class FakeGame(Game):
 
 class FakeGamePlayer(GamePlayer):
 
-    def __init__(self):
+    def __init__(self, fn_predict_probability):
         GamePlayer.__init__(self, None, FakeGame())
+        self.__fn_predict_probability = fn_predict_probability
 
     def play(self, state: State):
         pass
 
     def predict(self, state: FakeState):
-        actions_size = len(self.game.actions)
-        p = np.zeros(actions_size, dtype=float)
-        p[state.value % actions_size] = 1
-        return p, np.nan
+        return self.__fn_predict_probability(len(self.game.actions), state), np.nan
 
 
-def assert_state(mcts, s, n=[], w=[], q=[]):
+def assert_state(mcts, s, n=[], w=[], p=[]):
     np.testing.assert_equal(mcts.states_statistics[s].n, n)
     np.testing.assert_equal(mcts.states_statistics[s].w, w)
-    np.testing.assert_equal(mcts.states_statistics[s].q, q)
+    np.testing.assert_equal(mcts.states_statistics[s].p, p)
+
+
+def heuristic_fn(p, _):
+    return p
+
+
+def fn_predict_probability_1_for_next_action(actions_size, state):
+    p = np.zeros(actions_size, dtype=float)
+    p[state.value % actions_size] = 1
+    return p
+
+
+def fn_predict_probability_np_seed(actions_size, state):
+    return np.random.uniform(low=-1, high=1, size=actions_size)
 
 
 class TestMonteCarloTreeSearch(unittest.TestCase):
@@ -127,18 +139,15 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
                v=-1      v=1     v=1     v=0
 
         """
-        def heuristic_fn(p, _):
-            return p
-
-        fake_game_player = FakeGamePlayer()
+        fake_game_player = FakeGamePlayer(fn_predict_probability_1_for_next_action)
         mcts = MonteCarloTreeSearch(heuristic_fn, 2, fake_game_player, playouts=1)
         fake_state = FakeState(0, fake_game_player.game, 0)
         p = mcts.search(fake_state)
         np.testing.assert_equal(p, [-1, 1, 1, 0])
         self.assertEqual(list(mcts.states_statistics.keys()), ['s1', 's2', 's4'])
-        assert_state(mcts, 's1', n=[0, 1, 0, 0], w=[0, -1, 0, 0], q=[0, -1, 0, 0])
-        assert_state(mcts, 's2', n=[0, 0, 1, 0], w=[0, 0, 1, 0], q=[0, 0, 1, 0])
-        assert_state(mcts, 's4', n=[1, 0, 0, 0], w=[0, 0, 0, 0], q=[0, 0, 0, 0])
+        assert_state(mcts, 's1', n=[0, 1, 0, 0], w=[0, -1, 0, 0], p=[0, -1, 0, 0])
+        assert_state(mcts, 's2', n=[0, 0, 1, 0], w=[0, 0, 1, 0], p=[0, 0, 1, 0])
+        assert_state(mcts, 's4', n=[1, 0, 0, 0], w=[0, 0, 0, 0], p=[0, 0, 0, 0])
 
     def test_search_with_all_leaves_win(self):
         """
@@ -159,30 +168,53 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
                         v=1      v=1     v=1     v=1
 
                 """
-        def heuristic_fn(p, _):
-            return p
 
-        fake_game_player = FakeGamePlayer()
+        fake_game_player = FakeGamePlayer(fn_predict_probability_1_for_next_action)
         mcts = MonteCarloTreeSearch(heuristic_fn, 4, fake_game_player, playouts=1)
         fake_state = FakeState(0, fake_game_player.game, 0)
         p = mcts.search(fake_state)
         np.testing.assert_equal(p, [1, 1, 1, 1])
         self.assertEqual(list(mcts.states_statistics.keys()), ['s1', 's2', 's4'])
-        assert_state(mcts, 's1', n=[0, 2, 0, 0], w=[0, 2, 0, 0], q=[0, 1, 0, 0])
-        assert_state(mcts, 's2', n=[0, 0, 3, 0], w=[0, 0, 3, 0], q=[0, 0, 1, 0])
-        assert_state(mcts, 's4', n=[1, 0, 0, 0], w=[1, 0, 0, 0], q=[1, 0, 0, 0])
+        assert_state(mcts, 's1', n=[0, 2, 0, 0], w=[0, 2, 0, 0], p=[0, 1, 0, 0])
+        assert_state(mcts, 's2', n=[0, 0, 3, 0], w=[0, 0, 3, 0], p=[0, 0, 1, 0])
+        assert_state(mcts, 's4', n=[1, 0, 0, 0], w=[1, 0, 0, 0], p=[1, 0, 0, 0])
 
     def test_search_clean_state_statistics_for_each_search(self):
-        def heuristic_fn(p, _):
-            return p
-
-        fake_game_player = FakeGamePlayer()
+        fake_game_player = FakeGamePlayer(fn_predict_probability_1_for_next_action)
         mcts = MonteCarloTreeSearch(heuristic_fn, 2, fake_game_player, playouts=1)
         fake_state = FakeState(0, fake_game_player.game, 0)
         p = mcts.search(fake_state)
         p = mcts.search(fake_state)
         np.testing.assert_equal(p, [-1, 1, 1, 0])
         self.assertEqual(list(mcts.states_statistics.keys()), ['s1', 's2', 's4'])
-        assert_state(mcts, 's1', n=[0, 1, 0, 0], w=[0, -1, 0, 0], q=[0, -1, 0, 0])
-        assert_state(mcts, 's2', n=[0, 0, 1, 0], w=[0, 0, 1, 0], q=[0, 0, 1, 0])
-        assert_state(mcts, 's4', n=[1, 0, 0, 0], w=[0, 0, 0, 0], q=[0, 0, 0, 0])
+        assert_state(mcts, 's1', n=[0, 1, 0, 0], w=[0, -1, 0, 0], p=[0, -1, 0, 0])
+        assert_state(mcts, 's2', n=[0, 0, 1, 0], w=[0, 0, 1, 0], p=[0, 0, 1, 0])
+        assert_state(mcts, 's4', n=[1, 0, 0, 0], w=[0, 0, 0, 0], p=[0, 0, 0, 0])
+
+    def test_search_with_random_probabilities(self):
+        """
+                                                    Tree built
+                                                        s0
+
+                    (a1)                        (a2)            (a3)                    (a4)
+                     s1                          s2              s3                     s4
+
+            (a4)    (a1)    (a1)        (a1)    (a1)    (a2)                    (a1)    (a4)    (a1)
+             s4      s1      s1          s1      s1      s2                     s1      s4      s1
+
+            (a1)    (a2)    (a3)        (a4)    (a3)    (a1)                    (a3)   (a4)    (a3)
+             s1      s2      s3          s4      s3      s1                      s3     s4      s3
+
+            v=0      v=-1    v=1         v=-1    v=1     v=0    v=1 v=1 v=1      v=1    v=-1    v=0
+
+        """
+        np.random.seed(26)
+        fake_game_player = FakeGamePlayer(fn_predict_probability_np_seed)
+        mcts = MonteCarloTreeSearch(heuristic_fn, 3, fake_game_player, playouts=3)
+        fake_state = FakeState(0, fake_game_player.game, 0)
+        p = mcts.search(fake_state)
+        np .testing.assert_equal(p, [0, 0, 1, 0])
+        self.assertEqual(sorted(mcts.states_statistics.keys()), sorted(['s1', 's2', 's4']))
+        assert_state(mcts, 's1', n=[3, 1, 3, 2], w=[0, -1, 3, -1], p=[0, -1, 1, -0.5])
+        assert_state(mcts, 's2', n=[3, 1, 0, 0], w=[0, 0, 0, 0], p=[0, 0, 0, 0])
+        assert_state(mcts, 's4', n=[3, 0, 0, 2], w=[1, 0, 0, -2], p=[1/3, 0, 0, -1])
