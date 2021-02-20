@@ -86,13 +86,32 @@ def heuristic_fn(p, _):
     return p
 
 
-def fn_predict_probability_1_for_next_action(actions_size, state):
+def fn_predict_probability_1_for_next_action(actions_size, state:FakeState):
+    """" Fake predict probabilities of winning over each action. Probabilities are set to 0 except for one action.
+    E.g state = 1, actions_size = 3 then p = [0, 1, 0]
+    E.g state = 3, actions_size = 3 then p = [1, 0, 0]
+    (Function used in the FakeGamePlayer)
+    Args:
+        actions_size (int):   number of actions
+        state        (State): state to calculate the probabilities of winning per actions
+    Returns:
+        p (np array): probability over actions. All actions with 0 except for one action with probability of 1
+    """
     p = np.zeros(actions_size, dtype=float)
     p[state.value % actions_size] = 1
     return p
 
 
 def fn_predict_probability_np_seed(actions_size, state):
+    """Fake predict probabilities of winning over each action based on an uniform distribution
+    with values between [-1, 1]
+    (Function used in the FakeGamePlayer)
+    Args:
+       actions_size (int):   number of actions
+        state       (State): state to calculate the probabilities of winning per actions
+    Returns:
+        p (np array): probality over actions with an uniform distribution.
+    """
     return np.random.uniform(low=-1, high=1, size=actions_size)
 
 

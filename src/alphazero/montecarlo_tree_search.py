@@ -23,7 +23,7 @@ class MonteCarloTreeSearch:
             heuristic_fn (function):   function to evaluate how good is each action, receives probability and a state statistics
             max_depth    (number):     maximum depth for the tree while searching
             game_player  (GamePlayer): player for the game to optimize moves
-            playouts      (number):    number of playouts per simulation (default 100)
+            playouts     (number):     number of playouts per simulation (default 100)
         """
         assert heuristic_fn is not None, "heuristic_fn must be provided"
         assert max_depth > 0, "Tree depth must be greater than 0"
@@ -83,7 +83,8 @@ class MonteCarloTreeSearch:
 
     def __playout(self, state: State, depth=1):
         """Self plays the game from a given state.
-        Selects next action to perform based on the probability calculated by the model. It plays until max depth is
+        Selects next action based on the heuristic function value for each action. The heuristic function utilizes
+        the probability calculated by the model and the states statistics. It plays until max depth is
         reached or the game is over.
         Args:
             state (State): state to start self-playing
@@ -107,12 +108,12 @@ class MonteCarloTreeSearch:
         return v
 
     def __get_state_statistics(self, state):
-        """Gets the statistics for a state from the dictionary states_statistics.
+        """Gets the statistics for a state from the dictionary.
          If the state statistics don't exists, they are initiated with default values
         Args:
             state (State): state to get statistics for
         Returns:
-            state_statistics (StateStatistics): statistics for the given state
+            state_statistics (StateStatistics): statistics for the state
         """
         s = str(state)
         if s not in self.__states_statistics:

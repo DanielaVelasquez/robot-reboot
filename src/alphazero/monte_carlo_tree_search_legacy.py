@@ -48,7 +48,7 @@ class MonteCarloTreeSearchLegacy:
             if action not in game.get_valid_actions():
                 p = 0
 
-            action_value = edge.p + self.__get_exploration_value(p, edge.n)
+            action_value = edge.q + self.__get_exploration_value(p, edge.n)
 
             if best_action is None or best_action_value < action_value:
                 best_action = action
@@ -105,7 +105,7 @@ class MonteCarloTreeSearchLegacy:
                 self.__update_edge(observation, action, avg_value)
                 edge = self.__get_edge(action, observation)
                 edge.update_probability(actions_probability[action])
-                actions_v[action] = edge.p
+                actions_v[action] = edge.q
                 game.undo_move()
             else:
                 actions_probability[action] = -1
