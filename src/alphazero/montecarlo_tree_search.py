@@ -61,7 +61,7 @@ class MonteCarloTreeSearch:
         Returns:
             p (numpy array): probability distribution of winning for each action
         """
-        p = np.empty(len(self.__game.actions), dtype=float)
+        p = np.zeros(len(self.__game.actions), dtype=float)
         for i in range(len(self.__game.actions)):
             a = self.__game.actions[i]
             next_state = self.__game.apply(a, state)
