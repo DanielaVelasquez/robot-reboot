@@ -5,19 +5,19 @@ class State(ABC):
     """ State of a game
 
     Attributes:
-        sequence_id (int):  Moment in time where this state occurred
         game        (Game): Game that the state belongs to
+        sequence_id (int):  Moment in time where this state occurred
 
     """
 
-    def __init__(self, sequence_i, game):
+    def __init__(self, game, sequence_i=0):
         """ Initializes a state
         Args:
-            sequence_i (int):  Moment in time where the state occurred i.e 0  it's how the game started
             game       (Game): Game that the state belongs to
+            sequence_i (int):  Moment in time where the state occurred i.e 0  it's how the game started
         """
-        self.__sequence_i = sequence_i
         self.__game = game
+        self.__sequence_i = sequence_i
 
     @property
     def sequence_i(self):
@@ -25,7 +25,7 @@ class State(ABC):
 
     @property
     def game(self):
-        return self.game
+        return self.__game
 
     @abstractmethod
     def __str__(self):
