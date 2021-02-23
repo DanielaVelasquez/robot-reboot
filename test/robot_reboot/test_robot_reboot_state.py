@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import Mock
-from src.robot_reboot.robot_reboot_state import RobotRebootState
+from src.robot_reboot.state import RobotRebootState
 
 
 class TestRobotRebootState(unittest.TestCase):

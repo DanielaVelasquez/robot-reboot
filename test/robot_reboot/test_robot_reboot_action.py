@@ -1,5 +1,5 @@
 import unittest
-from src.robot_reboot.robot_reboot_action import RobotRebootAction
+from src.robot_reboot.action import RobotRebootAction
 from src.robot_reboot.util import Direction
 
 
