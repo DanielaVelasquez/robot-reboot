@@ -5,14 +5,14 @@ from src.alphazero.game_legacy import GameLegacy, GameActionLegacy
 from src.robot_reboot.util import Direction, Maze, calculate_size_with_walls
 
 
-class RobotRebootAction(GameActionLegacy):
+class RobotRebootActionLegacy(GameActionLegacy):
     def __init__(self, robot_id, movement_direction: Direction):
         self.robot = robot_id
         self.movement_direction = movement_direction
         self.position_before_move = tuple()
 
     def __eq__(self, other):
-        if not isinstance(other, RobotRebootAction):
+        if not isinstance(other, RobotRebootActionLegacy):
             return NotImplemented
         return self.robot == other.robot and self.movement_direction == other.movement_direction
 
@@ -73,14 +73,14 @@ class RobotRebootGame(GameLegacy):
         return self.robots[self.goal.robot] == self.goal.position
 
     def get_valid_actions(self):
-        return [RobotRebootAction(robot, movement) for movement in self.MOVEMENTS for robot in
-                range(len(self.robots)) if self.can_move(RobotRebootAction(robot, movement))]
+        return [RobotRebootActionLegacy(robot, movement) for movement in self.MOVEMENTS for robot in
+                range(len(self.robots)) if self.can_move(RobotRebootActionLegacy(robot, movement))]
 
     def get_all_actions(self):
-        return [RobotRebootAction(robot, movement) for movement in self.MOVEMENTS for robot in
+        return [RobotRebootActionLegacy(robot, movement) for movement in self.MOVEMENTS for robot in
                 range(len(self.robots))]
 
-    def execute_move(self, action: RobotRebootAction):
+    def execute_move(self, action: RobotRebootActionLegacy):
         current_position = self.robots[action.robot]
         action.__setattr__("position_before_move", current_position)
         if action.movement_direction == Direction.NORTH:
@@ -94,7 +94,7 @@ class RobotRebootGame(GameLegacy):
         else:
             raise Exception("Invalid movement")
 
-    def execute_undo_move(self, action: RobotRebootAction):
+    def execute_undo_move(self, action: RobotRebootActionLegacy):
         self.robots[action.robot] = action.__getattribute__("position_before_move")
 
     def __move_north(self, robot):
@@ -192,7 +192,7 @@ class RobotRebootGame(GameLegacy):
                 return True
         return False
 
-    def can_move(self, action: RobotRebootAction):
+    def can_move(self, action: RobotRebootActionLegacy):
         current_pos = self.robots[action.robot]
         self.move(action)
         after_pos = self.robots[action.robot]
