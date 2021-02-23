@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from src.robot_reboot.robot_reboot_game import RobotRebootGame, RobotRebootAction, Maze, RobotRebootGoal
+from src.robot_reboot.robot_reboot_game import RobotRebootGame, RobotRebootActionLegacy, Maze, RobotRebootGoal
 from src.robot_reboot.util import get_movement_same_direction_for_wall, get_cell_at, get_wall_at_direction, \
     get_opposite_direction, Direction, get_not_blocking_walls_when_robot_on_cell_moving_to
 
@@ -18,7 +18,7 @@ class TestRobotRebootGame(unittest.TestCase):
         robot = (1, 1)
         for move in RobotRebootGame.MOVEMENTS:
             game = RobotRebootGame(maze, [robot], RobotRebootGoal(0, (0, 0)))
-            self.assertTrue(game.can_move(RobotRebootAction(0, move)),
+            self.assertTrue(game.can_move(RobotRebootActionLegacy(0, move)),
                             f'Movement {move} should be allowed, there are no walls in the maze')
 
     def test_can_move_when_wall_on_same_position_as_robot_on_the_way(self):
@@ -32,7 +32,7 @@ class TestRobotRebootGame(unittest.TestCase):
             maze.cells[1, 1] = wall
             game = RobotRebootGame(maze, [robot], RobotRebootGoal(0, (0, 0)))
             movement = get_movement_same_direction_for_wall(wall)
-            self.assertFalse(game.can_move(RobotRebootAction(0, movement)),
+            self.assertFalse(game.can_move(RobotRebootActionLegacy(0, movement)),
                              f'Movement {movement} should NOT be allowed, there is a wall in the way' + str(maze.cells))
 
     def test_can_move_when_wall_on_next_cell_of_the_movement(self):
@@ -47,7 +47,7 @@ class TestRobotRebootGame(unittest.TestCase):
             wall = get_wall_at_direction(get_opposite_direction(movement_direction))
             maze.cells[cell] = wall
             game = RobotRebootGame(maze, [robot], RobotRebootGoal(0, (0, 0)))
-            self.assertFalse(game.can_move(RobotRebootAction(0, movement_direction)),
+            self.assertFalse(game.can_move(RobotRebootActionLegacy(0, movement_direction)),
                              f'Movement {movement_direction} should NOT be allowed, there is a wall in the way')
 
     def test_move_when_robot_on_next_cell_of_the_movement(self):
@@ -62,7 +62,7 @@ class TestRobotRebootGame(unittest.TestCase):
             cell = get_cell_at(movement_direction, robot, 3, 3)
             robots.append(cell)
             game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-            game.move(RobotRebootAction(0, movement_direction))
+            game.move(RobotRebootActionLegacy(0, movement_direction))
             self.assertEqual(robots, game.robots, 'Robots position should not change, there is a robot on its way')
 
     def test_move_and_undo_move_on_north_direction(self):
@@ -73,7 +73,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robot_initial_position = (1, 1)
         game = RobotRebootGame(maze, [robot_initial_position], RobotRebootGoal(0, (0, 0)))
-        action = RobotRebootAction(0, Direction.NORTH)
+        action = RobotRebootActionLegacy(0, Direction.NORTH)
         game.move(action)
         self.assertEqual([(0, 1)], game.robots)
         game.undo_move()
@@ -87,7 +87,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robot_initial_position = (1, 1)
         game = RobotRebootGame(maze, [robot_initial_position], RobotRebootGoal(0, (0, 0)))
-        action = RobotRebootAction(0, Direction.SOUTH)
+        action = RobotRebootActionLegacy(0, Direction.SOUTH)
         game.move(action)
         self.assertEqual([(2, 1)], game.robots)
         game.undo_move()
@@ -101,7 +101,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robot_initial_position = (1, 1)
         game = RobotRebootGame(maze, [robot_initial_position], RobotRebootGoal(0, (0, 0)))
-        action = RobotRebootAction(0, Direction.WEST)
+        action = RobotRebootActionLegacy(0, Direction.WEST)
         game.move(action)
         self.assertEqual([(1, 0)], game.robots)
         game.undo_move()
@@ -115,7 +115,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robot_initial_position = (1, 1)
         game = RobotRebootGame(maze, [robot_initial_position], RobotRebootGoal(0, (0, 0)))
-        action = RobotRebootAction(0, Direction.EAST)
+        action = RobotRebootActionLegacy(0, Direction.EAST)
         game.move(action)
         self.assertEqual([(1, 2)], game.robots)
         game.undo_move()
@@ -129,11 +129,11 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robot_initial_position = (1, 1)
         game = RobotRebootGame(maze, [robot_initial_position], RobotRebootGoal(0, (0, 0)))
-        game.move(RobotRebootAction(0, Direction.NORTH))
-        game.move(RobotRebootAction(0, Direction.WEST))
-        game.move(RobotRebootAction(0, Direction.SOUTH))
+        game.move(RobotRebootActionLegacy(0, Direction.NORTH))
+        game.move(RobotRebootActionLegacy(0, Direction.WEST))
+        game.move(RobotRebootActionLegacy(0, Direction.SOUTH))
         expected_positions = game.robots.copy()
-        action = RobotRebootAction(0, Direction.EAST)
+        action = RobotRebootActionLegacy(0, Direction.EAST)
         game.move(action)
         game.undo_move()
         self.assertEqual(expected_positions, game.robots)
@@ -144,14 +144,14 @@ class TestRobotRebootGame(unittest.TestCase):
         game = RobotRebootGame(maze, robots, RobotRebootGoal(0, (0, 0)))
         actions = game.get_all_actions()
         expected_actions = [
-            RobotRebootAction(0, Direction.NORTH),
-            RobotRebootAction(0, Direction.SOUTH),
-            RobotRebootAction(0, Direction.EAST),
-            RobotRebootAction(0, Direction.WEST),
-            RobotRebootAction(1, Direction.NORTH),
-            RobotRebootAction(1, Direction.SOUTH),
-            RobotRebootAction(1, Direction.EAST),
-            RobotRebootAction(1, Direction.WEST)
+            RobotRebootActionLegacy(0, Direction.NORTH),
+            RobotRebootActionLegacy(0, Direction.SOUTH),
+            RobotRebootActionLegacy(0, Direction.EAST),
+            RobotRebootActionLegacy(0, Direction.WEST),
+            RobotRebootActionLegacy(1, Direction.NORTH),
+            RobotRebootActionLegacy(1, Direction.SOUTH),
+            RobotRebootActionLegacy(1, Direction.EAST),
+            RobotRebootActionLegacy(1, Direction.WEST)
         ]
         self.assertCountEqual(expected_actions, actions)
 
@@ -163,7 +163,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(1, 1)]
         expected_actions = [
-            RobotRebootAction(0, Direction.NORTH),
+            RobotRebootActionLegacy(0, Direction.NORTH),
 
         ]
         game = RobotRebootGame(maze, robots, RobotRebootGoal(0, (0, 0)))
@@ -178,7 +178,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(1, 1)]
         expected_actions = [
-            RobotRebootAction(0, Direction.SOUTH),
+            RobotRebootActionLegacy(0, Direction.SOUTH),
 
         ]
         game = RobotRebootGame(maze, robots, RobotRebootGoal(0, (0, 0)))
@@ -193,7 +193,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(1, 1)]
         expected_actions = [
-            RobotRebootAction(0, Direction.WEST),
+            RobotRebootActionLegacy(0, Direction.WEST),
 
         ]
         game = RobotRebootGame(maze, robots, RobotRebootGoal(0, (0, 0)))
@@ -208,7 +208,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(1, 1)]
         expected_actions = [
-            RobotRebootAction(0, Direction.EAST),
+            RobotRebootActionLegacy(0, Direction.EAST),
 
         ]
         game = RobotRebootGame(maze, robots, RobotRebootGoal(0, (0, 0)))
@@ -223,9 +223,9 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(1, 1), (0, 2)]
         expected_actions = [
-            RobotRebootAction(0, Direction.EAST),
-            RobotRebootAction(1, Direction.WEST),
-            RobotRebootAction(1, Direction.SOUTH),
+            RobotRebootActionLegacy(0, Direction.EAST),
+            RobotRebootActionLegacy(1, Direction.WEST),
+            RobotRebootActionLegacy(1, Direction.SOUTH),
         ]
         game = RobotRebootGame(maze, robots, RobotRebootGoal(0, (0, 0)))
         valid_actions = game.get_valid_actions()
@@ -241,7 +241,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(4, 0)]
         game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-        game.move(RobotRebootAction(0, Direction.NORTH))
+        game.move(RobotRebootActionLegacy(0, Direction.NORTH))
         self.assertEqual([(0, 0)], game.robots)
 
     def test_move_north_when_north_wall_on_robot_pos(self):
@@ -254,7 +254,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(4, 0)]
         game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-        game.move(RobotRebootAction(0, Direction.NORTH))
+        game.move(RobotRebootActionLegacy(0, Direction.NORTH))
         self.assertEqual(robots, game.robots)
 
     def test_move_north_when_not_blocking_wall_on_robot_pos(self):
@@ -272,7 +272,7 @@ class TestRobotRebootGame(unittest.TestCase):
             maze.cells[robot_pos] = wall
             robots = [robot_pos]
             game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-            game.move(RobotRebootAction(0, direction))
+            game.move(RobotRebootActionLegacy(0, direction))
             self.assertEqual([(0, 0)], game.robots)
 
     def test_move_north_when_north_wall_on_the_way(self):
@@ -285,7 +285,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(4, 0)]
         game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-        game.move(RobotRebootAction(0, Direction.NORTH))
+        game.move(RobotRebootActionLegacy(0, Direction.NORTH))
         self.assertEqual([(2, 0)], game.robots)
 
     def test_move_north_when_south_wall_on_the_way(self):
@@ -298,7 +298,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(4, 0)]
         game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-        game.move(RobotRebootAction(0, Direction.NORTH))
+        game.move(RobotRebootActionLegacy(0, Direction.NORTH))
         self.assertEqual([(3, 0)], game.robots)
 
     def test_move_south(self):
@@ -311,7 +311,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(0, 0)]
         game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-        game.move(RobotRebootAction(0, Direction.SOUTH))
+        game.move(RobotRebootActionLegacy(0, Direction.SOUTH))
         self.assertEqual([(4, 0)], game.robots)
 
     def test_move_south_when_south_wall_on_robot_pos(self):
@@ -324,7 +324,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(0, 0)]
         game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-        game.move(RobotRebootAction(0, Direction.NORTH))
+        game.move(RobotRebootActionLegacy(0, Direction.NORTH))
         self.assertEqual(robots, game.robots)
 
     def test_move_south_when_not_blocking_wall_on_robot_pos(self):
@@ -342,7 +342,7 @@ class TestRobotRebootGame(unittest.TestCase):
             maze.cells[robot_pos] = wall
             robots = [robot_pos]
             game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-            game.move(RobotRebootAction(0, direction))
+            game.move(RobotRebootActionLegacy(0, direction))
             self.assertEqual([(4, 0)], game.robots)
 
     def test_move_south_when_north_wall_on_the_way(self):
@@ -355,7 +355,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(0, 0)]
         game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-        game.move(RobotRebootAction(0, Direction.SOUTH))
+        game.move(RobotRebootActionLegacy(0, Direction.SOUTH))
         self.assertEqual([(1, 0)], game.robots)
 
     def test_move_south_when_south_wall_on_the_way(self):
@@ -368,7 +368,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(0, 0)]
         game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-        game.move(RobotRebootAction(0, Direction.SOUTH))
+        game.move(RobotRebootActionLegacy(0, Direction.SOUTH))
         self.assertEqual([(2, 0)], game.robots)
 
     def test_move_east(self):
@@ -379,7 +379,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(1, 0)]
         game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-        game.move(RobotRebootAction(0, Direction.EAST))
+        game.move(RobotRebootActionLegacy(0, Direction.EAST))
         self.assertEqual([(1, 4)], game.robots)
 
     def test_move_east_when_east_wall_on_robot_pos(self):
@@ -390,7 +390,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(1, 0)]
         game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-        game.move(RobotRebootAction(0, Direction.EAST))
+        game.move(RobotRebootActionLegacy(0, Direction.EAST))
         self.assertEqual(robots, game.robots)
 
     def test_move_east_when_not_blocking_wall_on_robot_pos(self):
@@ -406,7 +406,7 @@ class TestRobotRebootGame(unittest.TestCase):
             maze.cells[robot_pos] = wall
             robots = [robot_pos]
             game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-            game.move(RobotRebootAction(0, direction))
+            game.move(RobotRebootActionLegacy(0, direction))
             self.assertEqual([(1, 4)], game.robots)
 
     def test_move_east_when_east_wall_on_the_way(self):
@@ -417,7 +417,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(1, 0)]
         game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-        game.move(RobotRebootAction(0, Direction.EAST))
+        game.move(RobotRebootActionLegacy(0, Direction.EAST))
         self.assertEqual([(1, 2)], game.robots)
 
     def test_move_east_when_west_wall_on_the_way(self):
@@ -428,7 +428,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(1, 0)]
         game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-        game.move(RobotRebootAction(0, Direction.EAST))
+        game.move(RobotRebootActionLegacy(0, Direction.EAST))
         self.assertEqual([(1, 1)], game.robots)
 
     def test_move_west(self):
@@ -439,7 +439,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(1, 4)]
         game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-        game.move(RobotRebootAction(0, Direction.WEST))
+        game.move(RobotRebootActionLegacy(0, Direction.WEST))
         self.assertEqual([(1, 0)], game.robots)
 
     def test_move_west_when_west_wall_on_robot_pos(self):
@@ -450,7 +450,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(1, 4)]
         game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-        game.move(RobotRebootAction(0, Direction.EAST))
+        game.move(RobotRebootActionLegacy(0, Direction.EAST))
         self.assertEqual(robots, game.robots)
 
     def test_move_west_when_not_blocking_wall_on_robot_pos(self):
@@ -466,7 +466,7 @@ class TestRobotRebootGame(unittest.TestCase):
             maze.cells[robot_pos] = wall
             robots = [robot_pos]
             game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-            game.move(RobotRebootAction(0, direction))
+            game.move(RobotRebootActionLegacy(0, direction))
             self.assertEqual([(1, 0)], game.robots)
 
     def test_move_west_when_east_wall_on_the_way(self):
@@ -477,7 +477,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(1, 4)]
         game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-        game.move(RobotRebootAction(0, Direction.WEST))
+        game.move(RobotRebootActionLegacy(0, Direction.WEST))
         self.assertEqual([(1, 3)], game.robots)
 
     def test_move_west_when_west_wall_on_the_way(self):
@@ -488,7 +488,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(1, 4)]
         game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-        game.move(RobotRebootAction(0, Direction.WEST))
+        game.move(RobotRebootActionLegacy(0, Direction.WEST))
         self.assertEqual([(1, 2)], game.robots)
 
     def test_is_robot_on(self):
@@ -514,7 +514,7 @@ class TestRobotRebootGame(unittest.TestCase):
         robots = [(0, 3), [1, 4], [2, 1]]
         game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
         self.assertFalse(game.is_over())
-        game.move(RobotRebootAction(0, Direction.WEST))
+        game.move(RobotRebootActionLegacy(0, Direction.WEST))
         self.assertTrue(game.is_over())
 
     def test_score_win(self):
@@ -525,7 +525,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(0, 3), [1, 4], [2, 1]]
         game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-        game.move(RobotRebootAction(0, Direction.WEST))
+        game.move(RobotRebootActionLegacy(0, Direction.WEST))
         self.assertEqual(1, game.score())
 
     def test_score_loss(self):
@@ -536,7 +536,7 @@ class TestRobotRebootGame(unittest.TestCase):
         ]))
         robots = [(0, 3), [1, 4], [2, 1]]
         game = RobotRebootGame(maze, robots.copy(), RobotRebootGoal(0, (0, 0)))
-        game.move(RobotRebootAction(0, Direction.SOUTH))
+        game.move(RobotRebootActionLegacy(0, Direction.SOUTH))
         self.assertEqual(0, game.score())
 
     def test_state_when_game_not_over(self):
