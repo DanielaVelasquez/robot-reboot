@@ -9,6 +9,12 @@ class Direction(Enum):
     WEST = 4
 
 
+def valid_maze(n_robots, maze):
+    robot_cells = [i * 2 for i in range(int(n_robots/2) + 1)]
+    cells = maze[:, robot_cells][robot_cells, :]
+    return np.all(cells == 0)
+
+
 class Maze:
     NORTH_WALL = 1
     EAST_WALL = 2
