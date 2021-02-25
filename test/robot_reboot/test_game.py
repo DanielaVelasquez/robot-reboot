@@ -1,15 +1,17 @@
 import unittest
-from unittest.mock import Mock
+
 import numpy as np
 
-from src.robot_reboot.game import RobotRebootGame, Direction
+from src.robot_reboot.game import RobotRebootGame, Direction, RobotRebootGoalHouse
 
 
 class TestGame(unittest.TestCase):
     def test_init(self):
+        house = RobotRebootGoalHouse(1, (0, 0))
         maze = np.array([[0, 2, 0], [4, 5, 6], [0, 8, 0]])
-        g = RobotRebootGame(2, maze)
+        g = RobotRebootGame(2, maze, house)
         self.assertEqual(g.n_robots, 2)
+        self.assertEqual(g.goal_house, house)
         np.testing.assert_equal(g.maze, maze)
         directions = [d for d in Direction]
         self.assertEqual(len(g.actions), 8)
@@ -39,11 +41,26 @@ class TestGame(unittest.TestCase):
         self.assertEqual(g.actions[7].direction, directions[3])
 
     def test_init_fails_when_n_robots_is_zero(self):
-        self.assertRaises(AssertionError, lambda: RobotRebootGame(0, Mock()))
+        house = RobotRebootGoalHouse(1, (0, 0))
+        maze = np.array([[0, 2, 0], [4, 5, 6], [0, 8, 0]])
+        self.assertRaises(AssertionError, lambda: RobotRebootGame(0, maze, house))
 
     def test_init_fails_when_n_robots_is_below_zero(self):
-        self.assertRaises(AssertionError, lambda: RobotRebootGame(-1, Mock()))
+        house = RobotRebootGoalHouse(1, (0, 0))
+        maze = np.array([[0, 2, 0], [4, 5, 6], [0, 8, 0]])
+        self.assertRaises(AssertionError, lambda: RobotRebootGame(-1, maze, house))
 
     def test_init_fails_when_maze_has_walls_on_robot_cells(self):
+        house = RobotRebootGoalHouse(1, (0, 0))
         maze = np.array([[1, 2, 0], [4, 5, 6], [0, 8, 0]])
-        self.assertRaises(AssertionError, lambda: RobotRebootGame(0, maze))
+        self.assertRaises(AssertionError, lambda: RobotRebootGame(0, maze, house))
+
+    def test_init_fails_when_house_row_out_maze(self):
+        house = RobotRebootGoalHouse(1, (4, 0))
+        maze = np.array([[0, 2, 0], [4, 5, 6], [0, 8, 0]])
+        self.assertRaises(AssertionError, lambda: RobotRebootGame(0, maze, house))
+
+    def test_init_fails_when_house_column_out_maze(self):
+        house = RobotRebootGoalHouse(1, (0, 4))
+        maze = np.array([[0, 2, 0], [4, 5, 6], [0, 8, 0]])
+        self.assertRaises(AssertionError, lambda: RobotRebootGame(0, maze, house))

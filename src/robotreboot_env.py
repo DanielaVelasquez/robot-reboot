@@ -40,7 +40,7 @@ class RobotRebootEnv(gym.Env):
         else:
             if (prev_state == state).all():
                 reward += RobotRebootEnv.SAME_STATE_PUNISHMENT
-            elif robot_id == self.robot_reboot.goal.robot_id:
+            elif robot_id == self.robot_reboot.goal_house.robot_id:
                 reward += RobotRebootEnv.MOVING_GOAL_ROBOT_REWARD
             reward += RobotRebootEnv.MOVEMENT_PUNISHMENT
         info = {}
