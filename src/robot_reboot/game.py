@@ -2,25 +2,8 @@ from src.alphazero.game import Game
 from src.robot_reboot.action import RobotRebootAction
 from src.robot_reboot.state import RobotRebootState
 from src.robot_reboot.util import Direction
+from .goal_house import RobotRebootGoalHouse
 from .util import valid_maze
-
-
-class RobotRebootGoalHouse:
-
-    def __init__(self, robot, pos: tuple):
-        self.__robot = robot
-        self.__house = pos
-
-    @property
-    def robot(self):
-        return self.__robot
-
-    @property
-    def house(self):
-        return self.__house
-
-    def __str__(self):
-        return f'Robot {self.robot} on house {self.house}'
 
 
 class RobotRebootGame(Game):
