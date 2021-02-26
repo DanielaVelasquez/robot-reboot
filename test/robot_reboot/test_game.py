@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from src.robot_reboot.game import RobotRebootGame, Direction, RobotRebootGoalHouse
+from src.robot_reboot.game import RobotRebootGame, Direction, RobotRebootGoalHouse, RobotRebootState
 
 
 class TestGame(unittest.TestCase):
@@ -64,3 +64,45 @@ class TestGame(unittest.TestCase):
         house = RobotRebootGoalHouse(1, (0, 4))
         maze = np.array([[0, 2, 0], [4, 5, 6], [0, 8, 0]])
         self.assertRaises(AssertionError, lambda: RobotRebootGame(0, maze, house))
+
+    def test_get_value_when_robot_reached_its_house(self):
+        """
+                |  R1 |      |  R2 |
+                |     |      |     |
+                |     |      |     |
+        """
+        house = (0, 0)
+        house = RobotRebootGoalHouse(0, house)
+        maze = np.array([[0, 1, 0], [0, 1, 0], [0, 1, 0]])
+        game = RobotRebootGame(2, maze, house)
+
+        s = RobotRebootState(game, [house, (0, 2)], sequence_i=1)
+        self.assertEqual(game.get_value(s), 1)
+
+    def test_get_value_when_none_robot_reached_goal_house(self):
+        """
+                |     |      |  R2 |
+                |     |      |     |
+                |     |      |  R1 |
+        """
+        house = (0, 0)
+        house = RobotRebootGoalHouse(0, house)
+        maze = np.array([[0, 1, 0], [0, 1, 0], [0, 1, 0]])
+        game = RobotRebootGame(2, maze, house)
+
+        s = RobotRebootState(game, [(2, 2), (0, 2)], sequence_i=1)
+        self.assertEqual(game.get_value(s), 0)
+
+    def test_get_value_when_wrong_robot_reached_goal_house(self):
+        """
+                |  R2 |      |  R1 |
+                |     |      |     |
+                |     |      |     |
+        """
+        house = (0, 0)
+        house = RobotRebootGoalHouse(0, house)
+        maze = np.array([[0, 1, 0], [0, 1, 0], [0, 1, 0]])
+        game = RobotRebootGame(2, maze, house)
+
+        s = RobotRebootState(game, [(0, 2), house], sequence_i=1)
+        self.assertEqual(game.get_value(s), 0)

@@ -1,4 +1,3 @@
-from .robot_reboot_game_legacy import RobotRebootGameLegacy, RobotRebootGoalLegacy
 from ..alphazero.state import State
 
 
@@ -10,7 +9,7 @@ class RobotRebootState(State):
                                  each index in the list represents a robot
     """
 
-    def __init__(self, game: RobotRebootGameLegacy, robots_positions, sequence_i=0):
+    def __init__(self, game, robots_positions, sequence_i=0):
         """ Initializes a robot reboot state
         Args:
             sequence_i       (int):  Moment in time where the state occurred i.e 0  it's how the game started
