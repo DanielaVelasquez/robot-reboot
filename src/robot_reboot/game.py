@@ -51,7 +51,7 @@ class RobotRebootGame(Game):
         return 0
 
     def is_over(self, state: RobotRebootState):
-        pass
+        return state.robots_positions[self.__goal_house.robot_id] == self.__goal_house.house
 
     def get_score(self, state: RobotRebootState):
         pass

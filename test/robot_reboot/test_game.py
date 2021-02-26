@@ -106,3 +106,45 @@ class TestGame(unittest.TestCase):
 
         s = RobotRebootState(game, [(0, 2), house_pos])
         self.assertEqual(0, game.get_value(s))
+
+    def test_is_over_when_robot_reached_its_house(self):
+        """
+                |  R1 |      |  R2 |
+                |     |      |     |
+                |     |      |     |
+        """
+        house_pos = (0, 0)
+        house = RobotRebootGoalHouse(0, house_pos)
+        maze = np.array([[0, 1, 0], [0, 1, 0], [0, 1, 0]])
+        game = RobotRebootGame(2, maze, house)
+
+        s = RobotRebootState(game, [house_pos, (0, 2)])
+        self.assertTrue(game.is_over(s))
+
+    def test_is_over_when_no_robot_reached_goal_house(self):
+        """
+                |     |      |  R2 |
+                |     |      |     |
+                |     |      |  R1 |
+        """
+        house_pos = (0, 0)
+        house = RobotRebootGoalHouse(0, house_pos)
+        maze = np.array([[0, 1, 0], [0, 1, 0], [0, 1, 0]])
+        game = RobotRebootGame(2, maze, house)
+
+        s = RobotRebootState(game, [(2, 2), (0, 2)])
+        self.assertFalse(game.is_over(s))
+
+    def test_is_over_when_wrong_robot_reached_goal_house(self):
+        """
+                |  R2 |      |  R1 |
+                |     |      |     |
+                |     |      |     |
+        """
+        house_pos = (0, 0)
+        house = RobotRebootGoalHouse(0, house_pos)
+        maze = np.array([[0, 1, 0], [0, 1, 0], [0, 1, 0]])
+        game = RobotRebootGame(2, maze, house)
+
+        s = RobotRebootState(game, [(0, 2), house_pos])
+        self.assertFalse(game.is_over(s))
