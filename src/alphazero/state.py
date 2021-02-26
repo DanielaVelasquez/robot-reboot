@@ -16,6 +16,7 @@ class State(ABC):
             game       (Game): Game that the state belongs to
             sequence_i (int):  Moment in time where the state occurred i.e 0  it's how the game started
         """
+        assert sequence_i >= 0, f"sequence_i: {sequence_i} must be a positive number"
         self.__game = game
         self.__sequence_i = sequence_i
 

@@ -18,6 +18,9 @@ class TestRobotRebootState(unittest.TestCase):
     def test_init_fails_when_empty_list_robot_positions(self):
         self.assertRaises(AssertionError, lambda: RobotRebootState(Mock(), []))
 
+    def test_init_fails_when_sequence_i_below_zero(self):
+        self.assertRaises(AssertionError, lambda: RobotRebootState(Mock(), [(0, 2), (4, 6)], sequence_i=-1))
+
     def test_str(self):
         s = RobotRebootState(Mock(), [(0, 2), (4, 6)])
         self.assertEqual(str(s), '[(0, 2), (4, 6)]')

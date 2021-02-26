@@ -148,3 +148,19 @@ class TestGame(unittest.TestCase):
 
         s = RobotRebootState(game, [(0, 2), house_pos])
         self.assertFalse(game.is_over(s))
+
+    def test_get_score_for_root_state(self):
+        house = RobotRebootGoalHouse(0, (0, 0))
+        maze = np.array([[0, 1, 0], [0, 1, 0], [0, 1, 0]])
+        game = RobotRebootGame(2, maze, house)
+
+        s = RobotRebootState(game, [(0, 2), (2, 2)])
+        self.assertEqual(0, game.get_score(s))
+
+    def test_get_score_for_state_with_sequence_value(self):
+        house = RobotRebootGoalHouse(0, (0, 0))
+        maze = np.array([[0, 1, 0], [0, 1, 0], [0, 1, 0]])
+        game = RobotRebootGame(2, maze, house)
+
+        s = RobotRebootState(game, [(0, 2), (2, 2)], sequence_i=20)
+        self.assertEqual(-20, game.get_score(s))

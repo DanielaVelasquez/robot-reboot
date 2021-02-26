@@ -54,7 +54,7 @@ class RobotRebootGame(Game):
         return state.robots_positions[self.__goal_house.robot_id] == self.__goal_house.house
 
     def get_score(self, state: RobotRebootState):
-        pass
+        return state.sequence_i * -1
 
     def apply(self, action: RobotRebootAction, state: RobotRebootState):
         pass
