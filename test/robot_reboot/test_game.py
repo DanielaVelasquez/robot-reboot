@@ -71,27 +71,27 @@ class TestGame(unittest.TestCase):
                 |     |      |     |
                 |     |      |     |
         """
-        house = (0, 0)
-        house = RobotRebootGoalHouse(0, house)
+        house_pos = (0, 0)
+        house = RobotRebootGoalHouse(0, house_pos)
         maze = np.array([[0, 1, 0], [0, 1, 0], [0, 1, 0]])
         game = RobotRebootGame(2, maze, house)
 
-        s = RobotRebootState(game, [house, (0, 2)], sequence_i=1)
-        self.assertEqual(game.get_value(s), 1)
+        s = RobotRebootState(game, [house_pos, (0, 2)])
+        self.assertEqual(1, game.get_value(s))
 
-    def test_get_value_when_none_robot_reached_goal_house(self):
+    def test_get_value_when_no_robot_reached_goal_house(self):
         """
                 |     |      |  R2 |
                 |     |      |     |
                 |     |      |  R1 |
         """
-        house = (0, 0)
-        house = RobotRebootGoalHouse(0, house)
+        house_pos = (0, 0)
+        house = RobotRebootGoalHouse(0, house_pos)
         maze = np.array([[0, 1, 0], [0, 1, 0], [0, 1, 0]])
         game = RobotRebootGame(2, maze, house)
 
-        s = RobotRebootState(game, [(2, 2), (0, 2)], sequence_i=1)
-        self.assertEqual(game.get_value(s), 0)
+        s = RobotRebootState(game, [(2, 2), (0, 2)])
+        self.assertEqual(0, game.get_value(s))
 
     def test_get_value_when_wrong_robot_reached_goal_house(self):
         """
@@ -99,10 +99,10 @@ class TestGame(unittest.TestCase):
                 |     |      |     |
                 |     |      |     |
         """
-        house = (0, 0)
-        house = RobotRebootGoalHouse(0, house)
+        house_pos = (0, 0)
+        house = RobotRebootGoalHouse(0, house_pos)
         maze = np.array([[0, 1, 0], [0, 1, 0], [0, 1, 0]])
         game = RobotRebootGame(2, maze, house)
 
-        s = RobotRebootState(game, [(0, 2), house], sequence_i=1)
-        self.assertEqual(game.get_value(s), 0)
+        s = RobotRebootState(game, [(0, 2), house_pos])
+        self.assertEqual(0, game.get_value(s))
