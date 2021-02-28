@@ -1,7 +1,7 @@
 from src.alphazero.game import Game
 from src.robot_reboot.action import RobotRebootAction
 from src.robot_reboot.state import RobotRebootState
-from src.robot_reboot.util import Direction
+from .direction import Direction
 from .goal_house import RobotRebootGoalHouse
 from .util import valid_maze
 
@@ -25,7 +25,8 @@ class RobotRebootGame(Game):
             goal_house     (RobotRebootGoalHouse): robot that needs to get to its house
         """
         assert n_robots > 0, "n_robots should be greater than zero"
-        assert valid_maze(n_robots, maze), "Maze is invalid"
+        assert valid_maze(n_robots, maze), "Maze is invalid, check only walls and empty cells are display and that" \
+                                           "walls are depicted in the designated cells, i.e even rows and columns"
         assert goal_house.house[0] < maze.shape[0], "goal house row out of the maze"
         assert goal_house.house[1] < maze.shape[1], "goal house column out of the maze"
         Game.__init__(self, [RobotRebootAction(r, d) for r in range(n_robots) for d in Direction])

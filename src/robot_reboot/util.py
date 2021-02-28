@@ -1,18 +1,17 @@
 import numpy as np
-from enum import Enum
 
-
-class Direction(Enum):
-    NORTH = 1
-    EAST = 2
-    SOUTH = 3
-    WEST = 4
+from src.robot_reboot.direction import Direction
+from src.robot_reboot.maze_cell_type import MazeCellType
 
 
 def valid_maze(n_robots, maze):
-    robot_cells = [i * 2 for i in range(int(n_robots/2) + 1)]
+    robot_cells = [i * 2 for i in range(int(n_robots / 2) + 1)]
     cells = maze[:, robot_cells][robot_cells, :]
-    return np.all(cells == 0)
+    return np.all(cells == MazeCellType.EMPTY.value) and maze_only_walls_empty_cells(maze)
+
+
+def maze_only_walls_empty_cells(maze):
+    return np.all(np.logical_or(maze == MazeCellType.EMPTY.value,maze == MazeCellType.WALL.value))
 
 
 class Maze:

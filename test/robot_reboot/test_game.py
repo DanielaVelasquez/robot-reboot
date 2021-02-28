@@ -8,7 +8,7 @@ from src.robot_reboot.game import RobotRebootGame, Direction, RobotRebootGoalHou
 class TestGame(unittest.TestCase):
     def test_init(self):
         house = RobotRebootGoalHouse(1, (0, 0))
-        maze = np.array([[0, 2, 0], [4, 5, 6], [0, 8, 0]])
+        maze = np.array([[0, 1, 0], [0, 1, 0], [0, 1, 0]])
         g = RobotRebootGame(2, maze, house)
         self.assertEqual(g.n_robots, 2)
         self.assertEqual(g.goal_house, house)

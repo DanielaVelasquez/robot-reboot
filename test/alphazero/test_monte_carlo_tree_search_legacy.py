@@ -4,7 +4,7 @@ from unittest.mock import Mock
 from src.alphazero.monte_carlo_tree_search_legacy import MonteCarloTreeSearchLegacy
 
 
-class TestMonteCarloTreeSearchLegacy(unittest.TestCase):
+class MonteCarloTreeSearchLegacy(unittest.TestCase):
 
     def test_playout_value_when_game_is_over(self):
         mock_game = Mock()
