@@ -27,7 +27,7 @@ class FakeAction(Action):
 class FakeState(State):
 
     def __init__(self, sequence_i, game, value):
-        State.__init__(self, sequence_i, game)
+        State.__init__(self, game, sequence_i)
         self.__value = value
 
     @property
