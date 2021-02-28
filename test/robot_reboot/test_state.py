@@ -24,3 +24,11 @@ class TestRobotRebootState(unittest.TestCase):
     def test_str(self):
         s = RobotRebootState(Mock(), [(0, 2), (4, 6)])
         self.assertEqual(str(s), '[(0, 2), (4, 6)]')
+
+    def test_is_robot__on_returns_true_when_robot_on_position(self):
+        s = RobotRebootState(Mock(), [(0, 2), (4, 6)])
+        self.assertTrue(s.is_robot_on((4, 6)))
+
+    def test_is_robot__on_returns_false_when_no_robot_on_position(self):
+        s = RobotRebootState(Mock(), [(0, 2), (4, 6)])
+        self.assertFalse(s.is_robot_on((5, 6)))

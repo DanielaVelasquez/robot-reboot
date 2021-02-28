@@ -25,5 +25,8 @@ class RobotRebootState(State):
     def robots_positions(self):
         return self.__robots_positions
 
+    def is_robot_on(self, pos):
+        return len([r for r in self.__robots_positions if r == pos]) != 0
+
     def __str__(self):
         return f'{self.__robots_positions}'
