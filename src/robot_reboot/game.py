@@ -62,7 +62,8 @@ class RobotRebootGame(Game):
         return state.sequence_i * -1
 
     def apply(self, action: RobotRebootAction, state: RobotRebootState):
-        robot_x, robot_y = state.robots_positions[action.robot_id]
+        pos = state.robots_positions[action.robot_id]
+        robot_x, robot_y = pos
         rows, cols = self.__maze.shape
         if action.direction == Direction.NORTH:
             walls = np.argwhere(self.__maze[:robot_x, robot_y] == MazeCellType.WALL.value)
@@ -72,6 +73,9 @@ class RobotRebootGame(Game):
                 return RobotRebootState(self, robots_positions, state.sequence_i + 1)
             else:
                 new_x = walls[walls.size - 1][0] + 1
+                new_pos = (new_x, robot_y)
+                if state.is_robot_on(new_pos) and new_pos != pos:
+                    new_x += 2
                 robots_positions = state.robots_positions.copy()
                 robots_positions[action.robot_id] = (new_x, robot_y)
                 return RobotRebootState(self, robots_positions, state.sequence_i + 1)
@@ -83,6 +87,9 @@ class RobotRebootGame(Game):
                 return RobotRebootState(self, robots_positions, state.sequence_i + 1)
             else:
                 new_x = walls[0][0] + robot_x
+                new_pos = (new_x, robot_y)
+                if state.is_robot_on((new_x, robot_y)) and new_pos != pos:
+                    new_x -= 2
                 robots_positions = state.robots_positions.copy()
                 robots_positions[action.robot_id] = (new_x, robot_y)
                 return RobotRebootState(self, robots_positions, state.sequence_i + 1)
@@ -94,6 +101,9 @@ class RobotRebootGame(Game):
                 return RobotRebootState(self, robots_positions, state.sequence_i + 1)
             else:
                 new_y = walls[walls.size - 1][0] + 1
+                new_pos = (robot_x, new_y)
+                if state.is_robot_on(new_pos) and new_pos != pos:
+                    new_y += 2
                 robots_positions = state.robots_positions.copy()
                 robots_positions[action.robot_id] = (robot_x, new_y)
                 return RobotRebootState(self, robots_positions, state.sequence_i + 1)
@@ -105,6 +115,9 @@ class RobotRebootGame(Game):
                 return RobotRebootState(self, robots_positions, state.sequence_i + 1)
             else:
                 new_y = walls[0][0] + robot_y
+                new_pos = (robot_x, new_y)
+                if state.is_robot_on(new_pos) and new_pos != pos:
+                    new_y -= 2
                 robots_positions = state.robots_positions.copy()
                 robots_positions[action.robot_id] = (robot_x, new_y)
                 return RobotRebootState(self, robots_positions, state.sequence_i + 1)
