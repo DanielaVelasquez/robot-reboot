@@ -1,9 +1,12 @@
+import numpy as np
+
 from src.alphazero.game import Game
 from src.robot_reboot.action import RobotRebootAction
 from src.robot_reboot.state import RobotRebootState
 from .direction import Direction
 from .goal_house import RobotRebootGoalHouse
 from .util import valid_maze
+from .maze_cell_type import MazeCellType
 
 
 class RobotRebootGame(Game):
@@ -29,6 +32,7 @@ class RobotRebootGame(Game):
                                            "walls are depicted in the designated cells, i.e even rows and columns"
         assert goal_house.house[0] < maze.shape[0], "goal house row out of the maze"
         assert goal_house.house[1] < maze.shape[1], "goal house column out of the maze"
+        # TODO ASSERT AGAINS MAZE MUST BE UNEVEN AND SQUARE
         Game.__init__(self, [RobotRebootAction(r, d) for r in range(n_robots) for d in Direction])
         self.__n_robots = n_robots
         self.__maze = maze
@@ -58,4 +62,51 @@ class RobotRebootGame(Game):
         return state.sequence_i * -1
 
     def apply(self, action: RobotRebootAction, state: RobotRebootState):
-        pass
+        robot_x, robot_y = state.robots_positions[action.robot_id]
+        rows, cols = self.__maze.shape
+        if action.direction == Direction.NORTH:
+            walls = np.argwhere(self.__maze[:robot_x, robot_y] == MazeCellType.WALL.value)
+            if walls.size == 0:
+                robots_positions = state.robots_positions.copy()
+                robots_positions[action.robot_id] = (0, robot_y)
+                return RobotRebootState(self, robots_positions, state.sequence_i + 1)
+            else:
+                new_x = walls[walls.size - 1][0] + 1
+                robots_positions = state.robots_positions.copy()
+                robots_positions[action.robot_id] = (new_x, robot_y)
+                return RobotRebootState(self, robots_positions, state.sequence_i + 1)
+        elif action.direction == Direction.SOUTH:
+            walls = np.argwhere(self.__maze[robot_x + 1:, robot_y] == MazeCellType.WALL.value)
+            if walls.size == 0:
+                robots_positions = state.robots_positions.copy()
+                robots_positions[action.robot_id] = (rows - 1, robot_y)
+                return RobotRebootState(self, robots_positions, state.sequence_i + 1)
+            else:
+                new_x = walls[0][0] + robot_x
+                robots_positions = state.robots_positions.copy()
+                robots_positions[action.robot_id] = (new_x, robot_y)
+                return RobotRebootState(self, robots_positions, state.sequence_i + 1)
+        elif action.direction == Direction.WEST:
+            walls = np.argwhere(self.__maze[robot_x, :robot_y] == MazeCellType.WALL.value)
+            if walls.size == 0:
+                robots_positions = state.robots_positions.copy()
+                robots_positions[action.robot_id] = (robot_x, 0)
+                return RobotRebootState(self, robots_positions, state.sequence_i + 1)
+            else:
+                new_y = walls[walls.size - 1][0] + 1
+                robots_positions = state.robots_positions.copy()
+                robots_positions[action.robot_id] = (robot_x, new_y)
+                return RobotRebootState(self, robots_positions, state.sequence_i + 1)
+        elif action.direction == Direction.EAST:
+            walls = np.argwhere(self.__maze[robot_x, robot_y + 1:] == MazeCellType.WALL.value)
+            if walls.size == 0:
+                robots_positions = state.robots_positions.copy()
+                robots_positions[action.robot_id] = (robot_x, cols - 1)
+                return RobotRebootState(self, robots_positions, state.sequence_i + 1)
+            else:
+                new_y = walls[0][0] + robot_y
+                robots_positions = state.robots_positions.copy()
+                robots_positions[action.robot_id] = (robot_x, new_y)
+                return RobotRebootState(self, robots_positions, state.sequence_i + 1)
+        else:
+            raise Exception("Unsupported direction")
