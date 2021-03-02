@@ -14,50 +14,6 @@ def maze_only_walls_empty_cells(maze):
     return np.all(np.logical_or(maze == MazeCellType.EMPTY.value,maze == MazeCellType.WALL.value))
 
 
-class Maze:
-    NORTH_WALL = 1
-    EAST_WALL = 2
-    SOUTH_WALL = 4
-    WEST_WALL = 8
-    EMPTY = 0
-
-    WALLS = [NORTH_WALL, EAST_WALL, SOUTH_WALL, WEST_WALL]
-
-    def __init__(self, cells: np.array):
-        self.cells = cells
-        self.size = cells.shape
-
-    @property
-    def height(self):
-        return int(self.size[1])
-
-    @property
-    def width(self):
-        return int(self.size[0])
-
-
-def get_movement_same_direction_for_wall(wall):
-    if wall == Maze.NORTH_WALL:
-        return Direction.NORTH
-    elif wall == Maze.SOUTH_WALL:
-        return Direction.SOUTH
-    elif wall == Maze.EAST_WALL:
-        return Direction.EAST
-    elif wall == Maze.WEST_WALL:
-        return Direction.WEST
-    else:
-        raise Exception("Invalid wall value")
-
-
-def get_wall_at_direction(direction: Direction):
-    if direction == direction.NORTH:
-        return Maze.NORTH_WALL
-    elif direction == direction.SOUTH:
-        return Maze.SOUTH_WALL
-    elif direction == direction.WEST:
-        return Maze.WEST_WALL
-    elif direction == direction.EAST:
-        return Maze.EAST_WALL
 
 
 def get_opposite_direction(movement: Direction):
@@ -103,9 +59,3 @@ def get_cell_at(direction: Direction, position: tuple, max_rows, max_cols):
         raise Exception("Not cell available")
 
 
-def get_not_blocking_walls_when_robot_on_cell_moving_to(direction: Direction):
-    return [wall for wall in Maze.WALLS if wall != get_wall_at_direction(direction)]
-
-
-def calculate_size_with_walls(size):
-    return 2 * size - 1
