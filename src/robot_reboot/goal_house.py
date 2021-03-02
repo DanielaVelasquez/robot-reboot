@@ -1,3 +1,7 @@
+from src.robot_reboot.goals_house_exceptions import InvalidRobotIdException
+from src.util.util import assertOrThrow
+
+
 class RobotRebootGoalHouse:
     """Goal of a robot reboot game, taking a robot to its house that is in a position of the maze
     Attributes:
@@ -11,6 +15,7 @@ class RobotRebootGoalHouse:
            robot_id (int):   robot identifier that needs to get home
            house    (tuple): position (x,y) where the robot's house is located in the maze
         """
+        assertOrThrow(robot_id >= 0, InvalidRobotIdException())
         self.__robot_id = robot_id
         self.__house = house
 
