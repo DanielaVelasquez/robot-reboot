@@ -3,7 +3,7 @@ import numpy as np
 from src.alphazero.game import Game
 from src.robot_reboot.action import RobotRebootAction
 from src.robot_reboot.state import RobotRebootState
-from src.util.util import assertOrThrow
+from src.exceptions.util import assertOrThrow
 from .direction import Direction
 from src.exceptions.robot_reboot.game import NoRobotsGameException, InvalidMazeException, RobotHouseOutOfMazeBoundsException, \
     MazeNotSquareException, MazeSizeInvalidException, RobotHouseInvalidRobotIdException
