@@ -1,4 +1,4 @@
-from .exceptions import RequiredValueException
+from exceptions.exceptions import RequiredValueException
 from ..alphazero.action import Action
 from exceptions.util import assertOrThrow
 

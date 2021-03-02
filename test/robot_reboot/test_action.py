@@ -1,6 +1,6 @@
 import unittest
 from src.robot_reboot.action import RobotRebootAction
-from src.robot_reboot.exceptions import RequiredValueException
+from exceptions.exceptions import RequiredValueException
 from src.robot_reboot.util import Direction
 
 
