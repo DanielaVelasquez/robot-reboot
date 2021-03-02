@@ -20,7 +20,7 @@ class RobotRebootState(State):
         assert len(robots_positions) != 0, "Robots position must be provided"
         assert len([rp for rp in robots_positions if rp[0] < 0 or rp[
             1] < 0]) == 0, "Robot positions can be negative values"
-        assert len([rp for rp in robots_positions if rp[0] < game.maze.shape[0] and rp[1] < game.maze.shape[
+        assert len([rp for rp in robots_positions if rp[0] >= game.maze.shape[0] or rp[1] >= game.maze.shape[
             1]]) == 0, "All robot positions must be inside of the maze bounds"
         State.__init__(self, game, sequence_i)
         self.__robots_positions = robots_positions
