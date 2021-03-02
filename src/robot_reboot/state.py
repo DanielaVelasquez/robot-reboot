@@ -1,4 +1,7 @@
+from .state_exceptions import EmptyRobotsPositionException, InvalidRobotsPositionException, \
+    RobotsPositionOutOfMazeBoundsException
 from ..alphazero.state import State
+from ..util.util import assertOrThrow
 
 
 class RobotRebootState(State):
@@ -17,11 +20,11 @@ class RobotRebootState(State):
             robots_positions (list): list of (x,y) values defining where a robot is on the maze
                                      each index in the list represents a robot
         """
-        assert len(robots_positions) != 0, "Robots position must be provided"
-        assert len([rp for rp in robots_positions if rp[0] < 0 or rp[
-            1] < 0]) == 0, "Robot positions can be negative values"
-        assert len([rp for rp in robots_positions if rp[0] >= game.maze.shape[0] or rp[1] >= game.maze.shape[
-            1]]) == 0, "All robot positions must be inside of the maze bounds"
+        assertOrThrow(len(robots_positions) != 0, EmptyRobotsPositionException)
+        assertOrThrow(len([rp for rp in robots_positions if rp[0] < 0 or rp[1] < 0]) == 0,
+                      InvalidRobotsPositionException())
+        assertOrThrow(len([rp for rp in robots_positions if rp[0] >= game.maze.shape[0] or rp[1] >= game.maze.shape[
+            1]]) == 0, RobotsPositionOutOfMazeBoundsException())
         State.__init__(self, game, sequence_i)
         self.__robots_positions = robots_positions
 
