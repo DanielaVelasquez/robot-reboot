@@ -3,6 +3,8 @@ from unittest.mock import Mock
 
 import numpy as np
 
+from exceptions.alphazero.monte_carlo_tree_search import InvalidDepthException, InvalidPlayoutException
+from exceptions.exceptions import RequiredValueException
 from src.alphazero.action import Action
 from src.alphazero.game import Game
 from src.alphazero.game_player import GamePlayer
@@ -125,24 +127,28 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         mock_game_player = Mock()
         MonteCarloTreeSearch(Mock(), 1, mock_game_player, playouts=1)
 
+    def test_init_fails_when_heuristic_fn_is_none(self):
+        mock_game_player = Mock()
+        self.assertRaises(RequiredValueException, lambda: MonteCarloTreeSearch(None, 1, mock_game_player))
+
     def test_init_fails_when_max_depth_is_zero(self):
         mock_game_player = Mock()
-        self.assertRaises(AssertionError, lambda: MonteCarloTreeSearch(Mock(), 0, mock_game_player))
+        self.assertRaises(InvalidDepthException, lambda: MonteCarloTreeSearch(Mock(), 0, mock_game_player))
 
     def test_init_fails_when_max_depth_is_below_zero(self):
         mock_game_player = Mock()
-        self.assertRaises(AssertionError, lambda: MonteCarloTreeSearch(Mock(), -1, mock_game_player))
+        self.assertRaises(InvalidDepthException, lambda: MonteCarloTreeSearch(Mock(), -1, mock_game_player))
 
     def test_init_fails_when_game_player_none(self):
-        self.assertRaises(AssertionError, lambda: MonteCarloTreeSearch(Mock(), -1, None))
+        self.assertRaises(RequiredValueException, lambda: MonteCarloTreeSearch(Mock(), 1, None))
 
     def test_init_fails_when_playouts_is_zero(self):
         mock_game_player = Mock()
-        self.assertRaises(AssertionError, lambda: MonteCarloTreeSearch(Mock(), 1, mock_game_player, playouts=0))
+        self.assertRaises(InvalidPlayoutException, lambda: MonteCarloTreeSearch(Mock(), 1, mock_game_player, playouts=0))
 
     def test_init_fails_when_playouts_is_below_zero(self):
         mock_game_player = Mock()
-        self.assertRaises(AssertionError, lambda: MonteCarloTreeSearch(Mock(), -1, mock_game_player, playouts=-1))
+        self.assertRaises(InvalidPlayoutException, lambda: MonteCarloTreeSearch(Mock(), 1, mock_game_player, playouts=-1))
 
     def test_search_with_depth_2(self):
         """
