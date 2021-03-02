@@ -1,4 +1,4 @@
-from .state_exceptions import EmptyRobotsPositionException, InvalidRobotsPositionException, \
+from src.exceptions.robot_reboot.state import EmptyRobotsPositionException, InvalidRobotsPositionException, \
     RobotsPositionOutOfMazeBoundsException
 from ..alphazero.state import State
 from ..util.util import assertOrThrow

@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 from unittest.mock import Mock, PropertyMock
 from src.robot_reboot.state import RobotRebootState
-from src.robot_reboot.state_exceptions import EmptyRobotsPositionException, InvalidRobotsPositionException, \
+from src.exceptions.robot_reboot.state import EmptyRobotsPositionException, InvalidRobotsPositionException, \
     RobotsPositionOutOfMazeBoundsException
 
 

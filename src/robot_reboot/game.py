@@ -5,7 +5,7 @@ from src.robot_reboot.action import RobotRebootAction
 from src.robot_reboot.state import RobotRebootState
 from src.util.util import assertOrThrow
 from .direction import Direction
-from .game_exceptions import NoRobotsGameException, InvalidMazeException, RobotHouseOutOfMazeBoundsException, \
+from src.exceptions.robot_reboot.game import NoRobotsGameException, InvalidMazeException, RobotHouseOutOfMazeBoundsException, \
     MazeNotSquareException, MazeSizeInvalidException, RobotHouseInvalidRobotIdException
 from .goal_house import RobotRebootGoalHouse
 from .util import valid_maze

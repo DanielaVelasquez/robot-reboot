@@ -1,4 +1,4 @@
-from src.robot_reboot.goals_house_exceptions import InvalidRobotIdException
+from src.exceptions.robot_reboot.goals import InvalidRobotIdException
 from src.util.util import assertOrThrow
 
 
