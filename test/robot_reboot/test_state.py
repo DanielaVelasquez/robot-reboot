@@ -1,5 +1,6 @@
 import unittest
-from unittest.mock import Mock
+import numpy as np
+from unittest.mock import Mock, PropertyMock
 from src.robot_reboot.state import RobotRebootState
 
 
@@ -32,3 +33,18 @@ class TestRobotRebootState(unittest.TestCase):
     def test_is_robot__on_returns_false_when_no_robot_on_position(self):
         s = RobotRebootState(Mock(), [(0, 2), (4, 6)])
         self.assertFalse(s.is_robot_on((5, 6)))
+
+    def test_init_fails_when_one_robot_position_with_negative_value(self):
+        self.assertRaises(AssertionError, lambda: RobotRebootState(Mock(), [(0, -1), (4, 6)]))
+
+    def test_init_fails_when_one_robot_x_position_out_of_maze_bounds(self):
+        mock_game = Mock()
+        mock_maze_property = PropertyMock(return_value=np.array([[0 for i in range(3)] for j in range(3)]))
+        type(mock_game).maze = mock_maze_property
+        self.assertRaises(AssertionError, lambda: RobotRebootState(mock_game, [(0, 2), (6, 0)]))
+
+    def test_init_fails_when_one_robot_out_of_maze_bounds(self):
+        mock_game = Mock()
+        mock_maze_property = PropertyMock(return_value=np.array([[0 for i in range(3)] for j in range(3)]))
+        type(mock_game).maze = mock_maze_property
+        self.assertRaises(AssertionError, lambda: RobotRebootState(mock_game, [(0, 2), (6, 6)]))
