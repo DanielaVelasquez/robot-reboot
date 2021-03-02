@@ -238,7 +238,7 @@ class TestGame(unittest.TestCase):
         self.assertEqual(robots_positions, s.robots_positions, "Robots position on initial state should not be altered")
         self.assertEqual(0, s.sequence_i, "Sequence on initial state should not be altered")
 
-    def test_apply_robot_moves_north_when_walls(self):
+    def test_apply_robot_moves_north_when_walls_first_robots_next(self):
         house = RobotRebootGoalHouse(0, (0, 0))
         maze = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -261,17 +261,17 @@ class TestGame(unittest.TestCase):
                          ])
         game = RobotRebootGame(2, maze, house)
 
-        robots_positions = [(8, 8), (0, 0)]
+        robots_positions = [(8, 8), (0, 8)]
         s = RobotRebootState(game, robots_positions)
         a = RobotRebootAction(0, Direction.NORTH)
         next_state = game.apply(a, s)
-        self.assertEqual([(4, 8), (0, 0)], next_state.robots_positions,
+        self.assertEqual([(4, 8), (0, 8)], next_state.robots_positions,
                          "Robot should move to the north of the maze, until it finds the wall")
         self.assertEqual(1, next_state.sequence_i, "Sequence should be update")
         self.assertEqual(robots_positions, s.robots_positions, "Robots position on initial state should not be altered")
         self.assertEqual(0, s.sequence_i, "Sequence on initial state should not be altered")
 
-    def test_apply_robot_moves_south_when_walls(self):
+    def test_apply_robot_moves_south_when_walls_first_robots_next(self):
         house = RobotRebootGoalHouse(0, (0, 0))
         maze = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -294,17 +294,17 @@ class TestGame(unittest.TestCase):
                          ])
         game = RobotRebootGame(2, maze, house)
 
-        robots_positions = [(8, 8), (0, 0)]
+        robots_positions = [(8, 8), (16, 8)]
         s = RobotRebootState(game, robots_positions)
         a = RobotRebootAction(0, Direction.SOUTH)
         next_state = game.apply(a, s)
-        self.assertEqual([(12, 8), (0, 0)], next_state.robots_positions,
+        self.assertEqual([(12, 8), (16, 8)], next_state.robots_positions,
                          "Robot should move to the south of the maze, until it finds the wall")
         self.assertEqual(1, next_state.sequence_i, "Sequence should be update")
         self.assertEqual(robots_positions, s.robots_positions, "Robots position on initial state should not be altered")
         self.assertEqual(0, s.sequence_i, "Sequence on initial state should not be altered")
 
-    def test_apply_robot_moves_west_when_walls(self):
+    def test_apply_robot_moves_west_when_walls_first_robots_next(self):
         house = RobotRebootGoalHouse(0, (0, 0))
         maze = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -327,17 +327,17 @@ class TestGame(unittest.TestCase):
                          ])
         game = RobotRebootGame(2, maze, house)
 
-        robots_positions = [(8, 8), (0, 0)]
+        robots_positions = [(8, 8), (8, 0)]
         s = RobotRebootState(game, robots_positions)
         a = RobotRebootAction(0, Direction.WEST)
         next_state = game.apply(a, s)
-        self.assertEqual([(8, 4), (0, 0)], next_state.robots_positions,
+        self.assertEqual([(8, 4), (8, 0)], next_state.robots_positions,
                          "Robot should move to the west of the maze, until it finds the wall")
         self.assertEqual(1, next_state.sequence_i, "Sequence should be update")
         self.assertEqual(robots_positions, s.robots_positions, "Robots position on initial state should not be altered")
         self.assertEqual(0, s.sequence_i, "Sequence on initial state should not be altered")
 
-    def test_apply_robot_moves_east_when_walls(self):
+    def test_apply_robot_moves_east_when_walls_first_robot_next(self):
         house = RobotRebootGoalHouse(0, (0, 0))
         maze = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -360,11 +360,11 @@ class TestGame(unittest.TestCase):
                          ])
         game = RobotRebootGame(2, maze, house)
 
-        robots_positions = [(8, 8), (0, 0)]
+        robots_positions = [(8, 8), (8, 16)]
         s = RobotRebootState(game, robots_positions)
         a = RobotRebootAction(0, Direction.EAST)
         next_state = game.apply(a, s)
-        self.assertEqual([(8, 12), (0, 0)], next_state.robots_positions,
+        self.assertEqual([(8, 12), (8, 16)], next_state.robots_positions,
                          "Robot should move to the east of the maze, until it finds the wall")
         self.assertEqual(1, next_state.sequence_i, "Sequence should be update")
         self.assertEqual(robots_positions, s.robots_positions, "Robots position on initial state should not be altered")
@@ -450,7 +450,7 @@ class TestGame(unittest.TestCase):
         self.assertEqual(robots_positions, s.robots_positions, "Robots position on initial state should not be altered")
         self.assertEqual(0, s.sequence_i, "Sequence on initial state should not be altered")
 
-    def test_apply_robot_moves_north_when_walls_and_robots(self):
+    def test_apply_robot_moves_north_when_robots_first_walls_next(self):
         house = RobotRebootGoalHouse(0, (0, 0))
         maze = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -483,7 +483,7 @@ class TestGame(unittest.TestCase):
         self.assertEqual(robots_positions, s.robots_positions, "Robots position on initial state should not be altered")
         self.assertEqual(0, s.sequence_i, "Sequence on initial state should not be altered")
 
-    def test_apply_robot_moves_south_when_walls_and_robots(self):
+    def test_apply_robot_moves_south_when_robots_first_walls_next(self):
         house = RobotRebootGoalHouse(0, (0, 0))
         maze = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -516,7 +516,7 @@ class TestGame(unittest.TestCase):
         self.assertEqual(robots_positions, s.robots_positions, "Robots position on initial state should not be altered")
         self.assertEqual(0, s.sequence_i, "Sequence on initial state should not be altered")
 
-    def test_apply_robot_moves_west_when_walls_and_robots(self):
+    def test_apply_robot_moves_west_when_robots_first_walls_next(self):
         house = RobotRebootGoalHouse(0, (0, 0))
         maze = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -549,7 +549,7 @@ class TestGame(unittest.TestCase):
         self.assertEqual(robots_positions, s.robots_positions, "Robots position on initial state should not be altered")
         self.assertEqual(0, s.sequence_i, "Sequence on initial state should not be altered")
 
-    def test_apply_robot_moves_east_when_walls_and_robots(self):
+    def test_apply_robot_moves_east_when_robots_first_walls_next(self):
         house = RobotRebootGoalHouse(0, (0, 0))
         maze = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
