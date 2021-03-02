@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from src.exceptions.robot_reboot.game import NoRobotsGameException, InvalidMazeException, RobotHouseOutOfMazeBoundsException, \
+from exceptions.robot_reboot.game import NoRobotsGameException, InvalidMazeException, RobotHouseOutOfMazeBoundsException, \
     MazeNotSquareException, MazeSizeInvalidException, RobotHouseInvalidRobotIdException
 from src.robot_reboot.game import RobotRebootGame, Direction, RobotRebootGoalHouse, RobotRebootState, RobotRebootAction
 

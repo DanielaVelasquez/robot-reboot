@@ -1,6 +1,6 @@
 from .exceptions import RequiredValueException
 from ..alphazero.action import Action
-from src.exceptions.util import assertOrThrow
+from exceptions.util import assertOrThrow
 
 
 class RobotRebootAction(Action):

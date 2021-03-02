@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 
 from src.alphazero.state_statistics import StateStatistics
-from src.exceptions.alphazero.state_statistics import EdgeNotVisitedException, InvalidNumberActionsException, \
+from exceptions.alphazero.state_statistics import EdgeNotVisitedException, InvalidNumberActionsException, \
     InvalidActionsTypeException
 
 

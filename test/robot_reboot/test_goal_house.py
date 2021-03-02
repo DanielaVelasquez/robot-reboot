@@ -1,6 +1,6 @@
 import unittest
 from src.robot_reboot.goal_house import RobotRebootGoalHouse
-from src.exceptions.robot_reboot.goals import InvalidRobotIdException
+from exceptions.robot_reboot.goals import InvalidRobotIdException
 
 
 class TestGoalHouse(unittest.TestCase):

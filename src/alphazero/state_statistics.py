@@ -1,8 +1,8 @@
 import numpy as np
 
-from src.exceptions.alphazero.state_statistics import EdgeNotVisitedException, InvalidNumberActionsException, \
+from exceptions.alphazero.state_statistics import EdgeNotVisitedException, InvalidNumberActionsException, \
     InvalidActionsTypeException
-from src.exceptions.util import assertOrThrow
+from exceptions.util import assertOrThrow
 
 
 class StateStatistics:
