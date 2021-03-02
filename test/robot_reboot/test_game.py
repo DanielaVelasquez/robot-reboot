@@ -2,6 +2,8 @@ import unittest
 
 import numpy as np
 
+from src.robot_reboot.exceptions import NoRobotsGameException, InvalidMazeException, RobotHouseOutOfMazeBoundsException, \
+    MazeNotSquareException, MazeSizeInvalidException, RobotHouseInvalidRobotIdException
 from src.robot_reboot.game import RobotRebootGame, Direction, RobotRebootGoalHouse, RobotRebootState, RobotRebootAction
 
 
@@ -41,34 +43,49 @@ class TestGame(unittest.TestCase):
         self.assertEqual(g.actions[7].direction, directions[3])
 
     def test_init_fails_when_n_robots_is_zero(self):
-        house = RobotRebootGoalHouse(1, (0, 0))
-        maze = np.array([[0, 2, 0], [4, 5, 6], [0, 8, 0]])
-        self.assertRaises(AssertionError, lambda: RobotRebootGame(0, maze, house))
+        house = RobotRebootGoalHouse(0, (0, 0))
+        maze = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
+        self.assertRaises(NoRobotsGameException, lambda: RobotRebootGame(0, maze, house))
 
     def test_init_fails_when_n_robots_is_below_zero(self):
-        house = RobotRebootGoalHouse(1, (0, 0))
-        maze = np.array([[0, 2, 0], [4, 5, 6], [0, 8, 0]])
-        self.assertRaises(AssertionError, lambda: RobotRebootGame(-1, maze, house))
+        house = RobotRebootGoalHouse(0, (0, 0))
+        maze = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
+        self.assertRaises(NoRobotsGameException, lambda: RobotRebootGame(-1, maze, house))
 
     def test_init_fails_when_maze_not_only_contains_zeros_and_ones(self):
-        house = RobotRebootGoalHouse(1, (0, 0))
+        house = RobotRebootGoalHouse(0, (0, 0))
         maze = np.array([[1, 2, 0], [4, 5, 6], [0, 8, 0]])
-        self.assertRaises(AssertionError, lambda: RobotRebootGame(0, maze, house))
+        self.assertRaises(InvalidMazeException, lambda: RobotRebootGame(1, maze, house))
 
     def test_init_fails_when_maze_has_walls_on_robot_cells(self):
-        house = RobotRebootGoalHouse(1, (0, 0))
+        house = RobotRebootGoalHouse(0, (0, 0))
         maze = np.array([[1, 0, 0], [0, 0, 0], [0, 0, 0]])
-        self.assertRaises(AssertionError, lambda: RobotRebootGame(0, maze, house))
+        self.assertRaises(InvalidMazeException, lambda: RobotRebootGame(1, maze, house))
 
     def test_init_fails_when_house_row_out_maze(self):
-        house = RobotRebootGoalHouse(1, (4, 0))
-        maze = np.array([[0, 2, 0], [4, 5, 6], [0, 8, 0]])
-        self.assertRaises(AssertionError, lambda: RobotRebootGame(0, maze, house))
+        house = RobotRebootGoalHouse(0, (4, 0))
+        maze = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
+        self.assertRaises(RobotHouseOutOfMazeBoundsException, lambda: RobotRebootGame(1, maze, house))
 
     def test_init_fails_when_house_column_out_maze(self):
-        house = RobotRebootGoalHouse(1, (0, 4))
-        maze = np.array([[0, 2, 0], [4, 5, 6], [0, 8, 0]])
-        self.assertRaises(AssertionError, lambda: RobotRebootGame(0, maze, house))
+        house = RobotRebootGoalHouse(0, (0, 4))
+        maze = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
+        self.assertRaises(RobotHouseOutOfMazeBoundsException, lambda: RobotRebootGame(1, maze, house))
+
+    def test_init_fails_when_robot_house_invalid(self):
+        house = RobotRebootGoalHouse(1, (0, 0))
+        maze = np.array([[0, 0], [0, 0]])
+        self.assertRaises(RobotHouseInvalidRobotIdException, lambda: RobotRebootGame(1, maze, house))
+
+    def test_init_fails_when_maze_not_square(self):
+        house = RobotRebootGoalHouse(0, (0, 0))
+        maze = np.array([[0, 0, 0], [0, 0, 0]])
+        self.assertRaises(MazeNotSquareException, lambda: RobotRebootGame(1, maze, house))
+
+    def test_init_fails_when_maze_size_not_odd(self):
+        house = RobotRebootGoalHouse(0, (0, 0))
+        maze = np.array([[0, 0], [0, 0]])
+        self.assertRaises(MazeSizeInvalidException, lambda: RobotRebootGame(1, maze, house))
 
     def test_get_value_when_robot_reached_its_house(self):
         """

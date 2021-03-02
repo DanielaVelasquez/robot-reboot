@@ -3,7 +3,10 @@ import numpy as np
 from src.alphazero.game import Game
 from src.robot_reboot.action import RobotRebootAction
 from src.robot_reboot.state import RobotRebootState
+from src.util.util import assertOrThrow
 from .direction import Direction
+from .exceptions import NoRobotsGameException, InvalidMazeException, RobotHouseOutOfMazeBoundsException, \
+    MazeNotSquareException, MazeSizeInvalidException, RobotHouseInvalidRobotIdException
 from .goal_house import RobotRebootGoalHouse
 from .util import valid_maze
 from .maze_cell_type import MazeCellType
@@ -27,12 +30,13 @@ class RobotRebootGame(Game):
                                         1 if there is a wall in that cell. 0 if its a cell where the robots can move.
             goal_house     (RobotRebootGoalHouse): robot that needs to get to its house
         """
-        assert n_robots > 0, "n_robots should be greater than zero"
-        assert valid_maze(n_robots, maze), "Maze is invalid, check only walls and empty cells are display and that" \
-                                           "walls are depicted in the designated cells, i.e even rows and columns"
-        assert goal_house.house[0] < maze.shape[0], "goal house row out of the maze"
-        assert goal_house.house[1] < maze.shape[1], "goal house column out of the maze"
-        # TODO ASSERT AGAINS MAZE MUST BE UNEVEN AND SQUARE
+        assertOrThrow(n_robots > 0, NoRobotsGameException())
+        assertOrThrow(valid_maze(n_robots, maze), InvalidMazeException())
+        assertOrThrow(goal_house.house[0] < maze.shape[0] and goal_house.house[1] < maze.shape[1],
+                      RobotHouseOutOfMazeBoundsException())
+        assertOrThrow(goal_house.robot_id < n_robots, RobotHouseInvalidRobotIdException())
+        assertOrThrow(maze.shape[0] == maze.shape[1], MazeNotSquareException())
+        assertOrThrow(maze.shape[0] % 2 != 0, MazeSizeInvalidException())
         Game.__init__(self, [RobotRebootAction(r, d) for r in range(n_robots) for d in Direction])
         self.__n_robots = n_robots
         self.__maze = maze
