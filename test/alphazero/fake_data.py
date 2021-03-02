@@ -5,7 +5,6 @@ from src.alphazero.model import Model
 from src.alphazero.state import State
 
 
-
 class FakeAction(Action):
 
     def __init__(self, value):
@@ -22,7 +21,7 @@ class FakeAction(Action):
 
 class FakeState(State):
 
-    def __init__(self, sequence_i, game, value):
+    def __init__(self, game, value, sequence_i=0):
         State.__init__(self, game, sequence_i)
         self.__value = value
 
@@ -69,7 +68,8 @@ class FakeGame(Game):
         """It goes to the state with the same action value
         E.g if action.value = 1 then it'll go to state.value =1 regardless of the starting state
         """
-        return FakeState(state.sequence_i + 1, self, action.value)
+        return FakeState(self, action.value, state.sequence_i + 1)
+
 
 def fn_predict_probability_1_for_next_action(actions_size, state: FakeState):
     """" Fake predict probabilities of winning over each action. Probabilities are set to 0 except for one action.
