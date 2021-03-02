@@ -1,4 +1,6 @@
+from .exceptions import RequiredValueException
 from ..alphazero.action import Action
+from ..util.util import assertOrThrow
 
 
 class RobotRebootAction(Action):
@@ -16,8 +18,8 @@ class RobotRebootAction(Action):
             robot_id  (int):       robot's id to move
             direction (Direction): direction where the robot is moving (N, S, E, W)
         """
-        assert robot_id is not None, "robot_id must be provided"
-        assert direction is not None, "direction must be provided"
+        assertOrThrow(robot_id is not None, RequiredValueException("robot_id"))
+        assertOrThrow(direction is not None, RequiredValueException("direction"))
         self.__robot_id = robot_id
         self.__direction = direction
 
