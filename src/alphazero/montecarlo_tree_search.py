@@ -1,5 +1,8 @@
 import numpy as np
 
+from exceptions.alphazero.monte_carlo_tree_search import InvalidDepthException, InvalidPlayoutException
+from exceptions.exceptions import RequiredValueException
+from exceptions.util import assertOrThrow
 from src.alphazero.state import State
 from .game_player import GamePlayer
 from .state_statistics import StateStatistics
@@ -25,10 +28,10 @@ class MonteCarloTreeSearch:
             game_player  (GamePlayer): player for the game to optimize moves
             playouts     (number):     number of playouts per simulation (default 100)
         """
-        assert heuristic_fn is not None, "heuristic_fn must be provided"
-        assert max_depth > 0, "Tree depth must be greater than 0"
-        assert game_player is not None, "game_player must be provided"
-        assert playouts > 0, "playouts must be greater than 0"
+        assertOrThrow(heuristic_fn is not None, RequiredValueException("heuristic_fn"))
+        assertOrThrow(max_depth > 0, InvalidDepthException())
+        assertOrThrow(game_player is not None, RequiredValueException("game_player"))
+        assertOrThrow(playouts > 0, InvalidPlayoutException())
 
         self.__heuristic_fn = heuristic_fn
         self.__max_depth = max_depth
@@ -36,7 +39,6 @@ class MonteCarloTreeSearch:
         self.__game = self.__game_player.game
         self.__playouts = playouts
         self.__states_statistics = {}
-
 
     @property
     def max_depth(self):

@@ -1,5 +1,5 @@
 import numpy as np
-from src.robot_reboot.robot_reboot_game import RobotRebootGame, RobotRebootGoal
+from src.robot_reboot.robot_reboot_game_legacy import RobotRebootGameLegacy, RobotRebootGoalLegacy
 from src.util.game_factory import GameFactory
 from src.robot_reboot.util import Maze
 
@@ -28,7 +28,7 @@ class RobotRebootFactory(GameFactory):
         maze = self.__generate_maze()
         goal = self.__generate_goal()
         robots = self.__generate_robots(goal)
-        return RobotRebootGame(Maze(maze), robots, goal)
+        return RobotRebootGameLegacy(Maze(maze), robots, goal)
 
     def build_with(self, seed):
         np.random.seed(seed)
@@ -56,11 +56,11 @@ class RobotRebootFactory(GameFactory):
             goals = self.__CONF[self.size].goals
             selected_goal = np.random.randint(len(goals))
             robot = np.random.randint(self.__CONF[self.size].robots)
-            return RobotRebootGoal(robot, goals[selected_goal])
+            return RobotRebootGoalLegacy(robot, goals[selected_goal])
         else:
             raise Exception(f'No defined configuration for size {self.size}')
 
-    def __generate_robots(self, goal: RobotRebootGoal):
+    def __generate_robots(self, goal: RobotRebootGoalLegacy):
         if self.size in self.__CONF:
             robots = list()
             for i in range(self.__CONF[self.size].robots):

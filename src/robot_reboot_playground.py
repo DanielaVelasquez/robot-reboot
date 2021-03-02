@@ -18,7 +18,7 @@ if __name__ == "__main__":
         # nn.load_model()
         print(f'Game {i}')
         print(f'Robots = {game.robots}')
-        print(f'Goal = {game.goal}')
+        print(f'Goal = {game.goal_house}')
         mcts = MonteCarloTreeSearch(nn, 0.5, 10)
         # Play that game until it is over
         actions_taken = 0

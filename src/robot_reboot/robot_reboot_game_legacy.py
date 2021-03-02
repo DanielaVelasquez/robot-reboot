@@ -33,7 +33,7 @@ class RobotRebootActionLegacy(GameActionLegacy):
         return f'Move robot {self.robot} in {direction} direction'
 
 
-class RobotRebootGoal:
+class RobotRebootGoalLegacy:
 
     def __init__(self, robot, pos: tuple):
         self.robot = robot
@@ -43,7 +43,7 @@ class RobotRebootGoal:
         return f'Robot {self.robot} on position {self.position}'
 
 
-class RobotRebootGame(GameLegacy):
+class RobotRebootGameLegacy(GameLegacy):
     MOVEMENTS = [Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST]
 
     GOAL = 9
@@ -53,7 +53,7 @@ class RobotRebootGame(GameLegacy):
     PRESENCE = 1
     FORBIDDEN = - 1
 
-    def __init__(self, maze: Maze, robots: list, goal: RobotRebootGoal):
+    def __init__(self, maze: Maze, robots: list, goal: RobotRebootGoalLegacy):
         super().__init__()
         self.maze = maze
         self.robots = robots

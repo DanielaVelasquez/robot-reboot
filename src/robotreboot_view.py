@@ -56,7 +56,7 @@ class RobotRebootView:
         self.__view_update(mode)
         for event in pygame.event.get():
             print(self.robot_reboot.robots)
-            print(self.robot_reboot.goal.cell)
+            print(self.robot_reboot.goal_house.cell)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.__select_robot(event.pos)
             elif event.type == pygame.KEYDOWN:
@@ -171,7 +171,7 @@ class RobotRebootView:
             pygame.draw.circle(self.maze_layer, colour + (transparency,), (x, y), r)
 
     def __draw_goal(self, transparency=235):
-        self.__colour_cell(self.robot_reboot.goal.cell, self.__goal_color, transparency)
+        self.__colour_cell(self.robot_reboot.goal_house.cell, self.__goal_color, transparency)
 
     def __colour_cell(self, cell, colour, transparency):
         x = int(cell[1] * self.cell_width + 0.5 + 1)

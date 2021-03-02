@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
 
+from exceptions.alphazero.state import InvalidStateSequence
+from exceptions.util import assertOrThrow
+
 
 class State(ABC):
     """ State of a game
@@ -16,6 +19,7 @@ class State(ABC):
             game       (Game): Game that the state belongs to
             sequence_i (int):  Moment in time where the state occurred i.e 0  it's how the game started
         """
+        assertOrThrow(sequence_i >= 0, InvalidStateSequence())
         self.__game = game
         self.__sequence_i = sequence_i
 
