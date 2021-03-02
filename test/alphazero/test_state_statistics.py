@@ -2,6 +2,8 @@ import unittest
 import numpy as np
 
 from src.alphazero.state_statistics import StateStatistics
+from src.exceptions.alphazero.state_statistics import EdgeNotVisitedException, InvalidNumberActionsException, \
+    InvalidActionsTypeException
 
 
 class TestStateStatistics(unittest.TestCase):
@@ -10,13 +12,13 @@ class TestStateStatistics(unittest.TestCase):
         StateStatistics(1)
 
     def test_init_with_n_actions_zero(self):
-        self.assertRaises(AssertionError, lambda: StateStatistics(0))
+        self.assertRaises(InvalidNumberActionsException, lambda: StateStatistics(0))
 
     def test_init_with_n_actions_below_zero(self):
-        self.assertRaises(AssertionError, lambda: StateStatistics(-1))
+        self.assertRaises(InvalidNumberActionsException, lambda: StateStatistics(-1))
 
     def test_init_with_n_actions_as_float(self):
-        self.assertRaises(AssertionError, lambda: StateStatistics(1.2))
+        self.assertRaises(InvalidActionsTypeException, lambda: StateStatistics(1.2))
 
     def test_visit(self):
         obj = StateStatistics(2)
@@ -35,4 +37,4 @@ class TestStateStatistics(unittest.TestCase):
 
     def test_add_value_when_no_visits_registered(self):
         obj = StateStatistics(2)
-        self.assertRaises(AssertionError, lambda: obj.add_value(0, 1))
+        self.assertRaises(EdgeNotVisitedException, lambda: obj.add_value(0, 1))

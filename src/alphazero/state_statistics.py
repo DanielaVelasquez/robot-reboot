@@ -1,5 +1,9 @@
 import numpy as np
 
+from src.exceptions.alphazero.state_statistics import EdgeNotVisitedException, InvalidNumberActionsException, \
+    InvalidActionsTypeException
+from src.exceptions.util import assertOrThrow
+
 
 class StateStatistics:
     """
@@ -16,8 +20,8 @@ class StateStatistics:
         Args:
             n_actions (number): number of actions
         """
-        assert n_actions > 0, "number of actions must be above zero"
-        assert type(n_actions) is int, "number of actions must be an integer"
+        assertOrThrow(n_actions > 0, InvalidNumberActionsException())
+        assertOrThrow(type(n_actions) is int, InvalidActionsTypeException())
 
         self.__n = np.zeros(n_actions, dtype=float)
         self.__w = np.zeros(n_actions, dtype=float)
@@ -48,7 +52,7 @@ class StateStatistics:
             action_i (int): index of the action taken
             v        (int): value of the leaf state (1 = win, 0 = draw, -1 = lost)
         """
-        assert self.__n[action_i] != 0, f"No visits have been registered for action: {action_i}"
+        assertOrThrow(self.__n[action_i] != 0, EdgeNotVisitedException(action_i))
         self.__w[action_i] += v
         self.__p[action_i] = self.__w[action_i] / self.__n[action_i]
 
