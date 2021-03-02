@@ -1,6 +1,8 @@
 import unittest
 import numpy as np
 from unittest.mock import Mock, PropertyMock
+
+from exceptions.alphazero.state import InvalidStateSequence
 from src.robot_reboot.state import RobotRebootState
 from exceptions.robot_reboot.state import EmptyRobotsPositionException, InvalidRobotsPositionException, \
     RobotsPositionOutOfMazeBoundsException
@@ -29,7 +31,7 @@ class TestRobotRebootState(unittest.TestCase):
         self.assertRaises(EmptyRobotsPositionException, lambda: RobotRebootState(get_game(), []))
 
     def test_init_fails_when_sequence_i_below_zero(self):
-        self.assertRaises(AssertionError, lambda: RobotRebootState(get_game(), [(0, 2), (0, 0)], sequence_i=-1))
+        self.assertRaises(InvalidStateSequence, lambda: RobotRebootState(get_game(), [(0, 2), (0, 0)], sequence_i=-1))
 
     def test_str(self):
         s = RobotRebootState(get_game(), [(0, 2), (0, 0)])
