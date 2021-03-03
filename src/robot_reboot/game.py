@@ -5,11 +5,13 @@ from src.robot_reboot.action import RobotRebootAction
 from src.robot_reboot.state import RobotRebootState
 from exceptions.util import assertOrThrow
 from .direction import Direction
-from exceptions.robot_reboot.game import NoRobotsGameException, InvalidMazeException, RobotHouseOutOfMazeBoundsException, \
+from exceptions.robot_reboot.game import NoRobotsGameException, InvalidMazeException, \
+    RobotHouseOutOfMazeBoundsException, \
     MazeNotSquareException, MazeSizeInvalidException, RobotHouseInvalidRobotIdException
 from .goal_house import RobotRebootGoalHouse
 from .util import valid_maze
 from .maze_cell_type import MazeCellType
+from ..alphazero.state import State
 
 
 class RobotRebootGame(Game):
@@ -127,3 +129,16 @@ class RobotRebootGame(Game):
                 return RobotRebootState(self, robots_positions, state.sequence_i + 1)
         else:
             raise Exception("Unsupported direction")
+
+    def get_valid_actions(self, state: RobotRebootState):
+        valid_actions = list()
+        for action in self.actions:
+            if not self.__is_wall_at(state.robots_positions[action.robot_id], action.direction):
+                valid_actions.append(action)
+        return valid_actions
+
+    def __is_wall_at(self, position: tuple, direction: Direction):
+        x, y = position
+        rows, cols = self.__maze.shape
+        return (direction == Direction.NORTH and y - 1 < 0) or (direction == Direction.SOUTH and y + 1 >= rows) or (
+                    direction == Direction.WEST and x - 1 < 0) or (direction == Direction.EAST and x + 1 >= cols)
