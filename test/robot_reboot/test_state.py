@@ -10,10 +10,10 @@ from exceptions.robot_reboot.state import EmptyRobotsPositionException, InvalidR
     RobotsPositionOutOfMazeBoundsException, NumberRobotsNotMatchingException
 
 
-def get_game(size=3):
+def get_game(size=3,n_robots=2):
     house = RobotRebootGoalHouse(0, (0, 0))
     maze = np.array([[0 for j in range(size)] for i in range(size)])
-    game = RobotRebootGame(1, maze, house)
+    game = RobotRebootGame(n_robots, maze, house)
     return game
 
 
@@ -60,6 +60,5 @@ class TestRobotRebootState(unittest.TestCase):
                           lambda: RobotRebootState(get_game(), [(0, 2), (6, 6)]))
 
     def test_init_fails_when_number_robots_in_state_not_match_robots_in_game(self):
-
         self.assertRaises(NumberRobotsNotMatchingException,
-                          lambda: RobotRebootState(RobotRebootState(get_game(), [(1, 1), (0, 1)])))
+                          lambda: RobotRebootState(RobotRebootState(get_game(n_robots=1), [(1, 1), (0, 1)])))

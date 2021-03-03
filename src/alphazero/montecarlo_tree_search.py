@@ -68,8 +68,9 @@ class MonteCarloTreeSearch:
         p = np.zeros(len(self.__game.actions), dtype=float)
         for i in range(len(self.__game.actions)):
             a = self.__game.actions[i]
-            next_state = self.__game.apply(a, state)
-            p[i] = self.__simulations(next_state, self.__playouts)
+            if a in self.__game.get_valid_actions(state):
+                next_state = self.__game.apply(a, state)
+                p[i] = self.__simulations(next_state, self.__playouts)
         return p
 
     def __simulations(self, state: State, n):
@@ -92,14 +93,14 @@ class MonteCarloTreeSearch:
             state (State): state to start self-playing
             depth (int):   depth in the tree
         """
-        if self.__game.is_over(state) or depth >= self.__max_depth:
+        valid_actions = self.__game.get_valid_actions(state)
+        if self.__game.is_over(state) or depth >= self.__max_depth or len(valid_actions) == 0:
             return self.__game.get_value(state)
         p, v = self.__game_player.predict(state)
 
         state_stats = self.__get_state_statistics(state)
         heuristic_values = self.__heuristic_fn(p, state_stats)
-        i_best = np.argsort(heuristic_values)[::-1][0]
-        a = self.__game.actions[i_best]
+        a, i_best = self.__get_best_action(heuristic_values, valid_actions)
 
         next_state = self.__game.apply(a, state)
         state_stats.visit(i_best)
@@ -108,6 +109,23 @@ class MonteCarloTreeSearch:
         state_stats.add_value(i_best, v)
 
         return v
+
+    def __get_best_action(self, heuristic_values, valid_actions):
+        """Gets the best next action to execute based on the results from the heuristic values
+        and valid actions from the current state
+        Args:
+            heuristic_values (np array): heuristic values for each action
+            valid_actions (list): actions that will alter the current state
+        """
+        ordered_actions = np.argsort(heuristic_values)[::-1]
+        i = 0
+        i_best = ordered_actions[i]
+        a = self.__game.actions[i_best]
+        while a not in valid_actions:
+            i += 1
+            i_best = ordered_actions[i]
+            a = self.__game.actions[i_best]
+        return a, i_best
 
     def __get_state_statistics(self, state):
         """Gets the statistics for a state from the dictionary.

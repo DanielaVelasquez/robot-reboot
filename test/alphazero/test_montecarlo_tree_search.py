@@ -130,7 +130,6 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         mcts = MonteCarloTreeSearch(heuristic_fn, 2, game_player, playouts=1)
         fake_state = FakeState(game_player.game, 0, 0)
         p = mcts.search(fake_state)
-        p = mcts.search(fake_state)
         np.testing.assert_equal(p, [-1, 1, 1, 0])
         self.assertEqual(list(mcts.states_statistics.keys()), ['s1', 's2', 's4'])
         assert_state(mcts, 's1', n=[0, 1, 0, 0], w=[0, -1, 0, 0], p=[0, -1, 0, 0])
