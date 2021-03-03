@@ -670,3 +670,22 @@ class TestGame(unittest.TestCase):
         s = RobotRebootState(game, [(0, 0)])
         self.assertEqual([], game.get_valid_actions(s),
                          "No valid actions should be retrieve, the robot doesnt' have cells to move")
+
+    def test_get_valid_actions_with_two_robots(self):
+        house = RobotRebootGoalHouse(0, (0, 0))
+        maze = np.array([[0, 0, 0, 0, 0],
+                         [0, 0, 0, 1, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0]
+                         ])
+        game = RobotRebootGame(3, maze, house)
+        s = RobotRebootState(game, [(1, 1), (1, 2), (0, 0)])
+        valid_actions = game.get_valid_actions(s)
+        not_valid_directions = {
+            0: [],
+            1: [Direction.EAST],
+            2: [Direction.NORTH, Direction.WEST]
+        }
+        self.assertEqual([], [a for a in valid_actions if a.direction in not_valid_directions[a.robot_id]],
+                         "Actions listed in the not_valid_directions for each robot should not be retrieved")

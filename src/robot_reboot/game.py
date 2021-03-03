@@ -138,28 +138,27 @@ class RobotRebootGame(Game):
         return valid_actions
 
     def __is_wall_at(self, position: tuple, direction: Direction):
-
+        """Determines if there is an immediate wall in the direction of a position, ie. is there a wall at north of (1,1)
+        if the position is at the edge of the maze, then movement outside the maze bounds is considered a wall, ie. if
+        there is a wall at north of (0,0) it returns true.
+        Args:
+            position (tuple): reference position to check a direction with
+            direction (Direction): direction to check from the position
+        Returns:
+            boolean: True if there is wall at the immediate direction or the immediate  position in that direction is out
+                     of the maze. False otherwise.
+        """
         x, y = position
         rows, cols = self.__maze.shape
 
-        if direction == Direction.NORTH and x - 1 >= 0 and self.__maze[x - 1, y] == MazeCellType.WALL.value:
-            return True
-        elif direction == Direction.NORTH and x - 1 < 0:
-            return True
-        elif direction == Direction.SOUTH and x + 1 < rows and self.__maze[x + 1, y] == MazeCellType.WALL.value:
-            return True
-        elif direction == Direction.SOUTH and x + 1 >= rows:
-            return True
-        elif direction == Direction.WEST and y - 1 >= 0 and self.__maze[x, y - 1] == MazeCellType.WALL.value:
-            return True
-        elif direction == Direction.WEST and y - 1 < 0:
-            return True
-        elif direction == Direction.EAST and y + 1 < cols and self.__maze[x, y + 1] == MazeCellType.WALL.value:
-            return True
-        elif direction == Direction.EAST and y + 1 >= cols:
-            return True
-
-        return False
-
-        # return (direction == Direction.NORTH and y - 1 < 0) or (direction == Direction.SOUTH and y + 1 >= rows) or (
-        #             direction == Direction.WEST and x - 1 < 0) or (direction == Direction.EAST and x + 1 >= cols)
+        return (direction == Direction.NORTH and (
+                (x - 1 >= 0 and self.__maze[x - 1, y] == MazeCellType.WALL.value) or (x - 1 < 0))
+                ) or (
+                       direction == Direction.SOUTH and (
+                       (x + 1 < rows and self.__maze[x + 1, y] == MazeCellType.WALL.value) or (x + 1 >= rows))
+               ) or (
+                       direction == Direction.WEST and (
+                       (y - 1 >= 0 and self.__maze[x, y - 1] == MazeCellType.WALL.value) or (y - 1 < 0))
+               ) or (
+                       direction == Direction.EAST and (
+                       (y + 1 < cols and self.__maze[x, y + 1] == MazeCellType.WALL.value) or (y + 1 >= cols)))
