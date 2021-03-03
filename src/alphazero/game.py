@@ -62,3 +62,13 @@ class Game(ABC):
             state   (State): next state after action is applied
         """
         pass
+
+    @abstractmethod
+    def get_valid_actions(self, state: State):
+        """Based on a state finds the actions that would produce a change if applied
+        Args:
+            state (State): state to check which actions will produce a different state
+        Returns:
+            valid_actions (list): list of actions that produce a changed if applied
+        """
+        pass

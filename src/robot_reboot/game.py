@@ -138,7 +138,28 @@ class RobotRebootGame(Game):
         return valid_actions
 
     def __is_wall_at(self, position: tuple, direction: Direction):
+
         x, y = position
         rows, cols = self.__maze.shape
-        return (direction == Direction.NORTH and y - 1 < 0) or (direction == Direction.SOUTH and y + 1 >= rows) or (
-                    direction == Direction.WEST and x - 1 < 0) or (direction == Direction.EAST and x + 1 >= cols)
+
+        if direction == Direction.NORTH and x - 1 >= 0 and self.__maze[x - 1, y] == MazeCellType.WALL.value:
+            return True
+        elif direction == Direction.NORTH and x - 1 < 0:
+            return True
+        elif direction == Direction.SOUTH and x + 1 < rows and self.__maze[x + 1, y] == MazeCellType.WALL.value:
+            return True
+        elif direction == Direction.SOUTH and x + 1 >= rows:
+            return True
+        elif direction == Direction.WEST and y - 1 >= 0 and self.__maze[x, y - 1] == MazeCellType.WALL.value:
+            return True
+        elif direction == Direction.WEST and y - 1 < 0:
+            return True
+        elif direction == Direction.EAST and y + 1 < cols and self.__maze[x, y + 1] == MazeCellType.WALL.value:
+            return True
+        elif direction == Direction.EAST and y + 1 >= cols:
+            return True
+
+        return False
+
+        # return (direction == Direction.NORTH and y - 1 < 0) or (direction == Direction.SOUTH and y + 1 >= rows) or (
+        #             direction == Direction.WEST and x - 1 < 0) or (direction == Direction.EAST and x + 1 >= cols)

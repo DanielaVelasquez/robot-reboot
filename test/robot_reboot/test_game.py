@@ -2,7 +2,8 @@ import unittest
 
 import numpy as np
 
-from exceptions.robot_reboot.game import NoRobotsGameException, InvalidMazeException, RobotHouseOutOfMazeBoundsException, \
+from exceptions.robot_reboot.game import NoRobotsGameException, InvalidMazeException, \
+    RobotHouseOutOfMazeBoundsException, \
     MazeNotSquareException, MazeSizeInvalidException, RobotHouseInvalidRobotIdException
 from src.robot_reboot.game import RobotRebootGame, Direction, RobotRebootGoalHouse, RobotRebootState, RobotRebootAction
 
@@ -598,3 +599,74 @@ class TestGame(unittest.TestCase):
         self.assertEqual(1, next_state.sequence_i, "Sequence should be update")
         self.assertEqual(robots_positions, s.robots_positions, "Robots position on initial state should not be altered")
         self.assertEqual(0, s.sequence_i, "Sequence on initial state should not be altered")
+
+    def test_get_valid_actions_without_north_movement_actions_when_north_wall(self):
+        house = RobotRebootGoalHouse(0, (0, 0))
+        maze = np.array([[0, 1, 0],
+                         [0, 0, 0],
+                         [0, 0, 0],
+                         ])
+        game = RobotRebootGame(1, maze, house)
+        s = RobotRebootState(game, [(1, 1)])
+        valid_actions = game.get_valid_actions(s)
+        self.assertEqual(len(game.actions) - 1, len(valid_actions),
+                         "All actions must be present except for the action that moves robot 0 in north direction")
+        self.assertEqual([], [a for a in valid_actions if a.direction == Direction.NORTH and a.robot_id == 0])
+
+    def test_get_valid_actions_without_south_movement_actions_when_south_wall(self):
+        house = RobotRebootGoalHouse(0, (0, 0))
+        maze = np.array([[0, 0, 0],
+                         [0, 0, 0],
+                         [0, 1, 0],
+                         ])
+        game = RobotRebootGame(1, maze, house)
+        s = RobotRebootState(game, [(1, 1)])
+        valid_actions = game.get_valid_actions(s)
+        self.assertEqual(len(game.actions) - 1, len(valid_actions),
+                         "All actions must be present except for the action that moves robot =0 in north direction")
+        self.assertEqual([], [a for a in valid_actions if a.direction == Direction.SOUTH and a.robot_id == 0])
+
+    def test_get_valid_actions_without_west_movement_actions_when_west_wall(self):
+        house = RobotRebootGoalHouse(0, (0, 0))
+        maze = np.array([[0, 0, 0],
+                         [1, 0, 0],
+                         [0, 0, 0],
+                         ])
+        game = RobotRebootGame(1, maze, house)
+        s = RobotRebootState(game, [(1, 1)])
+        valid_actions = game.get_valid_actions(s)
+        self.assertEqual(len(game.actions) - 1, len(valid_actions),
+                         "All actions must be present except for the action that moves robot =0 in north direction")
+        self.assertEqual([], [a for a in valid_actions if a.direction == Direction.WEST and a.robot_id == 0])
+
+    def test_get_valid_actions_without_east_movement_actions_when_west_wall(self):
+        house = RobotRebootGoalHouse(0, (0, 0))
+        maze = np.array([[0, 0, 0],
+                         [0, 0, 1],
+                         [0, 0, 0],
+                         ])
+        game = RobotRebootGame(1, maze, house)
+        s = RobotRebootState(game, [(1, 1)])
+        valid_actions = game.get_valid_actions(s)
+        self.assertEqual(len(game.actions) - 1, len(valid_actions),
+                         "All actions must be present except for the action that moves robot =0 in north direction")
+        self.assertEqual([], [a for a in valid_actions if a.direction == Direction.EAST and a.robot_id == 0])
+
+    def test_get_valid_actions_empty_when_robot_trapped_within_walls(self):
+        house = RobotRebootGoalHouse(0, (0, 0))
+        maze = np.array([[0, 1, 0],
+                         [1, 0, 1],
+                         [0, 1, 0],
+                         ])
+        game = RobotRebootGame(1, maze, house)
+        s = RobotRebootState(game, [(1, 1)])
+        self.assertEqual([], game.get_valid_actions(s))
+
+    def test_get_valid_actions_empty_when_maze_has_one_cell(self):
+        house = RobotRebootGoalHouse(0, (0, 0))
+        maze = np.array([[0],
+                         ])
+        game = RobotRebootGame(1, maze, house)
+        s = RobotRebootState(game, [(0, 0)])
+        self.assertEqual([], game.get_valid_actions(s),
+                         "No valid actions should be retrieve, the robot doesnt' have cells to move")
