@@ -157,7 +157,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         assert_state(mcts, 's2', n=[0, 0, 1, 0], w=[0, 0, 1, 0], p=[0, 0, 1, 0],
                      message="Visits for s2 should only count one the last search, check state statistics are reset")
         assert_state(mcts, 's4', n=[1, 0, 0, 0], w=[0, 0, 0, 0], p=[0, 0, 0, 0],
-                     message="Visits for s1 should only count one the last search, check state statistics are reset")
+                     message="Visits for s3 should only count one the last search, check state statistics are reset")
 
     def test_search_with_random_probabilities(self):
         """
