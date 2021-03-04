@@ -33,19 +33,6 @@ class FakeState(State):
         return f's{self.__value}'
 
 
-class FakeModel(Model):
-
-    def __init__(self, fn_predict_probability):
-        Model.__init__(self, "fake_model", FakeGame())
-        self.__fn_predict_probability = fn_predict_probability
-
-    def predict(self, state: State):
-        return self.__fn_predict_probability(len(self.game.actions), state), np.nan
-
-    def train(self, train_x, train_y, test_x, test_y):
-        pass
-
-
 class FakeGame(Game):
 
     def __init__(self):
@@ -76,6 +63,19 @@ class FakeGame(Game):
         if self.valid_state_actions_dict is not None and state.value in self.valid_state_actions_dict:
             return self.valid_state_actions_dict[state.value]
         return self.actions
+
+
+class FakeModel(Model):
+
+    def __init__(self, fn_predict_probability, game):
+        Model.__init__(self, "fake_model", game)
+        self.__fn_predict_probability = fn_predict_probability
+
+    def predict(self, state: State):
+        return self.__fn_predict_probability(len(self.game.actions), state), np.nan
+
+    def train(self, train_x, train_y, test_x, test_y):
+        pass
 
 
 def fn_predict_probability_1_for_next_action(actions_size, state: FakeState):
