@@ -35,8 +35,8 @@ class TestGamePlayer(unittest.TestCase):
         self.assertRaises(RequiredValueException, lambda: player.predict(None))
 
     def test_play(self):
-        fake_model = FakeModel(fn_predict_probability_1_for_next_action)
         fake_game = FakeGame()
+        fake_model = FakeModel(fn_predict_probability_1_for_next_action, fake_game)
         fake_state = FakeState(fake_game, 0)
         player = GamePlayer(fake_model, fake_game)
         final_state = player.play(fake_state)
@@ -44,8 +44,8 @@ class TestGamePlayer(unittest.TestCase):
         self.assertEqual(3, final_state.sequence_i)
 
     def test_play_when_max_actions_reached(self):
-        fake_model = FakeModel(fn_predict_probability_1_for_next_action)
         fake_game = FakeGame()
+        fake_model = FakeModel(fn_predict_probability_1_for_next_action, fake_game)
         fake_state = FakeState(fake_game, 0)
         player = GamePlayer(fake_model, fake_game)
         final_state = player.play(fake_state, max_actions=2)
