@@ -7,13 +7,16 @@ from exceptions.alphazero.monte_carlo_tree_search import InvalidDepthException, 
 from exceptions.exceptions import RequiredValueException
 from src.alphazero.game_player import GamePlayer
 from src.alphazero.montecarlo_tree_search import MonteCarloTreeSearch
+from src.robot_reboot.game import RobotRebootGame
+from src.robot_reboot.goal_house import RobotRebootGoalHouse
+from src.robot_reboot.state import RobotRebootState
 from test.alphazero.fake_data import FakeState, FakeModel, fn_predict_probability_1_for_next_action, FakeGame
 
 
-def assert_state(mcts, s, n=[], w=[], p=[]):
-    np.testing.assert_equal(mcts.states_statistics[s].n, n)
-    np.testing.assert_equal(mcts.states_statistics[s].w, w)
-    np.testing.assert_equal(mcts.states_statistics[s].p, p)
+def assert_state(mcts, s, n=[], w=[], p=[], message=""):
+    np.testing.assert_equal(mcts.states_statistics[s].n, n, message)
+    np.testing.assert_equal(mcts.states_statistics[s].w, w, message)
+    np.testing.assert_equal(mcts.states_statistics[s].p, p, message)
 
 
 def heuristic_fn(p, _):
@@ -82,7 +85,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
                v=-1      v=1     v=1     v=0
 
         """
-        fake_model = FakeModel(fn_predict_probability_1_for_next_action)
+        fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         game_player = GamePlayer(fake_model, fake_model.game)
         mcts = MonteCarloTreeSearch(heuristic_fn, 2, game_player, playouts=1)
         fake_state = FakeState(game_player.game, 0, 0)
@@ -113,7 +116,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
 
         """
 
-        fake_model = FakeModel(fn_predict_probability_1_for_next_action)
+        fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         game_player = GamePlayer(fake_model, fake_model.game)
         mcts = MonteCarloTreeSearch(heuristic_fn, 4, game_player, playouts=1)
         fake_state = FakeState(game_player.game, 0, 0)
@@ -125,16 +128,36 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         assert_state(mcts, 's4', n=[1, 0, 0, 0], w=[1, 0, 0, 0], p=[1, 0, 0, 0])
 
     def test_search_clean_state_statistics_for_each_search(self):
-        fake_model = FakeModel(fn_predict_probability_1_for_next_action)
+        """
+                               Tree built
+                                   s0
+
+                       (a1)    (a2)    (a3)    (a4)
+                        s1      s2      s3      s1
+
+                       (a2)    (a3)            (a1)
+                        s2      s3              s1
+
+                       v=-1      v=1     v=1     v=0
+
+       """
+        fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         game_player = GamePlayer(fake_model, fake_model.game)
         mcts = MonteCarloTreeSearch(heuristic_fn, 2, game_player, playouts=1)
         fake_state = FakeState(game_player.game, 0, 0)
+        # Executed twice, visits should not be added on top of the second search
+        mcts.search(fake_state)
         p = mcts.search(fake_state)
+
         np.testing.assert_equal(p, [-1, 1, 1, 0])
+
         self.assertEqual(list(mcts.states_statistics.keys()), ['s1', 's2', 's4'])
-        assert_state(mcts, 's1', n=[0, 1, 0, 0], w=[0, -1, 0, 0], p=[0, -1, 0, 0])
-        assert_state(mcts, 's2', n=[0, 0, 1, 0], w=[0, 0, 1, 0], p=[0, 0, 1, 0])
-        assert_state(mcts, 's4', n=[1, 0, 0, 0], w=[0, 0, 0, 0], p=[0, 0, 0, 0])
+        assert_state(mcts, 's1', n=[0, 1, 0, 0], w=[0, -1, 0, 0], p=[0, -1, 0, 0],
+                     message="Visits for s1 should only count one the last search, check state statistics are reset")
+        assert_state(mcts, 's2', n=[0, 0, 1, 0], w=[0, 0, 1, 0], p=[0, 0, 1, 0],
+                     message="Visits for s2 should only count one the last search, check state statistics are reset")
+        assert_state(mcts, 's4', n=[1, 0, 0, 0], w=[0, 0, 0, 0], p=[0, 0, 0, 0],
+                     message="Visits for s3 should only count one the last search, check state statistics are reset")
 
     def test_search_with_random_probabilities(self):
         """
@@ -154,7 +177,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
 
         """
         np.random.seed(26)
-        fake_model = FakeModel(fn_predict_probability_np_seed)
+        fake_model = FakeModel(fn_predict_probability_np_seed, FakeGame())
         game_player = GamePlayer(fake_model, fake_model.game)
         mcts = MonteCarloTreeSearch(heuristic_fn, 3, game_player, playouts=3)
         fake_state = FakeState(game_player.game, 0, 0)
@@ -171,7 +194,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         when MCTS searches
         Then all probabilities are zero because it can't explore the tree
         """
-        fake_model = FakeModel(fn_predict_probability_1_for_next_action)
+        fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         fake_game = fake_model.game
         game_player = GamePlayer(fake_model, fake_model.game)
         mcts = MonteCarloTreeSearch(heuristic_fn, 3, game_player, playouts=1)
@@ -199,7 +222,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
                                 v=0      v=-1     v=1     v=-1
 
         """
-        fake_model = FakeModel(fn_predict_probability_1_for_next_action)
+        fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         fake_game = fake_model.game
         game_player = GamePlayer(fake_model, fake_model.game)
         mcts = MonteCarloTreeSearch(heuristic_fn, 3, game_player, playouts=1)
@@ -235,7 +258,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
                         v=-1     v=0     v=1     v=-1
 
         """
-        fake_model = FakeModel(fn_predict_probability_1_for_next_action)
+        fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         fake_game = fake_model.game
         game_player = GamePlayer(fake_model, fake_model.game)
         mcts = MonteCarloTreeSearch(heuristic_fn, 3, game_player, playouts=1)
@@ -273,7 +296,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
                         v=0     v=1     v=-1
 
         """
-        fake_model = FakeModel(fn_predict_probability_1_for_next_action)
+        fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         fake_game = fake_model.game
         game_player = GamePlayer(fake_model, fake_model.game)
         mcts = MonteCarloTreeSearch(heuristic_fn, 3, game_player, playouts=1)
@@ -289,3 +312,40 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         assert_state(mcts, 's1', n=[0, 1, 0, 0], w=[0, -1, 0, 0], p=[0, -1, 0, 0])
         assert_state(mcts, 's2', n=[0, 0, 0, 1], w=[0, 0, 0, 0], p=[0, 0, 0, 0])
         assert_state(mcts, 's4', n=[2, 0, 0, 0], w=[-1, 0, 0, 0], p=[-0.5, 0, 0, 0])
+
+    def test_search_with_robot_reboot_game(self):
+        """
+        Given there is one robot in position (1,1) of the maze,
+              its goal is cell (0,0),
+              np seed is 26,
+              actions order is N, S, E, W
+        When MCTS searches
+        The tree generated is
+                            Tree built
+                              (1,1)
+
+                        (N)       (E)        (W)
+                       (0,1)     (1,2)      (1,0)
+
+                        (W)       (N)        (E)
+                       (0,0)     (0,2)      (1,2)
+
+                                  (W)        (N)
+                                 (0,0)      (0,2)
+
+                        v=1       v=1       v=-0
+
+        """
+        np.random.seed(26)
+        house = RobotRebootGoalHouse(0, (0, 0))
+        maze = np.array([[0, 0, 0],
+                         [0, 0, 0],
+                         [0, 1, 0],
+                         ])
+        game = RobotRebootGame(1, maze, house)
+        fake_model = FakeModel(fn_predict_probability_np_seed, game)
+        game_player = GamePlayer(fake_model, game)
+        mcts = MonteCarloTreeSearch(heuristic_fn, 3, game_player, playouts=1)
+        s = RobotRebootState(game, [(1, 1)])
+        p = mcts.search(s)
+        np.testing.assert_equal([1, 1, 0, 0], p)
