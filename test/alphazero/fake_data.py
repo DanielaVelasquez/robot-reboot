@@ -50,7 +50,7 @@ class FakeGame(Game):
 
     def __init__(self):
         Game.__init__(self, [FakeAction(i + 1) for i in range(4)])
-        self.valid_actions_dict = None
+        self.valid_state_actions_dict = None
 
     def get_value(self, state: FakeState):
         if state.value == 3:
@@ -73,8 +73,8 @@ class FakeGame(Game):
         return FakeState(self, action.value, state.sequence_i + 1)
 
     def get_valid_actions(self, state: FakeState):
-        if self.valid_actions_dict is not None and state.value in self.valid_actions_dict:
-            return self.valid_actions_dict[state.value]
+        if self.valid_state_actions_dict is not None and state.value in self.valid_state_actions_dict:
+            return self.valid_state_actions_dict[state.value]
         return self.actions
 
 
