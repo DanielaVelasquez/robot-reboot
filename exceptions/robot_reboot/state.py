@@ -11,3 +11,8 @@ class InvalidRobotsPositionException(Exception):
 class RobotsPositionOutOfMazeBoundsException(Exception):
     def __init__(self):
         self.message = "All robot positions must be inside of the maze bounds"
+
+
+class NumberRobotsNotMatchingException(Exception):
+    def __init__(self):
+        self.message = "Number of robots in the game and the state does not match"

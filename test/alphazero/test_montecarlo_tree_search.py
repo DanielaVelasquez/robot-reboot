@@ -7,7 +7,7 @@ from exceptions.alphazero.monte_carlo_tree_search import InvalidDepthException, 
 from exceptions.exceptions import RequiredValueException
 from src.alphazero.game_player import GamePlayer
 from src.alphazero.montecarlo_tree_search import MonteCarloTreeSearch
-from test.alphazero.fake_data import FakeState, FakeModel, fn_predict_probability_1_for_next_action
+from test.alphazero.fake_data import FakeState, FakeModel, fn_predict_probability_1_for_next_action, FakeGame
 
 
 def assert_state(mcts, s, n=[], w=[], p=[]):
@@ -111,7 +111,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
                                                  s3
                         v=1      v=1     v=1     v=1
 
-                """
+        """
 
         fake_model = FakeModel(fn_predict_probability_1_for_next_action)
         game_player = GamePlayer(fake_model, fake_model.game)
@@ -129,7 +129,6 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         game_player = GamePlayer(fake_model, fake_model.game)
         mcts = MonteCarloTreeSearch(heuristic_fn, 2, game_player, playouts=1)
         fake_state = FakeState(game_player.game, 0, 0)
-        p = mcts.search(fake_state)
         p = mcts.search(fake_state)
         np.testing.assert_equal(p, [-1, 1, 1, 0])
         self.assertEqual(list(mcts.states_statistics.keys()), ['s1', 's2', 's4'])
@@ -165,3 +164,128 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         assert_state(mcts, 's1', n=[3, 1, 3, 2], w=[0, -1, 3, -1], p=[0, -1, 1, -0.5])
         assert_state(mcts, 's2', n=[3, 1, 0, 0], w=[0, 0, 0, 0], p=[0, 0, 0, 0])
         assert_state(mcts, 's4', n=[3, 0, 0, 2], w=[1, 0, 0, -2], p=[1 / 3, 0, 0, -1])
+
+    def test_search_returns_all_probabilities_zero_when_none_valid_actions_on_root_state(self):
+        """
+        Given that there are no valid actions on the root state
+        when MCTS searches
+        Then all probabilities are zero because it can't explore the tree
+        """
+        fake_model = FakeModel(fn_predict_probability_1_for_next_action)
+        fake_game = fake_model.game
+        game_player = GamePlayer(fake_model, fake_model.game)
+        mcts = MonteCarloTreeSearch(heuristic_fn, 3, game_player, playouts=1)
+        fake_state = FakeState(fake_game, 0, 0)
+        # If state not defined here, all actions are returned
+        fake_game.valid_state_actions_dict = {
+            0: []
+        }
+        p = mcts.search(fake_state)
+        np.testing.assert_equal(p, [0, 0, 0, 0])
+        self.assertEqual(0, len(mcts.states_statistics))
+
+    def test_search__when_none_valid_actions_on_next_states_after_root_state(self):
+        """
+        Given that all states after the root state don't have valid actions
+        When MCTS searches
+        Then no states were visited from the following states after the root state
+
+                                        Tree built
+                                            s0
+
+                                (a1)    (a2)    (a3)    (a4)
+                                 s1      s2      s3      s1
+
+                                v=0      v=-1     v=1     v=-1
+
+        """
+        fake_model = FakeModel(fn_predict_probability_1_for_next_action)
+        fake_game = fake_model.game
+        game_player = GamePlayer(fake_model, fake_model.game)
+        mcts = MonteCarloTreeSearch(heuristic_fn, 3, game_player, playouts=1)
+        fake_state = FakeState(fake_game, 0, 0)
+        # If state not defined here, all actions are returned
+        fake_game.valid_state_actions_dict = {
+            1: [],
+            2: [],
+            3: [],
+            4: []
+        }
+        p = mcts.search(fake_state)
+        np.testing.assert_equal(p, [0, -1, 1, -1])
+        self.assertEqual(0, len(mcts.states_statistics))
+
+    def test_search__when_some_valid_actions_on_next_states(self):
+        """
+        Given that the s2 can't take action 3
+        When MCTS searches
+        Then s2 always takes action 4 because its the next best action
+                                Tree built
+                                    s0
+
+                        (a1)    (a2)    (a3)    (a4)
+                         s1      s2      s3      s1
+
+                        (a2)    (a4)            (a1)
+                         s2      s4              s1
+
+                        (a4)    (a1)            (a2)
+                         s4      s1              s2
+
+                        v=-1     v=0     v=1     v=-1
+
+        """
+        fake_model = FakeModel(fn_predict_probability_1_for_next_action)
+        fake_game = fake_model.game
+        game_player = GamePlayer(fake_model, fake_model.game)
+        mcts = MonteCarloTreeSearch(heuristic_fn, 3, game_player, playouts=1)
+        fake_state = FakeState(fake_game, 0, 0)
+        # If state not defined here, all actions are returned
+        fake_game.valid_state_actions_dict = {
+            2: [a for a in fake_game.actions if a.value != 3],  # It can't go to state 3
+        }
+        p = mcts.search(fake_state)
+        np.testing.assert_equal([-1, 0, 1, -1], p)
+        self.assertEqual(sorted(mcts.states_statistics.keys()), sorted(['s1', 's2', 's4']))
+        assert_state(mcts, 's1', n=[0, 2, 0, 0], w=[0, -2, 0, 0], p=[0, -1, 0, 0])
+        assert_state(mcts, 's2', n=[0, 0, 0, 2], w=[0, 0, 0, -1], p=[0, 0, 0, -0.5])
+        assert_state(mcts, 's4', n=[2, 0, 0, 0], w=[-1, 0, 0, 0], p=[-0.5, 0, 0, 0])
+
+    def test_search__when_some_valid_actions_on_next_states_and_root_state(self):
+        """
+        Given that s0 can't take action 1 and s2 can't take action 3
+        When MCTS searches
+        Then s0 doesn't explore s1 at the root level
+             s2 always takes action 4 because its the next best action
+
+                            Tree built
+                                s0
+
+                        (a2)    (a3)    (a4)
+                        s2      s3      s1
+
+                        (a4)            (a1)
+                         4              s1
+
+                        (a1)            (a2)
+                         s1              s2
+
+                        v=0     v=1     v=-1
+
+        """
+        fake_model = FakeModel(fn_predict_probability_1_for_next_action)
+        fake_game = fake_model.game
+        game_player = GamePlayer(fake_model, fake_model.game)
+        mcts = MonteCarloTreeSearch(heuristic_fn, 3, game_player, playouts=1)
+        fake_state = FakeState(fake_game, 0, 0)
+        # If state not defined here, all actions are returned
+        fake_game.valid_state_actions_dict = {
+            0: [a for a in fake_game.actions if a.value != 1],  # It can't go to state 1
+            2: [a for a in fake_game.actions if a.value != 3],  # It can't go to state 3
+        }
+        p = mcts.search(fake_state)
+        np.testing.assert_equal([0, 0, 1, -1], p)
+        self.assertEqual(sorted(mcts.states_statistics.keys()), sorted(['s1', 's2', 's4']))
+        assert_state(mcts, 's1', n=[0, 1, 0, 0], w=[0, -1, 0, 0], p=[0, -1, 0, 0])
+        assert_state(mcts, 's2', n=[0, 0, 0, 1], w=[0, 0, 0, 0], p=[0, 0, 0, 0])
+        assert_state(mcts, 's4', n=[2, 0, 0, 0], w=[-1, 0, 0, 0], p=[-0.5, 0, 0, 0])

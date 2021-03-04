@@ -47,8 +47,10 @@ class FakeModel(Model):
 
 
 class FakeGame(Game):
+
     def __init__(self):
         Game.__init__(self, [FakeAction(i + 1) for i in range(4)])
+        self.valid_state_actions_dict = None
 
     def get_value(self, state: FakeState):
         if state.value == 3:
@@ -69,6 +71,11 @@ class FakeGame(Game):
         E.g if action.value = 1 then it'll go to state.value =1 regardless of the starting state
         """
         return FakeState(self, action.value, state.sequence_i + 1)
+
+    def get_valid_actions(self, state: FakeState):
+        if self.valid_state_actions_dict is not None and state.value in self.valid_state_actions_dict:
+            return self.valid_state_actions_dict[state.value]
+        return self.actions
 
 
 def fn_predict_probability_1_for_next_action(actions_size, state: FakeState):

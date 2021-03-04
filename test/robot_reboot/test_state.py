@@ -3,16 +3,18 @@ import numpy as np
 from unittest.mock import Mock, PropertyMock
 
 from exceptions.alphazero.state import InvalidStateSequence
+from src.robot_reboot.game import RobotRebootGame
+from src.robot_reboot.goal_house import RobotRebootGoalHouse
 from src.robot_reboot.state import RobotRebootState
 from exceptions.robot_reboot.state import EmptyRobotsPositionException, InvalidRobotsPositionException, \
-    RobotsPositionOutOfMazeBoundsException
+    RobotsPositionOutOfMazeBoundsException, NumberRobotsNotMatchingException
 
 
-def get_game(size=3):
-    mock_game = Mock()
-    mock_maze_property = PropertyMock(return_value=np.array([[0 for j in range(size)] for i in range(size)]))
-    type(mock_game).maze = mock_maze_property
-    return mock_game
+def get_game(size=3,n_robots=2):
+    house = RobotRebootGoalHouse(0, (0, 0))
+    maze = np.array([[0 for j in range(size)] for i in range(size)])
+    game = RobotRebootGame(n_robots, maze, house)
+    return game
 
 
 class TestRobotRebootState(unittest.TestCase):
@@ -56,3 +58,7 @@ class TestRobotRebootState(unittest.TestCase):
     def test_init_fails_when_one_robot_out_of_maze_bounds(self):
         self.assertRaises(RobotsPositionOutOfMazeBoundsException,
                           lambda: RobotRebootState(get_game(), [(0, 2), (6, 6)]))
+
+    def test_init_fails_when_number_robots_in_state_not_match_robots_in_game(self):
+        self.assertRaises(NumberRobotsNotMatchingException,
+                          lambda: RobotRebootState(RobotRebootState(get_game(n_robots=1), [(1, 1), (0, 1)])))

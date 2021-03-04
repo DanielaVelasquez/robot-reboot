@@ -30,3 +30,6 @@ class RobotRebootAction(Action):
     @property
     def direction(self):
         return self.__direction
+
+    def __str__(self):
+        return f'Moving robot {self.__robot_id} on {self.__direction}'
