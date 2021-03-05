@@ -11,9 +11,7 @@ def valid_maze(n_robots, maze):
 
 
 def maze_only_walls_empty_cells(maze):
-    return np.all(np.logical_or(maze == MazeCellType.EMPTY.value,maze == MazeCellType.WALL.value))
-
-
+    return np.all(np.logical_or(maze == MazeCellType.EMPTY.value, maze == MazeCellType.WALL.value))
 
 
 def get_opposite_direction(movement: Direction):
@@ -59,3 +57,12 @@ def get_cell_at(direction: Direction, position: tuple, max_rows, max_cols):
         raise Exception("Not cell available")
 
 
+def join_quadrants(q1, q2, q3, q4):
+    assert q1.shape == q2.shape == q3.shape == q4.shape, "All quadrants must have the same shape"
+    rows, cols = q1.shape
+    result = np.zeros((2 * rows + 1, 2 * cols + 1), dtype=int)
+    result[0:rows, 0:cols] = q1
+    result[0:rows, cols+1:] = np.flip(q2, 1)
+    result[rows+1:, 0:cols] = np.flip(q3, 0)
+    result[rows+1:, cols+1:] = np.flip(q4)
+    return result
