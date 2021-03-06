@@ -62,7 +62,19 @@ def join_quadrants(q1, q2, q3, q4):
     rows, cols = q1.shape
     result = np.zeros((2 * rows + 1, 2 * cols + 1), dtype=int)
     result[0:rows, 0:cols] = q1
-    result[0:rows, cols+1:] = np.flip(q2, 1)
-    result[rows+1:, 0:cols] = np.flip(q3, 0)
-    result[rows+1:, cols+1:] = np.flip(q4)
+    result[0:rows, cols + 1:] = np.flip(q2, 1)
+    result[rows + 1:, 0:cols] = np.flip(q3, 0)
+    result[rows + 1:, cols + 1:] = np.flip(q4)
     return result
+
+
+def transpose_position_to_quadrant(q, pos, target_q):
+    x, y = pos
+    rows, cols = q.shape
+    if target_q == 2 or target_q == 4:
+        y += (cols - y) * 2
+
+    if target_q == 3 or target_q == 4:
+        x += (rows - x) * 2
+
+    return x, y

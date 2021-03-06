@@ -1,17 +1,16 @@
 import numpy as np
 
-from src.alphazero.game import Game
-from src.robot_reboot.action import RobotRebootAction
-from src.robot_reboot.state import RobotRebootState
-from exceptions.util import assertOrThrow
-from .direction import Direction
 from exceptions.robot_reboot.game import NoRobotsGameException, InvalidMazeException, \
     RobotHouseOutOfMazeBoundsException, \
     MazeNotSquareException, MazeSizeInvalidException, RobotHouseInvalidRobotIdException
+from exceptions.util import assertOrThrow
+from src.alphazero.game import Game
+from src.robot_reboot.action import RobotRebootAction
+from src.robot_reboot.state import RobotRebootState
+from .direction import Direction
 from .goal_house import RobotRebootGoalHouse
-from .util import valid_maze
 from .maze_cell_type import MazeCellType
-from ..alphazero.state import State
+from .util import valid_maze
 
 
 class RobotRebootGame(Game):
