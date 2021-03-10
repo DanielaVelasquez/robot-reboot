@@ -16,3 +16,8 @@ class RobotsPositionOutOfMazeBoundsException(Exception):
 class NumberRobotsNotMatchingException(Exception):
     def __init__(self):
         self.message = "Number of robots in the game and the state does not match"
+
+
+class InvalidRobotsList(Exception):
+    def __init__(self):
+        self.message = "A list with robots positions is expected"

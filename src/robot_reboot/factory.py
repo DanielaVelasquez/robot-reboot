@@ -46,7 +46,7 @@ class RobotRebootFactory:
         pos = (x, y)
         goal = RobotRebootGoalHouse(selected_house_goal.robot_id, pos)
         game = RobotRebootGame(n_robots, maze, goal)
-        state = RobotRebootState(game, generate_positions_except(n_robots, size, pos))
+        state = RobotRebootState(game, list(generate_positions_except(n_robots, size, pos)))
         return game, state, index[0:4]
 
     def get_game_configurations(self, size):

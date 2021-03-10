@@ -6,7 +6,9 @@ import numpy as np
 from exceptions.alphazero.monte_carlo_tree_search import InvalidDepthException, InvalidPlayoutException
 from exceptions.exceptions import RequiredValueException
 from src.alphazero.game_player import GamePlayer
+from src.alphazero.heuristic_function import heuristic_fn
 from src.alphazero.montecarlo_tree_search import MonteCarloTreeSearch
+from src.robot_reboot.factory import RobotRebootFactory
 from src.robot_reboot.game import RobotRebootGame
 from src.robot_reboot.goal_house import RobotRebootGoalHouse
 from src.robot_reboot.state import RobotRebootState
@@ -19,7 +21,7 @@ def assert_state(mcts, s, n=[], w=[], p=[], message=""):
     np.testing.assert_equal(mcts.states_statistics[s].p, p, message)
 
 
-def heuristic_fn(p, _):
+def fake_heuristic_fn(p, _):
     return p
 
 
@@ -87,7 +89,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         """
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = MonteCarloTreeSearch(heuristic_fn, 2, game_player, playouts=1)
+        mcts = MonteCarloTreeSearch(fake_heuristic_fn, 2, game_player, playouts=1)
         fake_state = FakeState(game_player.game, 0, 0)
         p = mcts.search(fake_state)
         np.testing.assert_equal(p, [-1, 1, 1, 0])
@@ -118,7 +120,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
 
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = MonteCarloTreeSearch(heuristic_fn, 4, game_player, playouts=1)
+        mcts = MonteCarloTreeSearch(fake_heuristic_fn, 4, game_player, playouts=1)
         fake_state = FakeState(game_player.game, 0, 0)
         p = mcts.search(fake_state)
         np.testing.assert_equal(p, [1, 1, 1, 1])
@@ -143,7 +145,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
        """
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = MonteCarloTreeSearch(heuristic_fn, 2, game_player, playouts=1)
+        mcts = MonteCarloTreeSearch(fake_heuristic_fn, 2, game_player, playouts=1)
         fake_state = FakeState(game_player.game, 0, 0)
         # Executed twice, visits should not be added on top of the second search
         mcts.search(fake_state)
@@ -179,7 +181,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         np.random.seed(26)
         fake_model = FakeModel(fn_predict_probability_np_seed, FakeGame())
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = MonteCarloTreeSearch(heuristic_fn, 3, game_player, playouts=3)
+        mcts = MonteCarloTreeSearch(fake_heuristic_fn, 3, game_player, playouts=3)
         fake_state = FakeState(game_player.game, 0, 0)
         p = mcts.search(fake_state)
         np.testing.assert_equal(p, [0, 0, 1, 0])
@@ -197,7 +199,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         fake_game = fake_model.game
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = MonteCarloTreeSearch(heuristic_fn, 3, game_player, playouts=1)
+        mcts = MonteCarloTreeSearch(fake_heuristic_fn, 3, game_player, playouts=1)
         fake_state = FakeState(fake_game, 0, 0)
         # If state not defined here, all actions are returned
         fake_game.valid_state_actions_dict = {
@@ -225,7 +227,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         fake_game = fake_model.game
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = MonteCarloTreeSearch(heuristic_fn, 3, game_player, playouts=1)
+        mcts = MonteCarloTreeSearch(fake_heuristic_fn, 3, game_player, playouts=1)
         fake_state = FakeState(fake_game, 0, 0)
         # If state not defined here, all actions are returned
         fake_game.valid_state_actions_dict = {
@@ -261,7 +263,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         fake_game = fake_model.game
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = MonteCarloTreeSearch(heuristic_fn, 3, game_player, playouts=1)
+        mcts = MonteCarloTreeSearch(fake_heuristic_fn, 3, game_player, playouts=1)
         fake_state = FakeState(fake_game, 0, 0)
         # If state not defined here, all actions are returned
         fake_game.valid_state_actions_dict = {
@@ -299,7 +301,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         fake_game = fake_model.game
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = MonteCarloTreeSearch(heuristic_fn, 3, game_player, playouts=1)
+        mcts = MonteCarloTreeSearch(fake_heuristic_fn, 3, game_player, playouts=1)
         fake_state = FakeState(fake_game, 0, 0)
         # If state not defined here, all actions are returned
         fake_game.valid_state_actions_dict = {
@@ -345,7 +347,17 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         game = RobotRebootGame(1, maze, house)
         fake_model = FakeModel(fn_predict_probability_np_seed, game)
         game_player = GamePlayer(fake_model, game)
-        mcts = MonteCarloTreeSearch(heuristic_fn, 3, game_player, playouts=1)
+        mcts = MonteCarloTreeSearch(fake_heuristic_fn, 3, game_player, playouts=1)
         s = RobotRebootState(game, [(1, 1)])
         p = mcts.search(s)
         np.testing.assert_equal([1, 1, 0, 0], p)
+
+    def test_search_with_robot_reboot_game_using_factory_and_heuristic_fn(self):
+        f = RobotRebootFactory(seed=26)
+
+        game, state, _ = f.create(11)
+        fake_model = FakeModel(fn_predict_probability_np_seed, game)
+        game_player = GamePlayer(fake_model, game)
+        mcts = MonteCarloTreeSearch(heuristic_fn, 3, game_player, playouts=1)
+        np.str(game.maze)
+        mcts.search(state)
