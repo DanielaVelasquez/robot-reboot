@@ -352,43 +352,6 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         p = mcts.search(s)
         np.testing.assert_equal([1, 1, 0, 0], p)
 
-    def test_search_with_robot_reboot_game(self):
-        """
-        Given there is one robot in position (1,1) of the maze,
-              its goal is cell (0,0),
-              np seed is 26,
-              actions order is N, S, E, W
-        When MCTS searches
-        The tree generated is
-                            Tree built
-                              (1,1)
-
-                        (N)       (E)        (W)
-                       (0,1)     (1,2)      (1,0)
-
-                        (W)       (N)        (E)
-                       (0,0)     (0,2)      (1,2)
-
-                                  (W)        (N)
-                                 (0,0)      (0,2)
-
-                        v=1       v=1       v=-0
-
-        """
-        np.random.seed(26)
-        house = RobotRebootGoalHouse(0, (0, 0))
-        maze = np.array([[0, 0, 0],
-                         [0, 0, 0],
-                         [0, 1, 0],
-                         ])
-        game = RobotRebootGame(1, maze, house)
-        fake_model = FakeModel(fn_predict_probability_np_seed, game)
-        game_player = GamePlayer(fake_model, game)
-        mcts = MonteCarloTreeSearch(fake_heuristic_fn, 3, game_player, playouts=1)
-        s = RobotRebootState(game, [(1, 1)])
-        p = mcts.search(s)
-        np.testing.assert_equal([1, 1, 0, 0], p)
-
     def test_search_with_robot_reboot_game_using_factory_and_heuristic_fn(self):
         f = RobotRebootFactory(seed=26)
 
