@@ -50,13 +50,19 @@ class RobotRebootFactory:
         return game, state, index[0:4]
 
     def get_game_configurations(self, size):
+        """Get all the game configurations for maze size
+        Args:
+            size (int): maze size
+        Returns:
+            confs (list): list of game configurations
+        """
         if size == 11:
-            quadrants = self.__get_5_x_5_quadrants()
+            confs = self.__get_5_x_5_quadrants()
         elif size == 31:
-            quadrants = self.__get_15x_15_quadrants()
+            confs = self.__get_15x_15_quadrants()
         else:
             raise UnsupportedMazeSize(size)
-        return quadrants
+        return confs
 
     def __get_5_x_5_quadrants(self):
         """Quadrants for a 11x11 maze"""
