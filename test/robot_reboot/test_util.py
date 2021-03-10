@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
-from src.robot_reboot.util import get_cell_at, Direction, join_quadrants, transpose_position_to_quadrant
+from src.robot_reboot.util import get_cell_at, Direction, join_quadrants, transpose_position_to_quadrant, build_matrix, \
+    generate_positions_except
 
 
 class TestUtil(unittest.TestCase):
@@ -133,6 +134,18 @@ class TestUtil(unittest.TestCase):
 
         self.assert_position_not_square_quadrant((2, 0), (4, 4), 4)
         self.assert_position_not_square_quadrant((2, 1), (4, 3), 4)
+
+    def test_build_maze_set_walls_correctly_and_maze_is_square(self):
+        m = build_matrix(3, [(0, 2), (2, 1)])
+        expected = np.array([[0, 0, 1],
+                             [0, 0, 0],
+                             [0, 1, 0]])
+        np.testing.assert_equal(expected, m)
+
+    def test_generate_positions_except_generates_different_positions(self):
+        positions = generate_positions_except(3, 5, (3, 4))
+        self.assertEqual(3, len(positions))
+        self.assertTrue((3, 4) not in positions)
 
     def assert_position_not_square_quadrant(self, origin, target, q):
         quadrant = np.arange(1, 7).reshape(3, 2)
