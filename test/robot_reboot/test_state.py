@@ -7,7 +7,7 @@ from src.robot_reboot.game import RobotRebootGame
 from src.robot_reboot.goal_house import RobotRebootGoalHouse
 from src.robot_reboot.state import RobotRebootState
 from exceptions.robot_reboot.state import EmptyRobotsPositionException, InvalidRobotsPositionException, \
-    RobotsPositionOutOfMazeBoundsException, NumberRobotsNotMatchingException
+    RobotsPositionOutOfMazeBoundsException, NumberRobotsNotMatchingException, InvalidRobotsList
 
 
 def get_game(size=3,n_robots=2):
@@ -62,3 +62,7 @@ class TestRobotRebootState(unittest.TestCase):
     def test_init_fails_when_number_robots_in_state_not_match_robots_in_game(self):
         self.assertRaises(NumberRobotsNotMatchingException,
                           lambda: RobotRebootState(RobotRebootState(get_game(n_robots=1), [(1, 1), (0, 1)])))
+
+    def test_init_fails_robots_not_list(self):
+        self.assertRaises(InvalidRobotsList,
+                          lambda: RobotRebootState(RobotRebootState(get_game(n_robots=1), {(1, 0)})))
