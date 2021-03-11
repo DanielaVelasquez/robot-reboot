@@ -1,9 +1,9 @@
 from tensorflow.keras import models, layers
 
 
-class CNN(models.Sequential):
+class CNN(models.Model):
     def __init__(self, input_shape=(31, 31, 9), n_outputs=4, convolutions=3):
-        models.Sequential.__init__(self)
+        super(CNN, self).__init__()
         self.add(layers.Input(input_shape, name='input'))
         for i in range(convolutions):
             self.add(layers.Conv2D(64, (4, 4), activation='relu', padding='same', name=f'conv_{i + 1}'))
