@@ -71,7 +71,7 @@ class TestRobotRebootState(unittest.TestCase):
     def test_get_state(self):
         factory = RobotRebootFactory(seed=26)
         game, state, _ = factory.create(11)
-        s = state.get_state()
+        s = state.get_matrix()
         self.assertEqual((11, 11, 5), s.shape, "State should have the size of the maze for rows and columns and"
                                                "one layer for the maze"
                                                "one layer for robot 0 position"
@@ -125,3 +125,4 @@ class TestRobotRebootState(unittest.TestCase):
 
         np.testing.assert_equal(np.zeros((11, 11)), s[:, :, 4],
                                 "Fifth layer should be all zero because second robot doesn't need to get to its house")
+

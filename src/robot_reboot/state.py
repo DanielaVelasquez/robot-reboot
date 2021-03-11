@@ -45,7 +45,14 @@ class RobotRebootState(State):
     def __str__(self):
         return f'{self.__robots_positions}'
 
-    def get_state(self):
+    def get_matrix(self):
+        """Gets a matrix that represents this state based on the game, this matrix consists of zeros and ones
+        it's 3-dimensional array where the first layer represents the maze and its walls, and following layers
+        for each robot there are two layers, one represent a robot position in the maze and the following the
+        robots house goal if it exists otherwise that layer is full of zeros
+        Returns:
+            maze : 3-dimensional array representing the state and the game
+        """
         r, c = self.game.maze.shape
         n_robots = len(self.__robots_positions)
         maze = np.zeros((r, c, n_robots * 2 + 1))
