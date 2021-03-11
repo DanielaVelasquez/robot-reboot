@@ -18,3 +18,4 @@ class CNN(models.Model):
         v = layers.Dense(1, activation='tanh', name='v')
         self.add
         self.add(layers.Concatenate([p, v]))
+        self.inp
