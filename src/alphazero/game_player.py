@@ -61,7 +61,7 @@ class GamePlayer:
         """
         if self.__game.is_over(state) or actions_count >= max_actions:
             return state
-        p, v = self.predict(state)
+        v, p = self.predict(state)
         i_best = np.argsort(p)[::-1][0]
         action = self.__game.actions[i_best]
 
@@ -74,8 +74,8 @@ class GamePlayer:
         Args:
             state (State): state to evaluate
         Returns
-            p (np array):   Predicted probability distribution over each action
             v (number):     Predicted value
+            p (np array):   Predicted probability distribution over each action
         """
         assertOrThrow(state is not None, RequiredValueException("state"))
         return self.__model.predict(state)

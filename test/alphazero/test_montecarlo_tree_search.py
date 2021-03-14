@@ -1,4 +1,5 @@
 import unittest
+import tensorflow as tf
 from unittest.mock import Mock
 
 import numpy as np
@@ -8,9 +9,11 @@ from exceptions.exceptions import RequiredValueException
 from src.alphazero.game_player import GamePlayer
 from src.alphazero.heuristic_function import heuristic_fn
 from src.alphazero.montecarlo_tree_search import MonteCarloTreeSearch
+from src.ml.model import get_cnn_model
 from src.robot_reboot.factory import RobotRebootFactory
 from src.robot_reboot.game import RobotRebootGame
 from src.robot_reboot.goal_house import RobotRebootGoalHouse
+from src.robot_reboot.model import RobotRebootModel
 from src.robot_reboot.state import RobotRebootState
 from test.alphazero.fake_data import FakeState, FakeModel, fn_predict_probability_1_for_next_action, FakeGame
 
@@ -316,48 +319,49 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         assert_state(mcts, 's4', n=[2, 0, 0, 0], w=[-1, 0, 0, 0], p=[-0.5, 0, 0, 0])
 
     def test_search_with_robot_reboot_game(self):
-        """
-        Given there is one robot in position (1,1) of the maze,
-              its goal is cell (0,0),
-              np seed is 26,
-              actions order is N, S, E, W
-        When MCTS searches
-        The tree generated is
-                            Tree built
-                              (1,1)
-
-                        (N)       (E)        (W)
-                       (0,1)     (1,2)      (1,0)
-
-                        (W)       (N)        (E)
-                       (0,0)     (0,2)      (1,2)
-
-                                  (W)        (N)
-                                 (0,0)      (0,2)
-
-                        v=1       v=1       v=-0
-
-        """
-        np.random.seed(26)
-        house = RobotRebootGoalHouse(0, (0, 0))
-        maze = np.array([[0, 0, 0],
-                         [0, 0, 0],
-                         [0, 1, 0],
-                         ])
-        game = RobotRebootGame(1, maze, house)
-        fake_model = FakeModel(fn_predict_probability_np_seed, game)
-        game_player = GamePlayer(fake_model, game)
-        mcts = MonteCarloTreeSearch(fake_heuristic_fn, 3, game_player, playouts=1)
-        s = RobotRebootState(game, [(1, 1)])
-        p = mcts.search(s)
-        np.testing.assert_equal([1, 1, 0, 0], p)
-
-    def test_search_with_robot_reboot_game_using_factory_and_heuristic_fn(self):
         f = RobotRebootFactory(seed=26)
-
         game, state, _ = f.create(11)
-        fake_model = FakeModel(fn_predict_probability_np_seed, game)
-        game_player = GamePlayer(fake_model, game)
+        cnn = get_cnn_model((11, 11, 5), n_outputs=len(game.actions), convolutions=2, optimizer='adam', seed=26)
+        model = RobotRebootModel(game, cnn)
+        game_player = GamePlayer(model, game)
         mcts = MonteCarloTreeSearch(heuristic_fn, 3, game_player, playouts=1)
         np.str(game.maze)
-        mcts.search(state)
+        p = mcts.search(state)
+        np.testing.assert_equal([0, 0, 0, 0, 0, 0, 0, 0], p)
+        self.assertEqual(sorted(['[(0, 0), (6, 0)]',
+                                 '[(0, 10), (6, 0)]',
+                                 '[(0, 6), (6, 0)]',
+                                 '[(1, 0), (0, 0)]',
+                                 '[(1, 0), (10, 0)]',
+                                 '[(1, 0), (6, 0)]',
+                                 '[(1, 0), (6, 10)]',
+                                 '[(1, 10), (6, 0)]',
+                                 '[(1, 6), (0, 0)]',
+                                 '[(1, 6), (10, 0)]',
+                                 '[(1, 6), (6, 10)]',
+                                 '[(10, 6), (6, 0)]']), sorted(mcts.states_statistics.keys()))
+
+        assert_state(mcts, '[(0, 0), (6, 0)]', n=[0, 0, 0, 0, 1, 1, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
+                     p=[0, 0, 0, 0, 0, 0, 0, 0])
+        assert_state(mcts, '[(0, 10), (6, 0)]', n=[0, 0, 0, 1, 0, 0, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
+                     p=[0, 0, 0, 0, 0, 0, 0, 0])
+        assert_state(mcts, '[(0, 6), (6, 0)]', n=[0, 0, 0, 1, 0, 1, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
+                     p=[0, 0, 0, 0, 0, 0, 0, 0])
+        assert_state(mcts, '[(1, 0), (0, 0)]', n=[1, 0, 0, 0, 0, 0, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
+                     p=[0, 0, 0, 0, 0, 0, 0, 0])
+        assert_state(mcts, '[(1, 0), (10, 0)]', n=[1, 0, 0, 0, 0, 0, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
+                     p=[0, 0, 0, 0, 0, 0, 0, 0])
+        assert_state(mcts, '[(1, 0), (6, 0)]', n=[1, 0, 0, 0, 0, 0, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
+                     p=[0, 0, 0, 0, 0, 0, 0, 0])
+        assert_state(mcts, '[(1, 0), (6, 10)]', n=[1, 0, 0, 0, 0, 0, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
+                     p=[0, 0, 0, 0, 0, 0, 0, 0])
+        assert_state(mcts, '[(1, 10), (6, 0)]', n=[1, 0, 0, 0, 0, 0, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
+                     p=[0, 0, 0, 0, 0, 0, 0, 0])
+        assert_state(mcts, '[(1, 6), (0, 0)]', n=[0, 0, 0, 1, 0, 0, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
+                     p=[0, 0, 0, 0, 0, 0, 0, 0])
+        assert_state(mcts, '[(1, 6), (10, 0)]', n=[0, 0, 0, 1, 0, 0, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
+                     p=[0, 0, 0, 0, 0, 0, 0, 0])
+        assert_state(mcts, '[(1, 6), (6, 10)]', n=[0, 0, 0, 1, 0, 0, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
+                     p=[0, 0, 0, 0, 0, 0, 0, 0])
+        assert_state(mcts, '[(10, 6), (6, 0)]', n=[1, 0, 0, 0, 0, 0, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
+                     p=[0, 0, 0, 0, 0, 0, 0, 0])

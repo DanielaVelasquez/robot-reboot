@@ -1,10 +1,15 @@
+import numpy as np
+
 from exceptions.robot_reboot.state import EmptyRobotsPositionException, InvalidRobotsPositionException, \
     RobotsPositionOutOfMazeBoundsException, NumberRobotsNotMatchingException, InvalidRobotsList
-from ..alphazero.state import State
 from exceptions.util import assertOrThrow
+from ..alphazero.state import State
 
 
 class RobotRebootState(State):
+
+    ROBOT_IN_CELL = 1
+
     """
     State for the robot reboot game is defined by the positions of the robots.
     Attributes:
@@ -39,3 +44,24 @@ class RobotRebootState(State):
 
     def __str__(self):
         return f'{self.__robots_positions}'
+
+    def get_matrix(self):
+        """Gets a matrix that represents this state based on the game, this matrix consists of zeros and ones
+        it's 3-dimensional array where the first layer represents the maze and its walls, and following layers
+        for each robot there are two layers, one represent a robot position in the maze and the following the
+        robots house goal if it exists otherwise that layer is full of zeros
+        Returns:
+            maze : 3-dimensional array representing the state and the game
+        """
+        r, c = self.game.maze.shape
+        n_robots = len(self.__robots_positions)
+        maze = np.zeros((r, c, n_robots * 2 + 1))
+        maze[:, :, 0] = self.game.maze
+        i = 1
+        for x, y in self.__robots_positions:
+            maze[x, y, i] = RobotRebootState.ROBOT_IN_CELL
+            i += 2
+        x, y = self.game.goal_house.house
+        # Goal house
+        maze[x, y, self.game.goal_house.robot_id + 2] = RobotRebootState.ROBOT_IN_CELL
+        return maze

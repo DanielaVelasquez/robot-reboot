@@ -3,6 +3,7 @@ import numpy as np
 from unittest.mock import Mock, PropertyMock
 
 from exceptions.alphazero.state import InvalidStateSequence
+from src.robot_reboot.factory import RobotRebootFactory
 from src.robot_reboot.game import RobotRebootGame
 from src.robot_reboot.goal_house import RobotRebootGoalHouse
 from src.robot_reboot.state import RobotRebootState
@@ -10,7 +11,7 @@ from exceptions.robot_reboot.state import EmptyRobotsPositionException, InvalidR
     RobotsPositionOutOfMazeBoundsException, NumberRobotsNotMatchingException, InvalidRobotsList
 
 
-def get_game(size=3,n_robots=2):
+def get_game(size=3, n_robots=2):
     house = RobotRebootGoalHouse(0, (0, 0))
     maze = np.array([[0 for j in range(size)] for i in range(size)])
     game = RobotRebootGame(n_robots, maze, house)
@@ -66,3 +67,62 @@ class TestRobotRebootState(unittest.TestCase):
     def test_init_fails_robots_not_list(self):
         self.assertRaises(InvalidRobotsList,
                           lambda: RobotRebootState(RobotRebootState(get_game(n_robots=1), {(1, 0)})))
+
+    def test_get_state(self):
+        factory = RobotRebootFactory(seed=26)
+        game, state, _ = factory.create(11)
+        s = state.get_matrix()
+        self.assertEqual((11, 11, 5), s.shape, "State should have the size of the maze for rows and columns and"
+                                               "one layer for the maze"
+                                               "one layer for robot 0 position"
+                                               "one layer for robot 0 house goal, "
+                                               "one layer for robot 1 position and "
+                                               "one layer for robot 1 house goal")
+        np.testing.assert_equal(game.maze, s[:, :, 0], "First layer should be the maze")
+        np.testing.assert_equal(np.array(([
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ])), s[:, :, 1], "Second layer should have a one where the first robot is located and the rest should be zero")
+
+        np.testing.assert_equal(np.array(([
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ])), s[:, :, 2],
+            "Third layer should have a one where the first robot's goal is located and the rest should be zero")
+
+        np.testing.assert_equal(np.array(([
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ])), s[:, :, 3],
+            "Fourth layer should have a one where the second robot is located and the rest should be zero")
+
+        np.testing.assert_equal(np.zeros((11, 11)), s[:, :, 4],
+                                "Fifth layer should be all zero because second robot doesn't need to get to its house")
+
