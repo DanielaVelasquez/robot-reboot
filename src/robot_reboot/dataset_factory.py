@@ -13,14 +13,16 @@ class RobotRebootDataSetFactory:
         max_depth (int): Max depth of the tree search
         cnn: neural network leading the mcts
         playouts: number of playouts per simulation
+        locate_robot_close_goal: determine if robots should be created close to its home
     """
 
-    def __init__(self, maze_size, cnn, max_depth=20, seed=26, playouts=10):
+    def __init__(self, maze_size, cnn, max_depth=20, seed=26, playouts=10, locate_robot_close_goal=False):
         self.__game_factory = RobotRebootFactory(seed=seed)
         self.__maze_size = maze_size
         self.__max_dept = max_depth
         self.__cnn = cnn
         self.__playouts = playouts
+        self.__locate_robot_close_goal = locate_robot_close_goal
 
     @property
     def game_factory(self):
@@ -42,6 +44,10 @@ class RobotRebootDataSetFactory:
     def playouts(self):
         return self.__playouts
 
+    @property
+    def locate_robot_close_goal(self):
+        return self.__locate_robot_close_goal
+
     def create(self):
         """Creates a data set example by creating random games, searching on the tree to build the probabilities,
         executes a play of the game and obtains the value if the NN suggestions were followed
@@ -50,7 +56,8 @@ class RobotRebootDataSetFactory:
             p (np array): Probability distribution of wining per action based on the initial state of the game
             s (state): Initial state where the search and play where applied in its matrix form
         """
-        game, state, robot_ids = self.game_factory.create(self.maze_size)
+        game, state, robot_ids = self.game_factory.create(self.maze_size,
+                                                          locate_robot_close_goal=self.locate_robot_close_goal)
         model = RobotRebootModel(game, self.cnn)
         game_player = GamePlayer(model, game)
         mcts = MonteCarloTreeSearch(heuristic_fn, self.max_depth, game_player, playouts=self.playouts)
