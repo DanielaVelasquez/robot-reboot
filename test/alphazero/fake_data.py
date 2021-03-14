@@ -72,7 +72,7 @@ class FakeModel(Model):
         self.__fn_predict_probability = fn_predict_probability
 
     def predict(self, state: State):
-        return self.__fn_predict_probability(len(self.game.actions), state), np.nan
+        return np.nan, self.__fn_predict_probability(len(self.game.actions), state)
 
     def train(self, train_x, train_y, test_x, test_y):
         pass
