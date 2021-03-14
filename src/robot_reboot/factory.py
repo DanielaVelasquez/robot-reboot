@@ -19,6 +19,8 @@ class RobotRebootFactory:
         """Creates a robot reboot game and its initial state.
         The maze is randomly created joining different quadrants and the robots are randomly located in the maze
         avoiding the game goal house for all the robots.
+        Args:
+            size (int): size of the maze (number of rows and cols)
         Returns:
             game: Robot reboot game
             state: Initial robot reboot game state

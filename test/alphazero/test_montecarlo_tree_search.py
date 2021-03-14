@@ -325,7 +325,6 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         model = RobotRebootModel(game, cnn)
         game_player = GamePlayer(model, game)
         mcts = MonteCarloTreeSearch(heuristic_fn, 3, game_player, playouts=1)
-        np.str(game.maze)
         p = mcts.search(state)
         np.testing.assert_equal([0, 0, 0, 0, 0, 0, 0, 0], p)
         self.assertEqual(sorted(['[(0, 0), (6, 0)]',
