@@ -96,7 +96,7 @@ class MonteCarloTreeSearch:
         valid_actions = self.__game.get_valid_actions(state)
         if self.__game.is_over(state) or depth >= self.__max_depth or len(valid_actions) == 0:
             return self.__game.get_value(state)
-        p, v = self.__game_player.predict(state)
+        v, p = self.__game_player.predict(state)
 
         state_stats = self.__get_state_statistics(state)
         heuristic_values = self.__heuristic_fn(p, state_stats)

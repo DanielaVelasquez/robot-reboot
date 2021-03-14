@@ -74,8 +74,8 @@ class GamePlayer:
         Args:
             state (State): state to evaluate
         Returns
-            p (np array):   Predicted probability distribution over each action
             v (number):     Predicted value
+            p (np array):   Predicted probability distribution over each action
         """
         assertOrThrow(state is not None, RequiredValueException("state"))
         return self.__model.predict(state)

@@ -1,8 +1,10 @@
 from tensorflow import keras
 from tensorflow.keras import layers, Model
+import tensorflow as tf
 
 
-def get_cnn_model(input_shape=(31, 31, 9), n_outputs=4, convolutions=3, optimizer='adam'):
+def get_cnn_model(input_shape=(31, 31, 9), n_outputs=4, convolutions=3, optimizer='adam', seed=26):
+    tf.random.set_seed(seed=seed)
     _input = layers.Input(shape=input_shape, name='input')
     x = layers.Conv2D(64, (4, 4), activation='relu', padding='same', name=f'conv_0')(_input)
     x = layers.MaxPooling2D(2)(x)
@@ -22,5 +24,5 @@ def get_cnn_model(input_shape=(31, 31, 9), n_outputs=4, convolutions=3, optimize
         "p": keras.losses.BinaryCrossentropy()
     }
 
-    cnn_model.compile(loss=losses, optimizer='adam')
+    cnn_model.compile(loss=losses, optimizer=optimizer)
     return cnn_model
