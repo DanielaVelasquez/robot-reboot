@@ -58,8 +58,7 @@ class RobotRebootFactory:
             robots_positions_2 = robots_positions.copy()
             robots_positions_2[robot] = goal_pos
             s = RobotRebootState(game, robots_positions_2)
-            number_actions = np.random.randint(1, max_movements)
-            for i in range(number_actions):
+            for i in range(max_movements):
                 valid_actions = [a for a in game.get_valid_actions(s) if a.robot_id == robot]
                 action = valid_actions[np.random.randint(0, len(valid_actions))]
                 s = game.apply(action, s)
