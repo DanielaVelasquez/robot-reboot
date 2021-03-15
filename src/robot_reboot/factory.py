@@ -16,12 +16,14 @@ class RobotRebootFactory:
     def __init__(self, seed=26):
         np.random.seed(seed)
 
-    def create(self, size, locate_robot_close_goal=False):
+    def create(self, size, locate_robot_close_goal=False, max_movements=5):
         """Creates a robot reboot game and its initial state.
         The maze is randomly created joining different quadrants and the robots are randomly located in the maze
         avoiding the game goal house for all the robots.
         Args:
             size (int): size of the maze (number of rows and cols)
+            locate_robot_close_goal (boolean): determine if the robot reaching its house should be located closer to its house
+            max_movements: max number of movements away from its house if the robot is reallocated
         Returns:
             game: Robot reboot game
             state: Initial robot reboot game state
@@ -56,7 +58,7 @@ class RobotRebootFactory:
             robots_positions_2 = robots_positions.copy()
             robots_positions_2[robot] = goal_pos
             s = RobotRebootState(game, robots_positions_2)
-            number_actions = np.random.randint(1, 5)
+            number_actions = np.random.randint(1, max_movements)
             for i in range(number_actions):
                 valid_actions = [a for a in game.get_valid_actions(s) if a.robot_id == robot]
                 action = valid_actions[np.random.randint(0, len(valid_actions))]

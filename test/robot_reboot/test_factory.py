@@ -39,6 +39,7 @@ class TestRobotRebootFactory(unittest.TestCase):
         game, original_state, selected_quadrants = factory.create(31)
         # Re-starting the factory to get the same state as above but with the reallocation
         factory = RobotRebootFactory(seed=26)
-        game, state_with_relocation, selected_quadrants = factory.create(31, locate_robot_close_goal=True)
+        game, state_with_relocation, selected_quadrants = factory.create(31, locate_robot_close_goal=True,
+                                                                         max_movements=5)
         robot = game.goal_house.robot_id
         self.assertNotEqual(original_state.robots_positions[robot], state_with_relocation.robots_positions[robot])
