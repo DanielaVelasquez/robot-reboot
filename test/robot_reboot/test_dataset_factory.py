@@ -21,5 +21,10 @@ class TestDatasetFactory(unittest.TestCase):
         v_2, p_2, s_2 = ds_factory.create(locate_robot_close_goal=False, max_movements=5)
         self.assertFalse(np.array_equal(s_1, s_2), "States should be different everytime it is invoked")
 
-
-
+    def test_(self):
+        cnn = get_cnn_model((31, 31, 9), n_outputs=16, convolutions=3, optimizer='adam', seed=26)
+        ds_factory = RobotRebootDataSetFactory(31, cnn, max_depth=20, seed=26, playouts=50)
+        np.random.seed(26)
+        [i for i in range(0, 12) if np.random.randint(1, 6) > 0]
+        v, p, s = ds_factory.create(locate_robot_close_goal=True, max_movements=np.random.randint(1, 6))
+        print(p)
