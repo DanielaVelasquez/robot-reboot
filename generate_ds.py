@@ -15,7 +15,7 @@ rows, cols, layers = 31, 31, 9
 
 def write_tf_record(i, max_movements):
     logging.info(f"Starting job {i}")
-    start_time_i = time.time()
+    start_time = time.time()
     cnn = tf.keras.models.load_model('model/model_0')
     ds_factory = RobotRebootDataSetFactory(31, cnn, max_depth=20, seed=26, playouts=50)
     v, p, s = ds_factory.create(locate_robot_close_goal=True, max_movements=max_movements)
@@ -33,7 +33,7 @@ def write_tf_record(i, max_movements):
     logging.info(f'Saving file {filename}')
     with tf.io.TFRecordWriter(filename) as f:
         f.write(sample.SerializeToString())
-    logging.info("Finished after %s seconds ---" % (time.time() - start_time_i))
+    logging.info("Finished after %s seconds ---" % (time.time() - start_time))
 
 
 def create_tfrecord(offset, n):
