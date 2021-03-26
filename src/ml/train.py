@@ -1,10 +1,10 @@
 import argparse
 import logging
 import os
-import tensorflow as tf
 
-from tensorflow.keras import backend as K
+import tensorflow as tf
 from tensorflow.keras.callbacks import ModelCheckpoint
+from .util import deserialize
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -23,18 +23,9 @@ def get_filenames(channel_name, channel):
 
 
 def read_tfrecord(example):
-    feature_desc = {
-        'v': tf.io.FixedLenFeature([], tf.float32),
-        'p': tf.io.VarLenFeature(tf.float32),
-        's': tf.io.VarLenFeature(tf.float32)
-    }
-    parsed = tf.io.parse_single_example(example, feature_desc)
-    x = tf.reshape(tf.sparse.to_dense(parsed['s']), (1, HEIGHT, WIDTH, DEPTH))
-    p = tf.reshape(tf.sparse.to_dense(parsed['p']), (1, 16))
-    v = tf.reshape(parsed['v'], (1, 1))
-
+    s, v, p = deserialize(example)
     y = {'v': v, 'p': p}
-    return x, y
+    return s, y
 
 
 def _input(epochs, channel, channel_name):
