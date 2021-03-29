@@ -12,15 +12,18 @@ from src.robot_reboot.util import join_quadrants, transpose_position_to_quadrant
 class RobotRebootFactory:
     """Factory to create Robot reboot games
     """
+
     def __init__(self, seed=26):
         np.random.seed(seed)
 
-    def create(self, size):
+    def create(self, size, locate_robot_close_goal=False, max_movements=5):
         """Creates a robot reboot game and its initial state.
         The maze is randomly created joining different quadrants and the robots are randomly located in the maze
         avoiding the game goal house for all the robots.
         Args:
             size (int): size of the maze (number of rows and cols)
+            locate_robot_close_goal (boolean): determine if the robot reaching its house should be located closer to its house
+            max_movements: max number of movements away from its house if the robot is reallocated
         Returns:
             game: Robot reboot game
             state: Initial robot reboot game state
@@ -48,7 +51,20 @@ class RobotRebootFactory:
         pos = (x, y)
         goal = RobotRebootGoalHouse(selected_house_goal.robot_id, pos)
         game = RobotRebootGame(n_robots, maze, goal)
-        state = RobotRebootState(game, list(generate_positions_except(n_robots, size, pos)))
+        robots_positions = list(generate_positions_except(n_robots, size, pos))
+        if locate_robot_close_goal:
+            robot = goal.robot_id
+            goal_pos = goal.house
+            robots_positions_2 = robots_positions.copy()
+            robots_positions_2[robot] = goal_pos
+            s = RobotRebootState(game, robots_positions_2)
+            for i in range(max_movements):
+                valid_actions = [a for a in game.get_valid_actions(s) if a.robot_id == robot]
+                action = valid_actions[np.random.randint(0, len(valid_actions))]
+                s = game.apply(action, s)
+            new_pos = s.robots_positions[robot]
+            robots_positions[robot] = new_pos
+        state = RobotRebootState(game, robots_positions)
         return game, state, index[0:4]
 
     def get_game_configurations(self, size):

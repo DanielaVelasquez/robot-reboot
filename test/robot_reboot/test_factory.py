@@ -20,6 +20,7 @@ class TestRobotRebootFactory(unittest.TestCase):
         np.testing.assert_equal(expected_maze, game.maze)
         self.assertEqual(n_robots, len(state.robots_positions))
         self.assertTrue(game.goal_house.house not in state.robots_positions)
+        self.assertEqual([(30, 15), (23, 6), (10, 14), (24, 21)], state.robots_positions)
 
     def test_create_different_mazes_every_time(self):
         factory = RobotRebootFactory(26)
@@ -28,3 +29,17 @@ class TestRobotRebootFactory(unittest.TestCase):
         self.assertFalse(np.array_equal(game_1.maze, game_2.maze))
         self.assertNotEqual(state_1.robots_positions, state_2.robots_positions)
         self.assertFalse(np.array_equal(selected_quadrants_1, selected_quadrants_2))
+
+    def test_create_when_locate_robot_close_goal(self):
+        """
+        Robot that needs to get to its house is moved to a (hopefully closer) different position that when
+        the reallocation doesn't occur
+        """
+        factory = RobotRebootFactory(seed=26)
+        game, original_state, selected_quadrants = factory.create(31)
+        # Re-starting the factory to get the same state as above but with the reallocation
+        factory = RobotRebootFactory(seed=26)
+        game, state_with_relocation, selected_quadrants = factory.create(31, locate_robot_close_goal=True,
+                                                                         max_movements=5)
+        robot = game.goal_house.robot_id
+        self.assertNotEqual(original_state.robots_positions[robot], state_with_relocation.robots_positions[robot])
