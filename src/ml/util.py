@@ -25,7 +25,7 @@ def get_tf_sample(v, p, s):
 
 
 def deserialize(serialized_sample):
-    parsed = tf.io.parse_single_example(serialized_sample, get_feature_desc)
+    parsed = tf.io.parse_single_example(serialized_sample, get_feature_desc())
     s = tf.reshape(tf.sparse.to_dense(parsed['s']), (1, rows, cols, layers))
     p = tf.reshape(tf.sparse.to_dense(parsed['p']), (1, 16))
     v = tf.reshape(parsed['v'], (1, 1))
