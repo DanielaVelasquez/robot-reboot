@@ -67,22 +67,31 @@ def train(args):
     logging.info("Loading model")
     model = get_model((31, 31, 9), n_outputs=16, convolutions=3, optimizer='adam', seed=26)
     model.load_weights(args.model)
+    
     losses = {
         "v": 'mean_squared_error',
         "p": tf.keras.losses.BinaryCrossentropy()
     }
-    model.compile(loss=losses, optimizer='adam')
+    
+    if args.optimizer == 'adam':
+        optimizer = tf.keras.optimizers.Adam(learning_rate=args.learning_rate)
+    elif args.optimizer == 'RMSprop':
+        optimizer = tf.keras.optimizers.RMSprop(learning_rate=args.learning_rate)
+    else:
+        optimizer = tf.keras.optimizers.SGD(learning_rate=args.learning_rate)
+    
+    model.compile(loss=losses, optimizer=optimizer, metrics=[tf.keras.metrics.Accuracy()])
 
     checkpoint = ModelCheckpoint(args.model_output_dir + 'checkpoint-{epoch}.h5')
 
     logging.info("Starting to train")
-    model.fit(train_ds)  # , epochs=args.epochs, validation_data=valid_ds, callbacks=[checkpoint])
-    #
-    # logging.info("Evaluating the model")
-    # v_eval, p_eval = model.evaluate(eval_ds)
-    #
-    # logging.info('Test loss v:{}'.format(v_eval))
-    # logging.info('Tess loss p:{}'.format(p_eval))
+    model.fit(train_ds , epochs=args.epochs, validation_data=valid_ds, callbacks=[checkpoint])
+    
+#     logging.info("Evaluating the model")
+#     v_eval, p_eval = model.evaluate(eval_ds)
+    
+#     logging.info('Test loss v:{}'.format(v_eval))
+#     logging.info('Tess loss p:{}'.format(p_eval))
 
     return save_model(model, args.model_output_dir, args.model_version)
 
@@ -138,6 +147,18 @@ if __name__ == '__main__':
         type=int,
         default=10,
         help='The number of steps to use for training.'
+    ),
+    parser.add_argument(
+        '--optimizer',
+        type=str,
+        default='adam',
+        help='Optimizer to train the model.'
+    )
+    parser.add_argument(
+        '--learning_rate',
+        type=float,
+        default=0.01,
+        help='Learning rate for the optimizer.'
     )
     args = parser.parse_args()
     train(args)
