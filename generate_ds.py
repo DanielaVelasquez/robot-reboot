@@ -7,16 +7,15 @@ import numpy as np
 import tensorflow as tf
 
 from src.robot_reboot.dataset_factory import RobotRebootDataSetFactory
+from src.ml.model import get_model
 
 logging.getLogger().setLevel(logging.INFO)
-
 rows, cols, layers = 31, 31, 9
 
 
-def write_tf_record(i, max_movements):
-    logging.info(f"Starting job {i}")
-    start_time = time.time()
-    cnn = tf.keras.models.load_model('model/model_0')
+def write_tf_record(i, max_movements, model_dir):
+    cnn = get_model()
+    cnn.load_weights(model_dir)
     ds_factory = RobotRebootDataSetFactory(31, cnn, max_depth=20, playouts=50)
     v, p, s = ds_factory.create(locate_robot_close_goal=True, max_movements=max_movements)
     state = s.reshape(rows * cols * layers, )
@@ -29,14 +28,13 @@ def write_tf_record(i, max_movements):
             }
         )
     )
-    filename = f'robot_reboot_{i}.tfrecord'
+    filename = f'data/robot_reboot_{i}.tfrecords'
     logging.info(f'Saving file {filename}')
     with tf.io.TFRecordWriter(filename) as f:
         f.write(sample.SerializeToString())
-    logging.info("Finished after %s seconds ---" % (time.time() - start_time))
 
 
-def create_tfrecord(offset, n):
+def create_tfrecord(offset, n, model_dir):
     processes = list()
     num_cores = multiprocessing.cpu_count()
     logging.info(f"Working with {num_cores} cores")
@@ -46,7 +44,7 @@ def create_tfrecord(offset, n):
             [t.join() for t in processes]
             processes = list()
         max_movements = np.random.randint(1, 6)
-        process = multiprocessing.Process(target=write_tf_record, args=(i + offset, max_movements))
+        process = multiprocessing.Process(target=write_tf_record, args=(i + offset, max_movements, model_dir))
         process.start()
         processes.append(process)
     logging.info(f"{n} jobs processed, waiting for them to finish")
@@ -74,9 +72,16 @@ if __name__ == '__main__':
         default=12,
         help='Id to start saving datasets'
     )
+
+    parser.add_argument(
+        '--model_dir',
+        type=str,
+        required=True,
+        help='Model used to generate the dataset'
+    )
     args = parser.parse_args()
     logging.info(f'Generating {args.total_samples} samples with seed {args.seed}')
     np.random.seed(args.seed)
     start_time = time.time()
-    create_tfrecord(args.offset, args.total_samples)
+    create_tfrecord(args.offset, args.total_samples, args.model_dir)
     logging.info("Finished after %s seconds ---" % (time.time() - start_time))

@@ -55,9 +55,9 @@ class RobotRebootDataSetFactory:
             s (state): Initial state where the search and play where applied in its matrix form
         """
         logging.info("Starting to create a dataset")
-        game, state, robot_ids = self.game_factory.create(self.maze_size,
-                                                          locate_robot_close_goal=locate_robot_close_goal,
-                                                          max_movements=max_movements)
+        game, state, quadrants_ids = self.game_factory.create(self.maze_size,
+                                                              locate_robot_close_goal=locate_robot_close_goal,
+                                                              max_movements=max_movements)
         logging.info("Game created")
         model = RobotRebootModel(game, self.cnn)
         game_player = GamePlayer(model, game)
