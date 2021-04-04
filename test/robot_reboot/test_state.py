@@ -69,7 +69,8 @@ class TestRobotRebootState(unittest.TestCase):
                           lambda: RobotRebootState(RobotRebootState(get_game(n_robots=1), {(1, 0)})))
 
     def test_get_state(self):
-        factory = RobotRebootFactory(seed=26)
+        np.random.seed(26)
+        factory = RobotRebootFactory()
         game, state, _ = factory.create(11)
         s = state.get_matrix()
         self.assertEqual((11, 11, 5), s.shape, "State should have the size of the maze for rows and columns and"

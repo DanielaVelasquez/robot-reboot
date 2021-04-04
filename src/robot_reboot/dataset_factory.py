@@ -19,8 +19,8 @@ class RobotRebootDataSetFactory:
         playouts: number of playouts per simulation
     """
 
-    def __init__(self, maze_size, cnn, max_depth=20, seed=26, playouts=10):
-        self.__game_factory = RobotRebootFactory(seed=seed)
+    def __init__(self, maze_size, cnn, max_depth=20, playouts=10):
+        self.__game_factory = RobotRebootFactory()
         self.__maze_size = maze_size
         self.__max_dept = max_depth
         self.__cnn = cnn

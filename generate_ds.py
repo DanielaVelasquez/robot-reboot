@@ -17,7 +17,7 @@ def write_tf_record(i, max_movements):
     logging.info(f"Starting job {i}")
     start_time = time.time()
     cnn = tf.keras.models.load_model('model/model_0')
-    ds_factory = RobotRebootDataSetFactory(31, cnn, max_depth=20, seed=26, playouts=50)
+    ds_factory = RobotRebootDataSetFactory(31, cnn, max_depth=20, playouts=50)
     v, p, s = ds_factory.create(locate_robot_close_goal=True, max_movements=max_movements)
     state = s.reshape(rows * cols * layers, )
     sample = tf.train.Example(
