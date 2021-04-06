@@ -62,36 +62,29 @@ def train(args):
     logging.info("Getting data sets")
     train_ds = _input(args.epochs, args.train, 'train')
     valid_ds = _input(args.epochs, args.validation, 'validation')
-    eval_ds = _input(args.epochs, args.eval, 'eval')
 
     logging.info("Loading model")
-    model = get_model((31, 31, 9), n_outputs=16, convolutions=3, optimizer='adam', seed=26)
+    model = get_model()
     model.load_weights(args.model)
-    
+
     losses = {
         "v": 'mean_squared_error',
         "p": tf.keras.losses.BinaryCrossentropy()
     }
-    
+
     if args.optimizer == 'adam':
         optimizer = tf.keras.optimizers.Adam(learning_rate=args.learning_rate)
     elif args.optimizer == 'RMSprop':
         optimizer = tf.keras.optimizers.RMSprop(learning_rate=args.learning_rate)
     else:
         optimizer = tf.keras.optimizers.SGD(learning_rate=args.learning_rate)
-    
+
     model.compile(loss=losses, optimizer=optimizer, metrics=[tf.keras.metrics.Accuracy()])
 
     checkpoint = ModelCheckpoint(args.model_output_dir + 'checkpoint-{epoch}.h5')
 
     logging.info("Starting to train")
-    model.fit(train_ds , epochs=args.epochs, validation_data=valid_ds, callbacks=[checkpoint])
-    
-#     logging.info("Evaluating the model")
-#     v_eval, p_eval = model.evaluate(eval_ds)
-    
-#     logging.info('Test loss v:{}'.format(v_eval))
-#     logging.info('Tess loss p:{}'.format(p_eval))
+    model.fit(train_ds, epochs=args.epochs, validation_data=valid_ds, callbacks=[checkpoint])
 
     return save_model(model, args.model_output_dir, args.model_version)
 
@@ -111,13 +104,6 @@ if __name__ == '__main__':
         required=True,
         default=os.environ.get('SM_CHANNEL_VALIDATION'),
         help='Directory where the robot reboot validation data is stored'
-    )
-    parser.add_argument(
-        '--eval',
-        type=str,
-        required=True,
-        default=os.environ.get('SM_CHANNEL_EVAL'),
-        help='Directory where the robot reboot evaluation data is stored'
     )
     parser.add_argument(
         '--model',
