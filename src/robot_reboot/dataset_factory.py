@@ -19,8 +19,8 @@ class RobotRebootDataSetFactory:
         playouts: number of playouts per simulation
     """
 
-    def __init__(self, maze_size, cnn, max_depth=20, seed=26, playouts=10):
-        self.__game_factory = RobotRebootFactory(seed=seed)
+    def __init__(self, maze_size, cnn, max_depth=20, playouts=10):
+        self.__game_factory = RobotRebootFactory()
         self.__maze_size = maze_size
         self.__max_dept = max_depth
         self.__cnn = cnn
@@ -55,9 +55,9 @@ class RobotRebootDataSetFactory:
             s (state): Initial state where the search and play where applied in its matrix form
         """
         logging.info("Starting to create a dataset")
-        game, state, robot_ids = self.game_factory.create(self.maze_size,
-                                                          locate_robot_close_goal=locate_robot_close_goal,
-                                                          max_movements=max_movements)
+        game, state, quadrants_ids = self.game_factory.create(self.maze_size,
+                                                              locate_robot_close_goal=locate_robot_close_goal,
+                                                              max_movements=max_movements)
         logging.info("Game created")
         model = RobotRebootModel(game, self.cnn)
         game_player = GamePlayer(model, game)

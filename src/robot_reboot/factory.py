@@ -13,9 +13,6 @@ class RobotRebootFactory:
     """Factory to create Robot reboot games
     """
 
-    def __init__(self, seed=26):
-        np.random.seed(seed)
-
     def create(self, size, locate_robot_close_goal=False, max_movements=5):
         """Creates a robot reboot game and its initial state.
         The maze is randomly created joining different quadrants and the robots are randomly located in the maze
