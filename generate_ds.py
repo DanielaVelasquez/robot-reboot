@@ -69,7 +69,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--offset',
         type=int,
-        default=12,
+        default=0,
         help='Id to start saving datasets'
     )
 
