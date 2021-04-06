@@ -12,6 +12,7 @@ class TestRobotRebootFactory(unittest.TestCase):
         self.assertRaises(UnsupportedMazeSize, lambda: factory.create(3))
 
     def test_create_returns_game_when_n_is_31(self):
+        np.random.seed(26)
         factory = RobotRebootFactory()
         game, state, selected_quadrants = factory.create(31)
         confs, n_robots = factory.get_game_configurations(31)
@@ -23,7 +24,8 @@ class TestRobotRebootFactory(unittest.TestCase):
         self.assertEqual([(30, 15), (23, 6), (10, 14), (24, 21)], state.robots_positions)
 
     def test_create_different_mazes_every_time(self):
-        factory = RobotRebootFactory(26)
+        np.random.seed(26)
+        factory = RobotRebootFactory()
         game_1, state_1, selected_quadrants_1 = factory.create(31)
         game_2, state_2, selected_quadrants_2 = factory.create(31)
         self.assertFalse(np.array_equal(game_1.maze, game_2.maze))
@@ -35,10 +37,11 @@ class TestRobotRebootFactory(unittest.TestCase):
         Robot that needs to get to its house is moved to a (hopefully closer) different position that when
         the reallocation doesn't occur
         """
-        factory = RobotRebootFactory(seed=26)
+        np.random.seed(26)
+        factory = RobotRebootFactory()
         game, original_state, selected_quadrants = factory.create(31)
         # Re-starting the factory to get the same state as above but with the reallocation
-        factory = RobotRebootFactory(seed=26)
+        factory = RobotRebootFactory()
         game, state_with_relocation, selected_quadrants = factory.create(31, locate_robot_close_goal=True,
                                                                          max_movements=5)
         robot = game.goal_house.robot_id

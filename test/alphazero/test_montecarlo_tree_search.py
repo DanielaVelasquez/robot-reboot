@@ -1,5 +1,4 @@
 import unittest
-import tensorflow as tf
 from unittest.mock import Mock
 
 import numpy as np
@@ -9,12 +8,9 @@ from exceptions.exceptions import RequiredValueException
 from src.alphazero.game_player import GamePlayer
 from src.alphazero.heuristic_function import heuristic_fn
 from src.alphazero.montecarlo_tree_search import MonteCarloTreeSearch
-from src.ml.model import get_cnn_model
+from src.ml.model import get_model
 from src.robot_reboot.factory import RobotRebootFactory
-from src.robot_reboot.game import RobotRebootGame
-from src.robot_reboot.goal_house import RobotRebootGoalHouse
 from src.robot_reboot.model import RobotRebootModel
-from src.robot_reboot.state import RobotRebootState
 from test.alphazero.fake_data import FakeState, FakeModel, fn_predict_probability_1_for_next_action, FakeGame
 
 
@@ -319,48 +315,40 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         assert_state(mcts, 's4', n=[2, 0, 0, 0], w=[-1, 0, 0, 0], p=[-0.5, 0, 0, 0])
 
     def test_search_with_robot_reboot_game(self):
-        f = RobotRebootFactory(seed=26)
-        game, state, _ = f.create(11)
-        cnn = get_cnn_model((11, 11, 5), n_outputs=len(game.actions), convolutions=2, optimizer='adam', seed=26)
+        np.random.seed(26)
+        f = RobotRebootFactory()
+        game, state, _ = f.create(31)
+        cnn = get_model()
         model = RobotRebootModel(game, cnn)
         game_player = GamePlayer(model, game)
         mcts = MonteCarloTreeSearch(heuristic_fn, 3, game_player, playouts=1)
         p = mcts.search(state)
-        np.testing.assert_equal([0, 0, 0, 0, 0, 0, 0, 0], p)
-        self.assertEqual(sorted(['[(0, 0), (6, 0)]',
-                                 '[(0, 10), (6, 0)]',
-                                 '[(0, 6), (6, 0)]',
-                                 '[(1, 0), (0, 0)]',
-                                 '[(1, 0), (10, 0)]',
-                                 '[(1, 0), (6, 0)]',
-                                 '[(1, 0), (6, 10)]',
-                                 '[(1, 10), (6, 0)]',
-                                 '[(1, 6), (0, 0)]',
-                                 '[(1, 6), (10, 0)]',
-                                 '[(1, 6), (6, 10)]',
-                                 '[(10, 6), (6, 0)]']), sorted(mcts.states_statistics.keys()))
-
-        assert_state(mcts, '[(0, 0), (6, 0)]', n=[0, 0, 0, 0, 1, 1, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
-                     p=[0, 0, 0, 0, 0, 0, 0, 0])
-        assert_state(mcts, '[(0, 10), (6, 0)]', n=[0, 0, 0, 1, 0, 0, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
-                     p=[0, 0, 0, 0, 0, 0, 0, 0])
-        assert_state(mcts, '[(0, 6), (6, 0)]', n=[0, 0, 0, 1, 0, 1, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
-                     p=[0, 0, 0, 0, 0, 0, 0, 0])
-        assert_state(mcts, '[(1, 0), (0, 0)]', n=[1, 0, 0, 0, 0, 0, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
-                     p=[0, 0, 0, 0, 0, 0, 0, 0])
-        assert_state(mcts, '[(1, 0), (10, 0)]', n=[1, 0, 0, 0, 0, 0, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
-                     p=[0, 0, 0, 0, 0, 0, 0, 0])
-        assert_state(mcts, '[(1, 0), (6, 0)]', n=[1, 0, 0, 0, 0, 0, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
-                     p=[0, 0, 0, 0, 0, 0, 0, 0])
-        assert_state(mcts, '[(1, 0), (6, 10)]', n=[1, 0, 0, 0, 0, 0, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
-                     p=[0, 0, 0, 0, 0, 0, 0, 0])
-        assert_state(mcts, '[(1, 10), (6, 0)]', n=[1, 0, 0, 0, 0, 0, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
-                     p=[0, 0, 0, 0, 0, 0, 0, 0])
-        assert_state(mcts, '[(1, 6), (0, 0)]', n=[0, 0, 0, 1, 0, 0, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
-                     p=[0, 0, 0, 0, 0, 0, 0, 0])
-        assert_state(mcts, '[(1, 6), (10, 0)]', n=[0, 0, 0, 1, 0, 0, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
-                     p=[0, 0, 0, 0, 0, 0, 0, 0])
-        assert_state(mcts, '[(1, 6), (6, 10)]', n=[0, 0, 0, 1, 0, 0, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
-                     p=[0, 0, 0, 0, 0, 0, 0, 0])
-        assert_state(mcts, '[(10, 6), (6, 0)]', n=[1, 0, 0, 0, 0, 0, 0, 0], w=[0, 0, 0, 0, 0, 0, 0, 0],
-                     p=[0, 0, 0, 0, 0, 0, 0, 0])
+        np.testing.assert_equal([0 for i in range(16)], p)
+        self.assertEqual(sorted(['[(0, 15), (23, 6), (10, 14), (24, 21)]',
+                                 '[(30, 12), (10, 6), (10, 14), (24, 21)]',
+                                 '[(30, 12), (23, 6), (10, 14), (24, 21)]',
+                                 '[(30, 15), (10, 6), (0, 14), (24, 21)]',
+                                 '[(30, 15), (10, 6), (10, 0), (24, 21)]',
+                                 '[(30, 15), (10, 6), (10, 14), (21, 21)]',
+                                 '[(30, 15), (10, 6), (10, 14), (24, 10)]',
+                                 '[(30, 15), (10, 6), (10, 14), (24, 21)]',
+                                 '[(30, 15), (10, 6), (10, 14), (24, 28)]',
+                                 '[(30, 15), (10, 6), (10, 14), (27, 21)]',
+                                 '[(30, 15), (21, 9), (10, 14), (24, 21)]',
+                                 '[(30, 15), (23, 5), (10, 14), (24, 21)]',
+                                 '[(30, 15), (23, 5), (10, 14), (24, 28)]',
+                                 '[(30, 15), (23, 6), (0, 14), (24, 21)]',
+                                 '[(30, 15), (23, 6), (10, 0), (24, 21)]',
+                                 '[(30, 15), (23, 6), (10, 14), (21, 21)]',
+                                 '[(30, 15), (23, 6), (10, 14), (24, 10)]',
+                                 '[(30, 15), (23, 6), (10, 14), (24, 21)]',
+                                 '[(30, 15), (23, 6), (10, 14), (24, 28)]',
+                                 '[(30, 15), (23, 6), (10, 14), (27, 21)]',
+                                 '[(30, 15), (23, 6), (10, 24), (24, 21)]',
+                                 '[(30, 15), (23, 6), (10, 24), (24, 28)]',
+                                 '[(30, 15), (23, 6), (12, 14), (24, 21)]',
+                                 '[(30, 15), (23, 6), (12, 14), (24, 28)]',
+                                 '[(30, 15), (23, 9), (10, 14), (24, 21)]',
+                                 '[(30, 15), (26, 6), (10, 14), (24, 21)]',
+                                 '[(30, 26), (10, 6), (10, 14), (24, 21)]',
+                                 '[(30, 26), (23, 6), (10, 14), (24, 21)]']), sorted(mcts.states_statistics.keys()))
