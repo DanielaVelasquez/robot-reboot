@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 
-from src.alphazero.heuristic_function import heuristic_fn
+from src.alphazero.heuristic_function import alpha_zero_heuristic_fn
 from src.alphazero.state_statistics import StateStatistics
 
 
@@ -18,7 +18,7 @@ class TestHeuristicFunction(unittest.TestCase):
 
         # p = [0.3, 0]
         # n = [3, 0]
-        values = heuristic_fn(predicted_p, statistics)
+        values = alpha_zero_heuristic_fn(predicted_p, statistics)
         self.assertTrue(values[1] > values[0])
 
     def test_heuristic_fn_when_predicted_probabilities_different_statistics(self):
@@ -30,7 +30,7 @@ class TestHeuristicFunction(unittest.TestCase):
 
         # p = [1, 0]
         # n = [1, 0]
-        values = heuristic_fn(predicted_p, statistics)
+        values = alpha_zero_heuristic_fn(predicted_p, statistics)
         self.assertTrue(values[1] > values[0])
 
     def test_heuristic_fn_when_predicted_probabilities_same_statistics(self):
@@ -42,6 +42,6 @@ class TestHeuristicFunction(unittest.TestCase):
 
         # p = [1, 0]
         # n = [1, 0]
-        values = heuristic_fn(predicted_p, statistics)
+        values = alpha_zero_heuristic_fn(predicted_p, statistics)
         self.assertTrue(values[1] < values[0])
 

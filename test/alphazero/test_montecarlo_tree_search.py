@@ -6,7 +6,7 @@ import numpy as np
 from exceptions.alphazero.monte_carlo_tree_search import InvalidDepthException, InvalidPlayoutException
 from exceptions.exceptions import RequiredValueException
 from src.alphazero.game_player import GamePlayer
-from src.alphazero.heuristic_function import heuristic_fn
+from src.alphazero.heuristic_function import alpha_zero_heuristic_fn
 from src.alphazero.montecarlo_tree_search import MonteCarloTreeSearch
 from src.ml.model import get_model
 from src.robot_reboot.factory import RobotRebootFactory
@@ -321,7 +321,7 @@ class TestMonteCarloTreeSearch(unittest.TestCase):
         cnn = get_model()
         model = RobotRebootModel(game, cnn)
         game_player = GamePlayer(model, game)
-        mcts = MonteCarloTreeSearch(heuristic_fn, 3, game_player, playouts=1)
+        mcts = MonteCarloTreeSearch(alpha_zero_heuristic_fn, 3, game_player, playouts=1)
         p = mcts.search(state)
         np.testing.assert_equal([0 for i in range(16)], p)
         self.assertEqual(sorted(['[(0, 15), (23, 6), (10, 14), (24, 21)]',

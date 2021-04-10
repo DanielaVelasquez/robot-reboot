@@ -1,7 +1,7 @@
 import logging
 
 from src.alphazero.game_player import GamePlayer
-from src.alphazero.heuristic_function import heuristic_fn
+from src.alphazero.heuristic_function import alpha_zero_heuristic_fn
 from src.alphazero.montecarlo_tree_search import MonteCarloTreeSearch
 from src.robot_reboot.factory import RobotRebootFactory
 from src.robot_reboot.model import RobotRebootModel
@@ -62,7 +62,7 @@ class RobotRebootDataSetFactory:
         model = RobotRebootModel(game, self.cnn)
         game_player = GamePlayer(model, game)
         logging.info("Search using MCTS")
-        mcts = MonteCarloTreeSearch(heuristic_fn, self.max_depth, game_player, playouts=self.playouts)
+        mcts = MonteCarloTreeSearch(alpha_zero_heuristic_fn, self.max_depth, game_player, playouts=self.playouts)
         p = mcts.search(state)
         logging.info("Search finished, probabilities calculated")
         logging.info("Playing the game")
