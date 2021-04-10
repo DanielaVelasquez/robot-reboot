@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 import numpy as np
 
-from exceptions.alphazero.alphazero import InvalidDepthException, InvalidPlayoutException
+from exceptions.mcts.monte_carlo_tree_search import InvalidDepthException, InvalidPlayoutException
 from exceptions.exceptions import RequiredValueException
 from src.alphazero.game_player import GamePlayer
 from src.alphazero.heuristic_function import alpha_zero_heuristic_fn
