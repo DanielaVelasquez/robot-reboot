@@ -2,11 +2,9 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
-from exceptions.mcts.monte_carlo_tree_search import InvalidDepthException, InvalidPlayoutException
-from exceptions.exceptions import RequiredValueException
 from exceptions.mcts.monte_carlo_tree_search import InvalidPlayoutException
 from exceptions.util import assertOrThrow
-from src.alphazero.game_player import GamePlayer
+from src.alphazero.game import Game
 from src.alphazero.state import State
 from src.alphazero.state_statistics import StateStatistics
 
@@ -15,41 +13,26 @@ class MonteCarloTreeSearch(ABC):
     """ Applies monte carlo tree search using a game player to find
     the best possible actions to take based on a state
     Attributes:
-        heuristic_fn      (function):   function to evaluate how good is each action, receives probability and a state statistics
-        max_depth         (number):     maximum depth for the tree while searching
-        game_player       (GamePlayer): player for the game to optimize moves
-        playouts          (number):     number of playouts per simulation
-        states_statistics (dict):       dictionary between visited states and its statistics per action
+        game              (Game):     game used for the search
+        playouts          (number):   number of playouts per simulation
+        states_statistics (dict):     dictionary between visited states and its statistics per action
     """
 
-    def __init__(self, heuristic_fn, max_depth, game_player: GamePlayer, playouts=100):
+    def __init__(self, game: Game, playouts=100):
         """
         Initializes a MonteCarlo tree search
         Args:
-            heuristic_fn (function):   function to evaluate how good is each action, receives probability and a state statistics
-            max_depth    (number):     maximum depth for the tree while searching
-            game_player  (GamePlayer): player for the game to optimize moves
-            playouts     (number):     number of playouts per simulation (default 100)
+            game      (Game):  game used for the search
+            playouts (number): number of playouts per simulation (default 100)
         """
-        assertOrThrow(heuristic_fn is not None, RequiredValueException("heuristic_fn"))
-        assertOrThrow(max_depth > 0, InvalidDepthException())
-        assertOrThrow(game_player is not None, RequiredValueException("game_player"))
         assertOrThrow(playouts > 0, InvalidPlayoutException())
-
-        self._heuristic_fn = heuristic_fn
-        self._max_depth = max_depth
-        self._game_player = game_player
-        self._game = self._game_player.game
+        self._game = game
         self._playouts = playouts
         self._states_statistics = {}
 
     @property
-    def max_depth(self):
-        return self._max_depth
-
-    @property
-    def game_player(self):
-        return self._game_player
+    def game(self):
+        return self._game
 
     @property
     def playouts(self):

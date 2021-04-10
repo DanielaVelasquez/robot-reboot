@@ -1,12 +1,36 @@
+from exceptions.alphazero.alpha_zero import InvalidDepthException
+from exceptions.exceptions import RequiredValueException
+from exceptions.util import assertOrThrow
 from src.alphazero.state import State
 from .game_player import GamePlayer
 from ..mcts.monte_carlo_tree_search import MonteCarloTreeSearch
 
 
 class AlphaZero(MonteCarloTreeSearch):
+    """AlphaZero algorithm, it uses MCTS and a neural network to lead the search
+    Attributes:
+        heuristic_fn      (function):   function to evaluate how good is each action, receives probability and a state statistics
+        max_depth         (number):     maximum depth for the tree while searching
+        game_player       (GamePlayer): player for the game to optimize moves
+    """
 
     def __init__(self, heuristic_fn, max_depth, game_player: GamePlayer, playouts=100):
-        MonteCarloTreeSearch.__init__(self, heuristic_fn, max_depth, game_player, playouts)
+        assertOrThrow(game_player is not None, RequiredValueException("game_player"))
+        MonteCarloTreeSearch.__init__(self,  game_player.game, playouts)
+        assertOrThrow(heuristic_fn is not None, RequiredValueException("heuristic_fn"))
+        assertOrThrow(max_depth > 0, InvalidDepthException())
+
+        self._heuristic_fn = heuristic_fn
+        self._max_depth = max_depth
+        self._game_player = game_player
+
+    @property
+    def max_depth(self):
+        return self._max_depth
+
+    @property
+    def game_player(self):
+        return self._game_player
 
     def _playout(self, state: State, depth=1):
         valid_actions = self._game.get_valid_actions(state)
