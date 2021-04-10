@@ -41,15 +41,3 @@ class Model(ABC):
             v (number): 1 if the game is predicted to win, 0 if it's a draw, -1 if its a lost
         """
         pass
-
-    @abstractmethod
-    def train(self, train_x, train_y, test_x, test_y):
-        """ Model improves its parameters to make better predictions based on training and testing data
-        Args:
-            train_x (list): data to train the model
-            train_y (list): correct label(s) for each value in train_x
-            test_x (list):  data to test how well the model is performing
-            test_y (list):  correct label(s) for each value in test_x
-
-        """
-        pass
