@@ -1,14 +1,14 @@
 import unittest
+
 import numpy as np
-from unittest.mock import Mock, PropertyMock
 
 from exceptions.alphazero.state import InvalidStateSequence
+from exceptions.robot_reboot.state import EmptyRobotsPositionException, InvalidRobotsPositionException, \
+    RobotsPositionOutOfMazeBoundsException, NumberRobotsNotMatchingException, InvalidRobotsList
 from src.robot_reboot.factory import RobotRebootFactory
 from src.robot_reboot.game import RobotRebootGame
 from src.robot_reboot.goal_house import RobotRebootGoalHouse
 from src.robot_reboot.state import RobotRebootState
-from exceptions.robot_reboot.state import EmptyRobotsPositionException, InvalidRobotsPositionException, \
-    RobotsPositionOutOfMazeBoundsException, NumberRobotsNotMatchingException, InvalidRobotsList
 
 
 def get_game(size=3, n_robots=2):
@@ -132,29 +132,32 @@ class TestRobotRebootState(unittest.TestCase):
         game, state, quadrants_ids = RobotRebootFactory().create(31, locate_robot_close_goal=True, max_movements=4)
         # Knowledge robot 2 needs to get home with seed 26
         matrix = state.get_matrix()
-        rows, cols, layers = matrix.shape
         np.testing.assert_equal(matrix[:, :, 0], game.maze)
         self.assert_robot(state.robots_positions, matrix, 0)
         self.assert_empty_houses(0, matrix)
+
         self.assert_robot(state.robots_positions, matrix, 1)
         self.assert_empty_houses(1, matrix)
+
         self.assert_robot(state.robots_positions, matrix, 2)
         self.assert_house(game.goal_house, matrix)
+
         self.assert_robot(state.robots_positions, matrix, 3)
         self.assert_empty_houses(3, matrix)
 
-        game.goal_house.robot_id
-
     def assert_robot(self, robots_positions, matrix, robot_id):
         x, y = robots_positions[robot_id]
-        self.assertEqual(matrix[x, y, robot_id * 2 + 1], RobotRebootState.ROBOT_IN_CELL,
-                         f'Robot {robot_id} not in the correct position')
+        robot_pos = np.argwhere(matrix[:, :, robot_id * 2 + 1] == RobotRebootState.ROBOT_IN_CELL)
+        self.assertEqual(robot_pos.shape, (1, 2), f'There is more than one robot in the layer for robot {robot_id}')
+        self.assertEqual(robot_pos[0, 0], x, f'Robot {robot_id} is not in the right x position')
+        self.assertEqual(robot_pos[0, 1], y, f'Robot {robot_id} is not in the right y position')
 
     def assert_empty_houses(self, robot_id, matrix):
         rows, cols, layers = matrix.shape
         np.testing.assert_equal(np.zeros((rows, cols)), matrix[:, :, (robot_id + 1) * 2],
-                                f'Robot {robot_id} house is not empty')
+                                f'Robot {robot_id} house  should be empty')
 
     def assert_house(self, house, matrix):
         x, y = house.house
-        self.assertEqual(matrix[x, y, (house.robot_id + 1) * 2], RobotRebootState.ROBOT_IN_CELL, f"House for robot {house.robot_id} not in the correct layer")
+        self.assertEqual(matrix[x, y, (house.robot_id + 1) * 2], RobotRebootState.ROBOT_IN_CELL,
+                         f"House for robot {house.robot_id} not in the correct layer")
