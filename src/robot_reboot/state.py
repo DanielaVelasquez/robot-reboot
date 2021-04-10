@@ -63,5 +63,5 @@ class RobotRebootState(State):
             i += 2
         x, y = self.game.goal_house.house
         # Goal house
-        maze[x, y, self.game.goal_house.robot_id + 2] = RobotRebootState.ROBOT_IN_CELL
+        maze[x, y, (self.game.goal_house.robot_id + 1) * 2] = RobotRebootState.ROBOT_IN_CELL
         return maze

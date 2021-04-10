@@ -127,3 +127,34 @@ class TestRobotRebootState(unittest.TestCase):
         np.testing.assert_equal(np.zeros((11, 11)), s[:, :, 4],
                                 "Fifth layer should be all zero because second robot doesn't need to get to its house")
 
+    def test_get_matrix(self):
+        np.random.seed(26)
+        game, state, quadrants_ids = RobotRebootFactory().create(31, locate_robot_close_goal=True, max_movements=4)
+        # Knowledge robot 2 needs to get home with seed 26
+        matrix = state.get_matrix()
+        rows, cols, layers = matrix.shape
+        np.testing.assert_equal(matrix[:, :, 0], game.maze)
+        self.assert_robot(state.robots_positions, matrix, 0)
+        self.assert_empty_houses(0, matrix)
+        self.assert_robot(state.robots_positions, matrix, 1)
+        self.assert_empty_houses(1, matrix)
+        self.assert_robot(state.robots_positions, matrix, 2)
+        self.assert_house(game.goal_house, matrix)
+        self.assert_robot(state.robots_positions, matrix, 3)
+        self.assert_empty_houses(3, matrix)
+
+        game.goal_house.robot_id
+
+    def assert_robot(self, robots_positions, matrix, robot_id):
+        x, y = robots_positions[robot_id]
+        self.assertEqual(matrix[x, y, robot_id * 2 + 1], RobotRebootState.ROBOT_IN_CELL,
+                         f'Robot {robot_id} not in the correct position')
+
+    def assert_empty_houses(self, robot_id, matrix):
+        rows, cols, layers = matrix.shape
+        np.testing.assert_equal(np.zeros((rows, cols)), matrix[:, :, (robot_id + 1) * 2],
+                                f'Robot {robot_id} house is not empty')
+
+    def assert_house(self, house, matrix):
+        x, y = house.house
+        self.assertEqual(matrix[x, y, (house.robot_id + 1) * 2], RobotRebootState.ROBOT_IN_CELL, f"House for robot {house.robot_id} not in the correct layer")
