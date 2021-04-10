@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 import numpy as np
 
-from exceptions.alphazero.monte_carlo_tree_search import InvalidDepthException, InvalidPlayoutException
+from exceptions.alphazero.alphazero import InvalidDepthException, InvalidPlayoutException
 from exceptions.exceptions import RequiredValueException
 from src.alphazero.game_player import GamePlayer
 from src.alphazero.heuristic_function import alpha_zero_heuristic_fn
@@ -37,7 +37,7 @@ def fn_predict_probability_np_seed(actions_size, state):
     return np.random.uniform(low=-1, high=1, size=actions_size)
 
 
-class TestMonteCarloTreeSearch(unittest.TestCase):
+class TestAlphaZero(unittest.TestCase):
 
     def test_init_passes_without_default_parameters(self):
         mock_game_player = Mock()

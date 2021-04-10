@@ -1,36 +1,19 @@
-import numpy as np
-
-from exceptions.alphazero.alphazero import InvalidDepthException, InvalidPlayoutException
-from exceptions.exceptions import RequiredValueException
-from exceptions.util import assertOrThrow
-from src.alphazero.state import State
-from .game_player import GamePlayer
-from .state_statistics import StateStatistics
+from abc import ABC, abstractmethod
 
 
-class AlphaZero:
-    """ Applies monte carlo tree search using a game player to find
-    the best possible actions to take based on a state
-    Attributes:
-        heuristic_fn      (function):   function to evaluate how good is each action, receives probability and a state statistics
-        max_depth         (number):     maximum depth for the tree while searching
-        game_player       (GamePlayer): player for the game to optimize moves
-        playouts          (number):     number of playouts per simulation
-        states_statistics (dict):       dictionary between visited states and its statistics per action
-    """
+class MonteCarloTreeSearch(ABC):
+    """ Applies monte carlo tree search
+        Attributes:
+            playouts          (number):     number of playouts per simulation
+            states_statistics (dict):       dictionary between visited states and its statistics per action
+        """
 
-    def __init__(self, heuristic_fn, max_depth, game_player: GamePlayer, playouts=100):
+    def __init__(self, playouts=100):
         """
         Initializes a MonteCarlo tree search
         Args:
-            heuristic_fn (function):   function to evaluate how good is each action, receives probability and a state statistics
-            max_depth    (number):     maximum depth for the tree while searching
-            game_player  (GamePlayer): player for the game to optimize moves
             playouts     (number):     number of playouts per simulation (default 100)
         """
-        assertOrThrow(heuristic_fn is not None, RequiredValueException("heuristic_fn"))
-        assertOrThrow(max_depth > 0, InvalidDepthException())
-        assertOrThrow(game_player is not None, RequiredValueException("game_player"))
         assertOrThrow(playouts > 0, InvalidPlayoutException())
 
         self.__heuristic_fn = heuristic_fn
