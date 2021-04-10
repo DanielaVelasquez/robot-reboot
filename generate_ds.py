@@ -39,19 +39,19 @@ def create_tfrecord(offset, max_total_seconds, model_dir):
     num_cores = multiprocessing.cpu_count()
     logging.info(f"Working with {num_cores} cores")
     start_time = time.time()
-    current_time = time.time() - start_time
+    total_seconds_running = time.time() - start_time
     i = 0
-    while current_time < max_total_seconds:
+    while total_seconds_running < max_total_seconds:
         if i % num_cores == 0 and i != 0:
-            logging.info(f"Processing jobs {current_time}/{max_total_seconds}")
+            logging.info(f"Processing jobs {total_seconds_running}/{max_total_seconds}")
             [t.join() for t in processes]
             processes = list()
         max_movements = np.random.randint(1, 6)
         process = multiprocessing.Process(target=write_tf_record, args=(i + offset, max_movements, model_dir))
         process.start()
         processes.append(process)
-        current_time = time.time() - start_time
-        logging.info(f"Total time {current_time}/{max_total_seconds}")
+        total_seconds_running = time.time() - start_time
+        logging.info(f"Total time {total_seconds_running}/{max_total_seconds}")
         i += 1
     logging.info(f"{i} jobs processed, waiting for them to finish")
     [t.join() for t in processes]

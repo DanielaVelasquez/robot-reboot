@@ -8,7 +8,7 @@ from .game_player import GamePlayer
 from .state_statistics import StateStatistics
 
 
-class MonteCarloTreeSearch:
+class AlphaZero:
     """ Applies monte carlo tree search using a game player to find
     the best possible actions to take based on a state
     Attributes:
