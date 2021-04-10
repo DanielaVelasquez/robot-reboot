@@ -34,31 +34,38 @@ def write_tf_record(i, max_movements, model_dir):
         f.write(sample.SerializeToString())
 
 
-def create_tfrecord(offset, n, model_dir):
+def create_tfrecord(offset, max_total_seconds, model_dir):
     processes = list()
     num_cores = multiprocessing.cpu_count()
     logging.info(f"Working with {num_cores} cores")
-    for i in range(0, n):
+    start_time = time.time()
+    current_time = time.time() - start_time
+    i = 0
+    while current_time < max_total_seconds:
         if i % num_cores == 0 and i != 0:
-            logging.info("Processing jobs")
+            logging.info(f"Processing jobs {current_time}/{max_total_seconds}")
             [t.join() for t in processes]
             processes = list()
         max_movements = np.random.randint(1, 6)
         process = multiprocessing.Process(target=write_tf_record, args=(i + offset, max_movements, model_dir))
         process.start()
         processes.append(process)
-    logging.info(f"{n} jobs processed, waiting for them to finish")
+        current_time = time.time() - start_time
+        logging.info(f"Total time {current_time}/{max_total_seconds}")
+        i += 1
+    logging.info(f"{i} jobs processed, waiting for them to finish")
     [t.join() for t in processes]
-    logging.info("Finished processed")
+    logging.info(f'{i} records generated')
+    logging.info("Finished after %s seconds ---" % (time.time() - start_time))
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--total_samples',
+        '--total_seconds',
         type=int,
         required=True,
-        help='Number of samples to create'
+        help='Max number of seconds that samples will be generated'
     )
     parser.add_argument(
         '--seed',
@@ -80,8 +87,8 @@ if __name__ == '__main__':
         help='Model used to generate the dataset'
     )
     args = parser.parse_args()
-    logging.info(f'Generating {args.total_samples} samples with seed {args.seed}')
+    logging.info(f'Running for {args.total_seconds} seconds with seed {args.seed}')
     np.random.seed(args.seed)
-    start_time = time.time()
-    create_tfrecord(args.offset, args.total_samples, args.model_dir)
-    logging.info("Finished after %s seconds ---" % (time.time() - start_time))
+
+    create_tfrecord(args.offset, args.total_seconds, args.model_dir)
+
