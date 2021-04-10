@@ -42,36 +42,36 @@ class TestAlphaZero(unittest.TestCase):
 
     def test_init_passes_without_default_parameters(self):
         mock_game_player = Mock()
-        AlphaZero(Mock(), 1, mock_game_player)
+        AlphaZero(1, mock_game_player)
 
     def test_init_passes_with_default_parameters(self):
         mock_game_player = Mock()
-        AlphaZero(Mock(), 1, mock_game_player, playouts=1)
+        AlphaZero(1, mock_game_player, heuristic_fn=Mock(), playouts=1)
 
     def test_init_fails_when_heuristic_fn_is_none(self):
         mock_game_player = Mock()
-        self.assertRaises(RequiredValueException, lambda: AlphaZero(None, 1, mock_game_player))
+        self.assertRaises(RequiredValueException, lambda: AlphaZero(1, mock_game_player, heuristic_fn=None))
 
     def test_init_fails_when_max_depth_is_zero(self):
         mock_game_player = Mock()
-        self.assertRaises(InvalidDepthException, lambda: AlphaZero(Mock(), 0, mock_game_player))
+        self.assertRaises(InvalidDepthException, lambda: AlphaZero(0, mock_game_player))
 
     def test_init_fails_when_max_depth_is_below_zero(self):
         mock_game_player = Mock()
-        self.assertRaises(InvalidDepthException, lambda: AlphaZero(Mock(), -1, mock_game_player))
+        self.assertRaises(InvalidDepthException, lambda: AlphaZero(-1, mock_game_player))
 
     def test_init_fails_when_game_player_none(self):
-        self.assertRaises(RequiredValueException, lambda: AlphaZero(Mock(), 1, None))
+        self.assertRaises(RequiredValueException, lambda: AlphaZero(1, None))
 
     def test_init_fails_when_playouts_is_zero(self):
         mock_game_player = Mock()
         self.assertRaises(InvalidPlayoutException,
-                          lambda: AlphaZero(Mock(), 1, mock_game_player, playouts=0))
+                          lambda: AlphaZero(1, mock_game_player, playouts=0))
 
     def test_init_fails_when_playouts_is_below_zero(self):
         mock_game_player = Mock()
         self.assertRaises(InvalidPlayoutException,
-                          lambda: AlphaZero(Mock(), 1, mock_game_player, playouts=-1))
+                          lambda: AlphaZero(1, mock_game_player, playouts=-1))
 
     def test_search_with_depth_2(self):
         """
@@ -89,7 +89,7 @@ class TestAlphaZero(unittest.TestCase):
         """
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = AlphaZero(fake_heuristic_fn, 2, game_player, playouts=1)
+        mcts = AlphaZero(2, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
         fake_state = FakeState(game_player.game, 0, 0)
         p = mcts.search(fake_state)
         np.testing.assert_equal(p, [-1, 1, 1, 0])
@@ -120,7 +120,7 @@ class TestAlphaZero(unittest.TestCase):
 
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = AlphaZero(fake_heuristic_fn, 4, game_player, playouts=1)
+        mcts = AlphaZero(4, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
         fake_state = FakeState(game_player.game, 0, 0)
         p = mcts.search(fake_state)
         np.testing.assert_equal(p, [1, 1, 1, 1])
@@ -145,7 +145,7 @@ class TestAlphaZero(unittest.TestCase):
        """
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = AlphaZero(fake_heuristic_fn, 2, game_player, playouts=1)
+        mcts = AlphaZero(2, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
         fake_state = FakeState(game_player.game, 0, 0)
         # Executed twice, visits should not be added on top of the second search
         mcts.search(fake_state)
@@ -181,7 +181,7 @@ class TestAlphaZero(unittest.TestCase):
         np.random.seed(26)
         fake_model = FakeModel(fn_predict_probability_np_seed, FakeGame())
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = AlphaZero(fake_heuristic_fn, 3, game_player, playouts=3)
+        mcts = AlphaZero(3, game_player, heuristic_fn=fake_heuristic_fn, playouts=3)
         fake_state = FakeState(game_player.game, 0, 0)
         p = mcts.search(fake_state)
         np.testing.assert_equal(p, [0, 0, 1, 0])
@@ -199,7 +199,7 @@ class TestAlphaZero(unittest.TestCase):
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         fake_game = fake_model.game
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = AlphaZero(fake_heuristic_fn, 3, game_player, playouts=1)
+        mcts = AlphaZero(3, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
         fake_state = FakeState(fake_game, 0, 0)
         # If state not defined here, all actions are returned
         fake_game.valid_state_actions_dict = {
@@ -227,7 +227,7 @@ class TestAlphaZero(unittest.TestCase):
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         fake_game = fake_model.game
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = AlphaZero(fake_heuristic_fn, 3, game_player, playouts=1)
+        mcts = AlphaZero(3, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
         fake_state = FakeState(fake_game, 0, 0)
         # If state not defined here, all actions are returned
         fake_game.valid_state_actions_dict = {
@@ -263,7 +263,7 @@ class TestAlphaZero(unittest.TestCase):
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         fake_game = fake_model.game
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = AlphaZero(fake_heuristic_fn, 3, game_player, playouts=1)
+        mcts = AlphaZero(3, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
         fake_state = FakeState(fake_game, 0, 0)
         # If state not defined here, all actions are returned
         fake_game.valid_state_actions_dict = {
@@ -301,7 +301,7 @@ class TestAlphaZero(unittest.TestCase):
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         fake_game = fake_model.game
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = AlphaZero(fake_heuristic_fn, 3, game_player, playouts=1)
+        mcts = AlphaZero(3, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
         fake_state = FakeState(fake_game, 0, 0)
         # If state not defined here, all actions are returned
         fake_game.valid_state_actions_dict = {
@@ -322,7 +322,7 @@ class TestAlphaZero(unittest.TestCase):
         cnn = get_model()
         model = RobotRebootModel(game, cnn)
         game_player = GamePlayer(model, game)
-        mcts = AlphaZero(alpha_zero_heuristic_fn, 3, game_player, playouts=1)
+        mcts = AlphaZero(3, game_player, heuristic_fn=alpha_zero_heuristic_fn, playouts=1)
         p = mcts.search(state)
         np.testing.assert_equal([0 for i in range(16)], p)
         self.assertEqual(sorted(['[(0, 15), (23, 6), (10, 14), (24, 21)]',

@@ -62,7 +62,7 @@ class RobotRebootDataSetFactory:
         model = RobotRebootModel(game, self.cnn)
         game_player = GamePlayer(model, game)
         logging.info("Search using MCTS")
-        mcts = AlphaZero(alpha_zero_heuristic_fn, self.max_depth, game_player, playouts=self.playouts)
+        mcts = AlphaZero(self.max_depth, game_player, alpha_zero_heuristic_fn, playouts=self.playouts)
         p = mcts.search(state)
         logging.info("Search finished, probabilities calculated")
         logging.info("Playing the game")

@@ -3,6 +3,7 @@ from exceptions.exceptions import RequiredValueException
 from exceptions.util import assertOrThrow
 from src.alphazero.state import State
 from .game_player import GamePlayer
+from .heuristic_function import alpha_zero_heuristic_fn
 from ..mcts.monte_carlo_tree_search import MonteCarloTreeSearch
 
 
@@ -14,7 +15,7 @@ class AlphaZero(MonteCarloTreeSearch):
         game_player       (GamePlayer): player for the game to optimize moves
     """
 
-    def __init__(self, heuristic_fn, max_depth, game_player: GamePlayer, playouts=100):
+    def __init__(self, max_depth, game_player: GamePlayer, heuristic_fn=alpha_zero_heuristic_fn, playouts=100):
         assertOrThrow(game_player is not None, RequiredValueException("game_player"))
         MonteCarloTreeSearch.__init__(self,  game_player.game, playouts)
         assertOrThrow(heuristic_fn is not None, RequiredValueException("heuristic_fn"))
