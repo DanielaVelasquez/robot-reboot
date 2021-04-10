@@ -13,6 +13,31 @@ from .maze_cell_type import MazeCellType
 from .util import valid_maze
 
 
+def get_game_from_matrix(matrix):
+    rows, cols, layers = matrix.shape
+    maze = matrix[:, :, 0]
+    robot_house = None
+    robots = list()
+    for i in range(1, layers):
+        if i % 2 != 0:
+            rob_pos = np.argwhere(matrix[:, :, i] == RobotRebootState.ROBOT_IN_CELL)
+            assert "More than one robot in a robot layer", rob_pos.shape == (1, 2)
+            robots.append((rob_pos[0, 0], rob_pos[0, 1]))
+        else:
+            house_pos = np.argwhere(matrix[:, :, i] == RobotRebootState.ROBOT_IN_CELL)
+            is_house = house_pos.shape != (0, 2)
+            assert "There is more than one house defined in the matrix", robot_house is not None and is_house
+            if is_house:
+                robot_house = RobotRebootGoalHouse(int(i / 2) - 1, (house_pos[0, 0], house_pos[0, 1]))
+
+    assert "No robot positions found in the maze", len(robots) > 0
+    assert "No robot house was defined", robot_house is not None
+
+    game = RobotRebootGame(int((layers - 1) / 2), maze, robot_house)
+    state = RobotRebootState(game, robots)
+    return game, state
+
+
 class RobotRebootGame(Game):
     """
     Robot Reboot game, its maze and number of robots to move.
