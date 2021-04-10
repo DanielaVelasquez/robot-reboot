@@ -17,7 +17,7 @@ class AlphaZero(MonteCarloTreeSearch):
 
     def __init__(self, max_depth, game_player: GamePlayer, heuristic_fn=alpha_zero_heuristic_fn, playouts=100):
         assertOrThrow(game_player is not None, RequiredValueException("game_player"))
-        MonteCarloTreeSearch.__init__(self,  game_player.game, playouts)
+        MonteCarloTreeSearch.__init__(self, game_player.game, playouts)
         assertOrThrow(heuristic_fn is not None, RequiredValueException("heuristic_fn"))
         assertOrThrow(max_depth > 0, InvalidDepthException())
 
@@ -50,4 +50,3 @@ class AlphaZero(MonteCarloTreeSearch):
         state_stats.add_value(i_best, v)
 
         return v
-
