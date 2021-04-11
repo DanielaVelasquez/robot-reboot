@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
+from exceptions.exceptions import RequiredValueException
 from exceptions.mcts.monte_carlo_tree_search import InvalidPlayoutException
 from exceptions.util import assertOrThrow
 from src.game.game import Game
@@ -26,6 +27,7 @@ class MonteCarloTreeSearch(ABC):
             playouts (number): number of playouts per simulation (default 100)
         """
         assertOrThrow(playouts > 0, InvalidPlayoutException())
+        assertOrThrow(game is not None, RequiredValueException("game"))
         self._game = game
         self._playouts = playouts
         self._states_statistics = {}

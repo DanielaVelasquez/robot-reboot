@@ -1,3 +1,4 @@
+from exceptions.exceptions import RequiredValueException
 from exceptions.mcts.util import InvalidDepthException
 from exceptions.util import assertOrThrow
 from src.game.state import State
@@ -17,6 +18,7 @@ class UCT(MonteCarloTreeSearch):
     def __init__(self, game, max_depth, heuristic_fn=uct_heuristic_fn, playouts=100):
         MonteCarloTreeSearch.__init__(self, game, playouts)
         assertOrThrow(max_depth > 0, InvalidDepthException())
+        assertOrThrow(heuristic_fn is not None, RequiredValueException("heuristic_fn"))
         self.__max_depth = max_depth
         self.__heuristic_fn = heuristic_fn
 

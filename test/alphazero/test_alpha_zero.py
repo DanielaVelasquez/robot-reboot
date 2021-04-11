@@ -333,6 +333,7 @@ class TestAlphaZero(unittest.TestCase):
         model = RobotRebootModel(game, cnn)
         game_player = GamePlayer(model, game)
         alpha_zero = AlphaZero(3, game_player, heuristic_fn=alpha_zero_heuristic_fn, playouts=1)
+        self.assertEqual(alpha_zero.game, game)
         p = alpha_zero.search(state)
         np.testing.assert_equal([0 for i in range(16)], p)
         self.assertEqual(sorted(['[(0, 15), (23, 6), (10, 14), (24, 21)]',
