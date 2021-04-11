@@ -21,26 +21,26 @@ class AlphaZero(MonteCarloTreeSearch):
         assertOrThrow(heuristic_fn is not None, RequiredValueException("heuristic_fn"))
         assertOrThrow(max_depth > 0, InvalidDepthException())
 
-        self._heuristic_fn = heuristic_fn
-        self._max_depth = max_depth
-        self._game_player = game_player
+        self.__heuristic_fn = heuristic_fn
+        self.__max_depth = max_depth
+        self.__game_player = game_player
 
     @property
     def max_depth(self):
-        return self._max_depth
+        return self.__max_depth
 
     @property
     def game_player(self):
-        return self._game_player
+        return self.__game_player
 
     def _playout(self, state: State, depth=1):
         valid_actions = self._game.get_valid_actions(state)
-        if self._game.is_over(state) or depth >= self._max_depth or len(valid_actions) == 0:
+        if self._game.is_over(state) or depth >= self.__max_depth or len(valid_actions) == 0:
             return self._game.get_value(state)
-        v, p = self._game_player.predict(state)
+        v, p = self.__game_player.predict(state)
 
         state_stats = self._get_state_statistics(state)
-        heuristic_values = self._heuristic_fn(p, state_stats)
+        heuristic_values = self.__heuristic_fn(p, state_stats)
         a, i_best = self._get_best_action(heuristic_values, valid_actions)
 
         next_state = self._game.apply(a, state)
