@@ -15,10 +15,10 @@ from src.robot_reboot.model import RobotRebootModel
 from test.alphazero.fake_data import FakeState, FakeModel, fn_predict_probability_1_for_next_action, FakeGame
 
 
-def assert_state(mcts, s, n=[], w=[], p=[], message=""):
-    np.testing.assert_equal(mcts.states_statistics[s].n, n, message)
-    np.testing.assert_equal(mcts.states_statistics[s].w, w, message)
-    np.testing.assert_equal(mcts.states_statistics[s].p, p, message)
+def assert_state(alpha_zero, s, n=[], w=[], p=[], message=""):
+    np.testing.assert_equal(alpha_zero.states_statistics[s].n, n, message)
+    np.testing.assert_equal(alpha_zero.states_statistics[s].w, w, message)
+    np.testing.assert_equal(alpha_zero.states_statistics[s].p, p, message)
 
 
 def fake_heuristic_fn(p, _):
@@ -42,11 +42,21 @@ class TestAlphaZero(unittest.TestCase):
 
     def test_init_passes_without_default_parameters(self):
         mock_game_player = Mock()
-        AlphaZero(1, mock_game_player)
+        alpha_zero = AlphaZero(1, mock_game_player)
+        self.assertEqual(alpha_zero.max_depth, 1)
+        self.assertEqual(alpha_zero.game_player, mock_game_player)
+        self.assertIsNotNone(alpha_zero.game)
+        self.assertEqual(alpha_zero.playouts, 100)
 
     def test_init_passes_with_default_parameters(self):
         mock_game_player = Mock()
-        AlphaZero(1, mock_game_player, heuristic_fn=Mock(), playouts=1)
+        mock_heuristic_fn = Mock()
+        alpha_zero = AlphaZero(2, mock_game_player, heuristic_fn=mock_heuristic_fn, playouts=20)
+        self.assertEqual(alpha_zero.max_depth, 2)
+        self.assertEqual(alpha_zero.game_player, mock_game_player)
+        self.assertIsNotNone(alpha_zero.game)
+        self.assertEqual(alpha_zero.heuristic_fn, mock_heuristic_fn)
+        self.assertEqual(alpha_zero.playouts, 20)
 
     def test_init_fails_when_heuristic_fn_is_none(self):
         mock_game_player = Mock()
@@ -89,14 +99,14 @@ class TestAlphaZero(unittest.TestCase):
         """
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = AlphaZero(2, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
+        alpha_zero = AlphaZero(2, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
         fake_state = FakeState(game_player.game, 0, 0)
-        p = mcts.search(fake_state)
+        p = alpha_zero.search(fake_state)
         np.testing.assert_equal(p, [-1, 1, 1, 0])
-        self.assertEqual(list(mcts.states_statistics.keys()), ['s1', 's2', 's4'])
-        assert_state(mcts, 's1', n=[0, 1, 0, 0], w=[0, -1, 0, 0], p=[0, -1, 0, 0])
-        assert_state(mcts, 's2', n=[0, 0, 1, 0], w=[0, 0, 1, 0], p=[0, 0, 1, 0])
-        assert_state(mcts, 's4', n=[1, 0, 0, 0], w=[0, 0, 0, 0], p=[0, 0, 0, 0])
+        self.assertEqual(list(alpha_zero.states_statistics.keys()), ['s1', 's2', 's4'])
+        assert_state(alpha_zero, 's1', n=[0, 1, 0, 0], w=[0, -1, 0, 0], p=[0, -1, 0, 0])
+        assert_state(alpha_zero, 's2', n=[0, 0, 1, 0], w=[0, 0, 1, 0], p=[0, 0, 1, 0])
+        assert_state(alpha_zero, 's4', n=[1, 0, 0, 0], w=[0, 0, 0, 0], p=[0, 0, 0, 0])
 
     def test_search_with_all_leaves_win(self):
         """
@@ -120,14 +130,14 @@ class TestAlphaZero(unittest.TestCase):
 
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = AlphaZero(4, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
+        alpha_zero = AlphaZero(4, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
         fake_state = FakeState(game_player.game, 0, 0)
-        p = mcts.search(fake_state)
+        p = alpha_zero.search(fake_state)
         np.testing.assert_equal(p, [1, 1, 1, 1])
-        self.assertEqual(list(mcts.states_statistics.keys()), ['s1', 's2', 's4'])
-        assert_state(mcts, 's1', n=[0, 2, 0, 0], w=[0, 2, 0, 0], p=[0, 1, 0, 0])
-        assert_state(mcts, 's2', n=[0, 0, 3, 0], w=[0, 0, 3, 0], p=[0, 0, 1, 0])
-        assert_state(mcts, 's4', n=[1, 0, 0, 0], w=[1, 0, 0, 0], p=[1, 0, 0, 0])
+        self.assertEqual(list(alpha_zero.states_statistics.keys()), ['s1', 's2', 's4'])
+        assert_state(alpha_zero, 's1', n=[0, 2, 0, 0], w=[0, 2, 0, 0], p=[0, 1, 0, 0])
+        assert_state(alpha_zero, 's2', n=[0, 0, 3, 0], w=[0, 0, 3, 0], p=[0, 0, 1, 0])
+        assert_state(alpha_zero, 's4', n=[1, 0, 0, 0], w=[1, 0, 0, 0], p=[1, 0, 0, 0])
 
     def test_search_clean_state_statistics_for_each_search(self):
         """
@@ -145,20 +155,20 @@ class TestAlphaZero(unittest.TestCase):
        """
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = AlphaZero(2, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
+        alpha_zero = AlphaZero(2, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
         fake_state = FakeState(game_player.game, 0, 0)
         # Executed twice, visits should not be added on top of the second search
-        mcts.search(fake_state)
-        p = mcts.search(fake_state)
+        alpha_zero.search(fake_state)
+        p = alpha_zero.search(fake_state)
 
         np.testing.assert_equal(p, [-1, 1, 1, 0])
 
-        self.assertEqual(list(mcts.states_statistics.keys()), ['s1', 's2', 's4'])
-        assert_state(mcts, 's1', n=[0, 1, 0, 0], w=[0, -1, 0, 0], p=[0, -1, 0, 0],
+        self.assertEqual(list(alpha_zero.states_statistics.keys()), ['s1', 's2', 's4'])
+        assert_state(alpha_zero, 's1', n=[0, 1, 0, 0], w=[0, -1, 0, 0], p=[0, -1, 0, 0],
                      message="Visits for s1 should only count one the last search, check state statistics are reset")
-        assert_state(mcts, 's2', n=[0, 0, 1, 0], w=[0, 0, 1, 0], p=[0, 0, 1, 0],
+        assert_state(alpha_zero, 's2', n=[0, 0, 1, 0], w=[0, 0, 1, 0], p=[0, 0, 1, 0],
                      message="Visits for s2 should only count one the last search, check state statistics are reset")
-        assert_state(mcts, 's4', n=[1, 0, 0, 0], w=[0, 0, 0, 0], p=[0, 0, 0, 0],
+        assert_state(alpha_zero, 's4', n=[1, 0, 0, 0], w=[0, 0, 0, 0], p=[0, 0, 0, 0],
                      message="Visits for s3 should only count one the last search, check state statistics are reset")
 
     def test_search_with_random_probabilities(self):
@@ -181,14 +191,14 @@ class TestAlphaZero(unittest.TestCase):
         np.random.seed(26)
         fake_model = FakeModel(fn_predict_probability_np_seed, FakeGame())
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = AlphaZero(3, game_player, heuristic_fn=fake_heuristic_fn, playouts=3)
+        alpha_zero = AlphaZero(3, game_player, heuristic_fn=fake_heuristic_fn, playouts=3)
         fake_state = FakeState(game_player.game, 0, 0)
-        p = mcts.search(fake_state)
+        p = alpha_zero.search(fake_state)
         np.testing.assert_equal(p, [0, 0, 1, 0])
-        self.assertEqual(sorted(mcts.states_statistics.keys()), sorted(['s1', 's2', 's4']))
-        assert_state(mcts, 's1', n=[3, 1, 3, 2], w=[0, -1, 3, -1], p=[0, -1, 1, -0.5])
-        assert_state(mcts, 's2', n=[3, 1, 0, 0], w=[0, 0, 0, 0], p=[0, 0, 0, 0])
-        assert_state(mcts, 's4', n=[3, 0, 0, 2], w=[1, 0, 0, -2], p=[1 / 3, 0, 0, -1])
+        self.assertEqual(sorted(alpha_zero.states_statistics.keys()), sorted(['s1', 's2', 's4']))
+        assert_state(alpha_zero, 's1', n=[3, 1, 3, 2], w=[0, -1, 3, -1], p=[0, -1, 1, -0.5])
+        assert_state(alpha_zero, 's2', n=[3, 1, 0, 0], w=[0, 0, 0, 0], p=[0, 0, 0, 0])
+        assert_state(alpha_zero, 's4', n=[3, 0, 0, 2], w=[1, 0, 0, -2], p=[1 / 3, 0, 0, -1])
 
     def test_search_returns_all_probabilities_zero_when_none_valid_actions_on_root_state(self):
         """
@@ -199,15 +209,15 @@ class TestAlphaZero(unittest.TestCase):
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         fake_game = fake_model.game
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = AlphaZero(3, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
+        alpha_zero = AlphaZero(3, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
         fake_state = FakeState(fake_game, 0, 0)
         # If state not defined here, all actions are returned
         fake_game.valid_state_actions_dict = {
             0: []
         }
-        p = mcts.search(fake_state)
+        p = alpha_zero.search(fake_state)
         np.testing.assert_equal(p, [0, 0, 0, 0])
-        self.assertEqual(0, len(mcts.states_statistics))
+        self.assertEqual(0, len(alpha_zero.states_statistics))
 
     def test_search__when_none_valid_actions_on_next_states_after_root_state(self):
         """
@@ -227,7 +237,7 @@ class TestAlphaZero(unittest.TestCase):
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         fake_game = fake_model.game
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = AlphaZero(3, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
+        alpha_zero = AlphaZero(3, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
         fake_state = FakeState(fake_game, 0, 0)
         # If state not defined here, all actions are returned
         fake_game.valid_state_actions_dict = {
@@ -236,9 +246,9 @@ class TestAlphaZero(unittest.TestCase):
             3: [],
             4: []
         }
-        p = mcts.search(fake_state)
+        p = alpha_zero.search(fake_state)
         np.testing.assert_equal(p, [0, -1, 1, -1])
-        self.assertEqual(0, len(mcts.states_statistics))
+        self.assertEqual(0, len(alpha_zero.states_statistics))
 
     def test_search__when_some_valid_actions_on_next_states(self):
         """
@@ -263,18 +273,18 @@ class TestAlphaZero(unittest.TestCase):
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         fake_game = fake_model.game
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = AlphaZero(3, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
+        alpha_zero = AlphaZero(3, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
         fake_state = FakeState(fake_game, 0, 0)
         # If state not defined here, all actions are returned
         fake_game.valid_state_actions_dict = {
             2: [a for a in fake_game.actions if a.value != 3],  # It can't go to state 3
         }
-        p = mcts.search(fake_state)
+        p = alpha_zero.search(fake_state)
         np.testing.assert_equal([-1, 0, 1, -1], p)
-        self.assertEqual(sorted(mcts.states_statistics.keys()), sorted(['s1', 's2', 's4']))
-        assert_state(mcts, 's1', n=[0, 2, 0, 0], w=[0, -2, 0, 0], p=[0, -1, 0, 0])
-        assert_state(mcts, 's2', n=[0, 0, 0, 2], w=[0, 0, 0, -1], p=[0, 0, 0, -0.5])
-        assert_state(mcts, 's4', n=[2, 0, 0, 0], w=[-1, 0, 0, 0], p=[-0.5, 0, 0, 0])
+        self.assertEqual(sorted(alpha_zero.states_statistics.keys()), sorted(['s1', 's2', 's4']))
+        assert_state(alpha_zero, 's1', n=[0, 2, 0, 0], w=[0, -2, 0, 0], p=[0, -1, 0, 0])
+        assert_state(alpha_zero, 's2', n=[0, 0, 0, 2], w=[0, 0, 0, -1], p=[0, 0, 0, -0.5])
+        assert_state(alpha_zero, 's4', n=[2, 0, 0, 0], w=[-1, 0, 0, 0], p=[-0.5, 0, 0, 0])
 
     def test_search__when_some_valid_actions_on_next_states_and_root_state(self):
         """
@@ -301,19 +311,19 @@ class TestAlphaZero(unittest.TestCase):
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         fake_game = fake_model.game
         game_player = GamePlayer(fake_model, fake_model.game)
-        mcts = AlphaZero(3, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
+        alpha_zero = AlphaZero(3, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
         fake_state = FakeState(fake_game, 0, 0)
         # If state not defined here, all actions are returned
         fake_game.valid_state_actions_dict = {
             0: [a for a in fake_game.actions if a.value != 1],  # It can't go to state 1
             2: [a for a in fake_game.actions if a.value != 3],  # It can't go to state 3
         }
-        p = mcts.search(fake_state)
+        p = alpha_zero.search(fake_state)
         np.testing.assert_equal([0, 0, 1, -1], p)
-        self.assertEqual(sorted(mcts.states_statistics.keys()), sorted(['s1', 's2', 's4']))
-        assert_state(mcts, 's1', n=[0, 1, 0, 0], w=[0, -1, 0, 0], p=[0, -1, 0, 0])
-        assert_state(mcts, 's2', n=[0, 0, 0, 1], w=[0, 0, 0, 0], p=[0, 0, 0, 0])
-        assert_state(mcts, 's4', n=[2, 0, 0, 0], w=[-1, 0, 0, 0], p=[-0.5, 0, 0, 0])
+        self.assertEqual(sorted(alpha_zero.states_statistics.keys()), sorted(['s1', 's2', 's4']))
+        assert_state(alpha_zero, 's1', n=[0, 1, 0, 0], w=[0, -1, 0, 0], p=[0, -1, 0, 0])
+        assert_state(alpha_zero, 's2', n=[0, 0, 0, 1], w=[0, 0, 0, 0], p=[0, 0, 0, 0])
+        assert_state(alpha_zero, 's4', n=[2, 0, 0, 0], w=[-1, 0, 0, 0], p=[-0.5, 0, 0, 0])
 
     def test_search_with_robot_reboot_game(self):
         np.random.seed(26)
@@ -322,8 +332,8 @@ class TestAlphaZero(unittest.TestCase):
         cnn = get_model()
         model = RobotRebootModel(game, cnn)
         game_player = GamePlayer(model, game)
-        mcts = AlphaZero(3, game_player, heuristic_fn=alpha_zero_heuristic_fn, playouts=1)
-        p = mcts.search(state)
+        alpha_zero = AlphaZero(3, game_player, heuristic_fn=alpha_zero_heuristic_fn, playouts=1)
+        p = alpha_zero.search(state)
         np.testing.assert_equal([0 for i in range(16)], p)
         self.assertEqual(sorted(['[(0, 15), (23, 6), (10, 14), (24, 21)]',
                                  '[(30, 12), (23, 6), (10, 14), (24, 21)]',
@@ -352,4 +362,4 @@ class TestAlphaZero(unittest.TestCase):
                                  '[(30, 15), (23, 9), (10, 14), (24, 21)]',
                                  '[(30, 15), (26, 6), (10, 14), (24, 21)]',
                                  '[(30, 26), (23, 6), (10, 14), (24, 21)]',
-                                 '[(30, 26), (23, 6), (10, 14), (24, 28)]']), sorted(mcts.states_statistics.keys()))
+                                 '[(30, 26), (23, 6), (10, 14), (24, 28)]']), sorted(alpha_zero.states_statistics.keys()))
