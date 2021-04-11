@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from exceptions.alphazero.state import InvalidStateSequence
+from exceptions.game.state import InvalidStateSequence
 from exceptions.util import assertOrThrow
 
 

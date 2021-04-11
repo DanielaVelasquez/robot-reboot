@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from exceptions.alphazero.state import InvalidStateSequence
+from exceptions.game.state import InvalidStateSequence
 from exceptions.robot_reboot.state import EmptyRobotsPositionException, InvalidRobotsPositionException, \
     RobotsPositionOutOfMazeBoundsException, NumberRobotsNotMatchingException, InvalidRobotsList
 from src.robot_reboot.factory import RobotRebootFactory

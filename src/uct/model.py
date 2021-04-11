@@ -1,5 +1,5 @@
 from src.alphazero.model import Model
-from src.alphazero.state import State
+from src.game.state import State
 from src.robot_reboot.game import RobotRebootGame
 
 

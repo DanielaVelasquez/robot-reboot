@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from .state import State
-from .game import Game
+from src.game.state import State
+from src.game.game import Game
 
 
 class Model(ABC):

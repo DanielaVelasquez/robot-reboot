@@ -4,8 +4,8 @@ import numpy as np
 
 from exceptions.mcts.monte_carlo_tree_search import InvalidPlayoutException
 from exceptions.util import assertOrThrow
-from src.alphazero.game import Game
-from src.alphazero.state import State
+from src.game.game import Game
+from src.game.state import State
 from src.mcts.state_statistics import StateStatistics
 
 

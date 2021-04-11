@@ -3,7 +3,7 @@ import numpy as np
 from exceptions.robot_reboot.state import EmptyRobotsPositionException, InvalidRobotsPositionException, \
     RobotsPositionOutOfMazeBoundsException, NumberRobotsNotMatchingException, InvalidRobotsList
 from exceptions.util import assertOrThrow
-from ..alphazero.state import State
+from src.game.state import State
 
 
 class RobotRebootState(State):

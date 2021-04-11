@@ -4,7 +4,7 @@ from exceptions.robot_reboot.game import NoRobotsGameException, InvalidMazeExcep
     RobotHouseOutOfMazeBoundsException, \
     MazeNotSquareException, MazeSizeInvalidException, RobotHouseInvalidRobotIdException
 from exceptions.util import assertOrThrow
-from src.alphazero.game import Game
+from src.game.game import Game
 from src.robot_reboot.action import RobotRebootAction
 from src.robot_reboot.state import RobotRebootState
 from .direction import Direction

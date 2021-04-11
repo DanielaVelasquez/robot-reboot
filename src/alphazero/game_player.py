@@ -2,9 +2,9 @@ import numpy as np
 
 from exceptions.exceptions import RequiredValueException
 from exceptions.util import assertOrThrow
-from src.alphazero.game import Game
+from src.game.game import Game
 from src.alphazero.model import Model
-from src.alphazero.state import State
+from src.game.state import State
 
 
 class GamePlayer:

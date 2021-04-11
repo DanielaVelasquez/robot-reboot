@@ -1,5 +1,5 @@
 from exceptions.exceptions import RequiredValueException
-from ..alphazero.action import Action
+from src.game.action import Action
 from exceptions.util import assertOrThrow
 
 
