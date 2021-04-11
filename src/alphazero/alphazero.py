@@ -1,4 +1,4 @@
-from exceptions.alphazero.alpha_zero import InvalidDepthException
+from exceptions.mcts.util import InvalidDepthException
 from exceptions.exceptions import RequiredValueException
 from exceptions.util import assertOrThrow
 from src.game.state import State

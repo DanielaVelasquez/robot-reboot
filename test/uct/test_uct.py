@@ -1,14 +1,21 @@
 import unittest
+from unittest.mock import Mock
 
-from src.robot_reboot.factory import RobotRebootFactory
-from src.uct.model import UctModel
+from src.uct.uct import UCT
 
 
-class TestUctModel(unittest.TestCase):
-    def test_predict_returns_1_for_each_action(self):
-        game, state, quadrants_ids = RobotRebootFactory().create(31, locate_robot_close_goal=True, max_movements=4)
-        uctModel = UctModel(game)
-        v, p = uctModel.predict(state)
-        self.assertIsNone(v)
-        for i in p:
-            self.assertEqual(i, 1)
+class TestUct(unittest.TestCase):
+    def test_init_passes_without_default_parameters(self):
+        mock_game = Mock()
+        uct = UCT(mock_game, 1)
+        self.assertEqual(uct.max_depth, 1)
+        self.assertEqual(uct.game, mock_game)
+
+    def test_init_with_default_parameters(self):
+        mock_game = Mock()
+        mock_heuristic_fn = Mock()
+        uct = UCT(mock_game, 2, heuristic_fn=mock_heuristic_fn, playouts=100)
+        self.assertEqual(uct.game, mock_game)
+        self.assertEqual(uct.max_depth, 2)
+        self.assertEqual(uct.heuristic_fn, mock_heuristic_fn)
+        self.assertEqual(uct.playouts, 100)
