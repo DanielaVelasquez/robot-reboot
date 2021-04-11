@@ -31,4 +31,18 @@ class UCT(MonteCarloTreeSearch):
         return self.__heuristic_fn
 
     def _playout(self, state: State, depth=1):
-        pass
+        valid_actions = self._game.get_valid_actions(state)
+        if self._game.is_over(state) or depth >= self.__max_depth or len(valid_actions) == 0:
+            return self._game.get_value(state)
+
+        state_stats = self._get_state_statistics(state)
+        heuristic_values = self.__heuristic_fn(state_stats, len(self._states_statistics))
+        a, i_best = self._get_best_action(heuristic_values, valid_actions)
+
+        next_state = self._game.apply(a, state)
+        state_stats.visit(i_best)
+
+        v = self._playout(next_state, depth + 1)
+        state_stats.add_value(i_best, v)
+
+        return v

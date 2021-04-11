@@ -17,6 +17,11 @@ class MonteCarloTreeSearch(ABC):
         game              (Game):     game used for the search
         playouts          (number):   number of playouts per simulation
         states_statistics (dict):     dictionary between visited states and its statistics per action
+                                      {
+                                        's1': StateStatistics(),
+                                        's2': StateStatistics(),
+                                        ...
+                                      }
     """
 
     def __init__(self, game: Game, playouts=100):

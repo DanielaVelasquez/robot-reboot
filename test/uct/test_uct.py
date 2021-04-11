@@ -37,5 +37,3 @@ class TestUct(unittest.TestCase):
 
     def test_init_throws_invalid_playout_exception_when_playout_is_zero(self):
         self.assertRaises(InvalidPlayoutException, lambda: UCT(Mock(), 2, playouts=0))
-
-
