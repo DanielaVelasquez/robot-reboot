@@ -13,15 +13,10 @@ from src.ml.model import get_model
 from src.robot_reboot.factory import RobotRebootFactory
 from src.robot_reboot.model import RobotRebootModel
 from test.alphazero.fake_data import FakeState, FakeModel, fn_predict_probability_1_for_next_action, FakeGame
+from test.mcts.util import assert_state
 
 
-def assert_state(alpha_zero, s, n=[], w=[], p=[], message=""):
-    np.testing.assert_equal(alpha_zero.states_statistics[s].n, n, message)
-    np.testing.assert_equal(alpha_zero.states_statistics[s].w, w, message)
-    np.testing.assert_equal(alpha_zero.states_statistics[s].p, p, message)
-
-
-def fake_heuristic_fn(p, _):
+def fake_alpha_zero_heuristic_fn(p, _):
     return p
 
 
@@ -99,7 +94,7 @@ class TestAlphaZero(unittest.TestCase):
         """
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         game_player = GamePlayer(fake_model, fake_model.game)
-        alpha_zero = AlphaZero(2, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
+        alpha_zero = AlphaZero(2, game_player, heuristic_fn=fake_alpha_zero_heuristic_fn, playouts=1)
         fake_state = FakeState(game_player.game, 0, 0)
         p = alpha_zero.search(fake_state)
         np.testing.assert_equal(p, [-1, 1, 1, 0])
@@ -130,7 +125,7 @@ class TestAlphaZero(unittest.TestCase):
 
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         game_player = GamePlayer(fake_model, fake_model.game)
-        alpha_zero = AlphaZero(4, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
+        alpha_zero = AlphaZero(4, game_player, heuristic_fn=fake_alpha_zero_heuristic_fn, playouts=1)
         fake_state = FakeState(game_player.game, 0, 0)
         p = alpha_zero.search(fake_state)
         np.testing.assert_equal(p, [1, 1, 1, 1])
@@ -155,7 +150,7 @@ class TestAlphaZero(unittest.TestCase):
        """
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         game_player = GamePlayer(fake_model, fake_model.game)
-        alpha_zero = AlphaZero(2, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
+        alpha_zero = AlphaZero(2, game_player, heuristic_fn=fake_alpha_zero_heuristic_fn, playouts=1)
         fake_state = FakeState(game_player.game, 0, 0)
         # Executed twice, visits should not be added on top of the second search
         alpha_zero.search(fake_state)
@@ -191,7 +186,7 @@ class TestAlphaZero(unittest.TestCase):
         np.random.seed(26)
         fake_model = FakeModel(fn_predict_probability_np_seed, FakeGame())
         game_player = GamePlayer(fake_model, fake_model.game)
-        alpha_zero = AlphaZero(3, game_player, heuristic_fn=fake_heuristic_fn, playouts=3)
+        alpha_zero = AlphaZero(3, game_player, heuristic_fn=fake_alpha_zero_heuristic_fn, playouts=3)
         fake_state = FakeState(game_player.game, 0, 0)
         p = alpha_zero.search(fake_state)
         np.testing.assert_equal(p, [0, 0, 1, 0])
@@ -209,7 +204,7 @@ class TestAlphaZero(unittest.TestCase):
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         fake_game = fake_model.game
         game_player = GamePlayer(fake_model, fake_model.game)
-        alpha_zero = AlphaZero(3, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
+        alpha_zero = AlphaZero(3, game_player, heuristic_fn=fake_alpha_zero_heuristic_fn, playouts=1)
         fake_state = FakeState(fake_game, 0, 0)
         # If state not defined here, all actions are returned
         fake_game.valid_state_actions_dict = {
@@ -237,7 +232,7 @@ class TestAlphaZero(unittest.TestCase):
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         fake_game = fake_model.game
         game_player = GamePlayer(fake_model, fake_model.game)
-        alpha_zero = AlphaZero(3, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
+        alpha_zero = AlphaZero(3, game_player, heuristic_fn=fake_alpha_zero_heuristic_fn, playouts=1)
         fake_state = FakeState(fake_game, 0, 0)
         # If state not defined here, all actions are returned
         fake_game.valid_state_actions_dict = {
@@ -273,7 +268,7 @@ class TestAlphaZero(unittest.TestCase):
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         fake_game = fake_model.game
         game_player = GamePlayer(fake_model, fake_model.game)
-        alpha_zero = AlphaZero(3, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
+        alpha_zero = AlphaZero(3, game_player, heuristic_fn=fake_alpha_zero_heuristic_fn, playouts=1)
         fake_state = FakeState(fake_game, 0, 0)
         # If state not defined here, all actions are returned
         fake_game.valid_state_actions_dict = {
@@ -311,7 +306,7 @@ class TestAlphaZero(unittest.TestCase):
         fake_model = FakeModel(fn_predict_probability_1_for_next_action, FakeGame())
         fake_game = fake_model.game
         game_player = GamePlayer(fake_model, fake_model.game)
-        alpha_zero = AlphaZero(3, game_player, heuristic_fn=fake_heuristic_fn, playouts=1)
+        alpha_zero = AlphaZero(3, game_player, heuristic_fn=fake_alpha_zero_heuristic_fn, playouts=1)
         fake_state = FakeState(fake_game, 0, 0)
         # If state not defined here, all actions are returned
         fake_game.valid_state_actions_dict = {

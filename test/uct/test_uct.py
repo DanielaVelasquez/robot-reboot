@@ -1,10 +1,18 @@
 import unittest
 from unittest.mock import Mock
+import numpy as np
 
 from exceptions.exceptions import RequiredValueException
 from exceptions.mcts.monte_carlo_tree_search import InvalidPlayoutException
 from exceptions.mcts.util import InvalidDepthException
+from src.mcts.state_statistics import StateStatistics
 from src.uct.uct import UCT
+from test.alphazero.fake_data import FakeGame, FakeState
+from test.mcts.util import assert_state
+
+
+def fake_uct_heuristic_fn(state_statistics: StateStatistics, n):
+    return state_statistics.p
 
 
 class TestUct(unittest.TestCase):
@@ -37,3 +45,26 @@ class TestUct(unittest.TestCase):
 
     def test_init_throws_invalid_playout_exception_when_playout_is_zero(self):
         self.assertRaises(InvalidPlayoutException, lambda: UCT(Mock(), 2, playouts=0))
+
+    def test_search_with_depth_2_and_playouts_1(self):
+        """
+                        Tree built
+                            s0
+
+                (a1)    (a2)    (a3)    (a4)
+                 s1      s2      s3      s1
+
+                (a2)    (a3)            (a1)
+                 s2      s3              s1
+
+               v=-1      v=1     v=1     v=0
+
+        """
+        fake_game = FakeGame()
+        fake_state = FakeState(fake_game, 0, 0)
+        uct = UCT(fake_game, 2, heuristic_fn=fake_uct_heuristic_fn, playouts=1)
+        p = uct.search(fake_state)
+        np.testing.assert_equal(p, [-1, -1, 1, -1])
+        assert_state(uct, 's1', n=[0, 0, 0, 1], w=[0, 0, 0, -1], p=[0, 0, 0, -1])
+        assert_state(uct, 's2', n=[0, 0, 0, 1], w=[0, 0, 0, -1], p=[0, 0, 0, -1])
+        assert_state(uct, 's4', n=[0, 0, 0, 1], w=[0, 0, 0, -1], p=[0, 0, 0, -1])
