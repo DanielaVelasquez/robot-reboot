@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 
 from src.alphazero.heuristic_function import alpha_zero_heuristic_fn
-from src.alphazero.state_statistics import StateStatistics
+from src.mcts.state_statistics import StateStatistics
 
 
 class TestHeuristicFunction(unittest.TestCase):

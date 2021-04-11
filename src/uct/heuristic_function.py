@@ -1,4 +1,4 @@
-from src.alphazero.state_statistics import StateStatistics
+from src.mcts.state_statistics import StateStatistics
 import numpy as np
 
 C = 0.4

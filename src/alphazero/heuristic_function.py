@@ -1,4 +1,4 @@
-from src.alphazero.state_statistics import StateStatistics
+from src.mcts.state_statistics import StateStatistics
 
 
 def alpha_zero_heuristic_fn(predicted_p, statistics: StateStatistics):

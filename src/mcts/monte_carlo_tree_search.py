@@ -6,7 +6,7 @@ from exceptions.mcts.monte_carlo_tree_search import InvalidPlayoutException
 from exceptions.util import assertOrThrow
 from src.alphazero.game import Game
 from src.alphazero.state import State
-from src.alphazero.state_statistics import StateStatistics
+from src.mcts.state_statistics import StateStatistics
 
 
 class MonteCarloTreeSearch(ABC):

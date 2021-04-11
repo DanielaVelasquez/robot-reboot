@@ -1,6 +1,6 @@
 import numpy as np
 
-from exceptions.alphazero.state_statistics import EdgeNotVisitedException, InvalidNumberActionsException, \
+from exceptions.mcts.state_statistics import EdgeNotVisitedException, InvalidNumberActionsException, \
     InvalidActionsTypeException
 from exceptions.util import assertOrThrow
 
