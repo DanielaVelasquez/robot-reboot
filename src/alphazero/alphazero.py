@@ -33,6 +33,10 @@ class AlphaZero(MonteCarloTreeSearch):
     def game_player(self):
         return self.__game_player
 
+    @property
+    def heuristic_fn(self):
+        return self.__heuristic_fn
+
     def _playout(self, state: State, depth=1):
         valid_actions = self._game.get_valid_actions(state)
         if self._game.is_over(state) or depth >= self.__max_depth or len(valid_actions) == 0:
