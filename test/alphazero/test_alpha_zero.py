@@ -323,11 +323,11 @@ class TestAlphaZero(unittest.TestCase):
     def test_search_with_robot_reboot_game(self):
         np.random.seed(26)
         f = RobotRebootFactory()
-        game, state, _ = f.create(31)
+        game, state, _ = f.create(31, locate_robot_close_goal=True, max_movements=3)
         cnn = get_model()
         model = RobotRebootModel(game, cnn)
         game_player = GamePlayer(model, game)
-        alpha_zero = AlphaZero(3, game_player, heuristic_fn=alpha_zero_heuristic_fn, playouts=1)
+        alpha_zero = AlphaZero(5, game_player, heuristic_fn=alpha_zero_heuristic_fn, playouts=5)
         self.assertEqual(alpha_zero.game, game)
         p = alpha_zero.search(state)
         np.testing.assert_equal([0 for i in range(16)], p)

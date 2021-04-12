@@ -44,7 +44,7 @@ class AlphaZero(MonteCarloTreeSearch):
         v, p = self.__game_player.predict(state)
 
         state_stats = self._get_state_statistics(state)
-        heuristic_values = self.__heuristic_fn(p, state_stats)
+        heuristic_values = self.__heuristic_fn(p, state_stats, len(self._states_statistics))
         a, i_best = self._get_best_action(heuristic_values, valid_actions)
 
         next_state = self._game.apply(a, state)
