@@ -6,6 +6,8 @@ from exceptions.exceptions import RequiredValueException
 from exceptions.mcts.monte_carlo_tree_search import InvalidPlayoutException
 from exceptions.mcts.util import InvalidDepthException
 from src.mcts.state_statistics import StateStatistics
+from src.robot_reboot.factory import RobotRebootFactory
+from src.uct.heuristic_function import uct_heuristic_fn
 from src.uct.uct import UCT
 from test.alphazero.fake_data import FakeGame, FakeState
 from test.mcts.util import assert_state
@@ -68,3 +70,12 @@ class TestUct(unittest.TestCase):
         assert_state(uct, 's1', n=[0, 0, 0, 1], w=[0, 0, 0, -1], p=[0, 0, 0, -1])
         assert_state(uct, 's2', n=[0, 0, 0, 1], w=[0, 0, 0, -1], p=[0, 0, 0, -1])
         assert_state(uct, 's4', n=[0, 0, 0, 1], w=[0, 0, 0, -1], p=[0, 0, 0, -1])
+
+    def test_search_with_robot_reboot_game(self):
+        np.random.seed(26)
+        f = RobotRebootFactory()
+        game, state, _ = f.create(31, locate_robot_close_goal=True, max_movements=3)
+        uct = UCT(game, 20, heuristic_fn=uct_heuristic_fn, playouts=50)
+        p = uct.search(state)
+        np.testing.assert_equal(p, [0.74, 0.76, 0., 0.8, 0.76, 0.78, 0.82, 0.82, 0., 0., 1., 0., 0.8, 0.68, 0.8, 0.84])
+        self.assertEqual(len(uct.states_statistics), 1896)
