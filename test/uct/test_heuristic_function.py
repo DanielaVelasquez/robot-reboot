@@ -19,4 +19,4 @@ class TestHeuristicFunction(unittest.TestCase):
     def test_uct_heuristic_fn_when_no_visits_registered(self):
         statistics = StateStatistics(1)
         values = uct_heuristic_fn(statistics, 4)
-        self.assertAlmostEqual(values[0], 148, delta=0.001)
+        self.assertAlmostEqual(values[0], 148.931, delta=0.001)
