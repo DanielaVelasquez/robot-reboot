@@ -28,22 +28,26 @@ def write_tf_record(i, max_movements, model_dir):
             }
         )
     )
-    filename = f'data/robot_reboot_{i}.tfrecords'
+    filename = f'robot_reboot_data/iter_0/robot_reboot_{i}.tfrecords'
     logging.info(f'Saving file {filename}')
     with tf.io.TFRecordWriter(filename) as f:
         f.write(sample.SerializeToString())
 
 
-def create_tfrecord(offset, max_total_seconds, model_dir):
+def create_tfrecord(offset, threshold, model_dir, time_threshold):
     processes = list()
     num_cores = multiprocessing.cpu_count()
     logging.info(f"Working with {num_cores} cores")
     start_time = time.time()
     total_seconds_running = time.time() - start_time
     i = 0
-    while total_seconds_running < max_total_seconds:
+    while (time_threshold and total_seconds_running < threshold) or (not time_threshold and i < threshold):
         if i % num_cores == 0 and i != 0:
-            logging.info(f"Processing jobs {total_seconds_running}/{max_total_seconds}")
+            if time_threshold:
+                logging.info(f"Processing jobs {total_seconds_running}/{threshold}")
+            else:
+                logging.info(f"Processing jobs {i}/{threshold}")
+
             [t.join() for t in processes]
             processes = list()
         max_movements = np.random.randint(1, 6)
@@ -51,7 +55,10 @@ def create_tfrecord(offset, max_total_seconds, model_dir):
         process.start()
         processes.append(process)
         total_seconds_running = time.time() - start_time
-        logging.info(f"Total time {total_seconds_running}/{max_total_seconds}")
+        if time_threshold:
+            logging.info(f"Total time {total_seconds_running}/{threshold}")
+        else:
+            logging.info(f"Total samples {i}/{threshold}")
         i += 1
     logging.info(f"{i} jobs processed, waiting for them to finish")
     [t.join() for t in processes]
@@ -62,10 +69,17 @@ def create_tfrecord(offset, max_total_seconds, model_dir):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--total_seconds',
+        '--threshold',
         type=int,
         required=True,
         help='Max number of seconds that samples will be generated'
+    )
+    parser.add_argument(
+        '--time_threshold',
+        type=int,
+        required=False,
+        default=1,
+        help='Determine if the threshold is for time 1 or 0 for number of samples'
     )
     parser.add_argument(
         '--seed',
@@ -87,8 +101,11 @@ if __name__ == '__main__':
         help='Model used to generate the dataset'
     )
     args = parser.parse_args()
-    logging.info(f'Running for {args.total_seconds} seconds with seed {args.seed}')
+
+    if args.time_threshold > 0:
+        logging.info(f'Running for {args.threshold} seconds with seed {args.seed}')
+    else:
+        logging.info(f'Running to generate {args.threshold} samples with seed {args.seed}')
     np.random.seed(args.seed)
 
-    create_tfrecord(args.offset, args.total_seconds, args.model_dir)
-
+    create_tfrecord(args.offset, args.threshold, args.model_dir, args.time_threshold > 0)
