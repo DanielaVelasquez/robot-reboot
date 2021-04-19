@@ -16,7 +16,7 @@ SHUFFLE_BUFFER_SIZE = 100
 
 
 def get_filenames(channel_name, channel):
-    if channel_name in ['train', 'validation', 'eval']:
+    if channel_name in ['train', 'valid', 'eval']:
         return [os.path.join(channel, f'{channel_name}.tfrecords')]
     else:
         raise ValueError(f'Invalid data for {channel_name}')
@@ -41,6 +41,7 @@ def _input(epochs, channel, channel_name):
     logging.info(f'Loading data for {channel_name}')
 
     filenames = get_filenames(channel_name, channel)
+    logging.info(f'Reading files {filenames}')
     dataset = tf.data.TFRecordDataset(filenames)
     dataset = dataset.map(read_tfrecord, num_parallel_calls=20)
 
@@ -61,7 +62,7 @@ def save_model(model, dir, version):
 def train(args):
     logging.info("Getting data sets")
     train_ds = _input(args.epochs, args.train, 'train')
-    valid_ds = _input(args.epochs, args.validation, 'validation')
+    valid_ds = _input(args.epochs, args.valid, 'valid')
 
     logging.info("Loading model")
     model = get_model()
@@ -82,9 +83,11 @@ def train(args):
     model.compile(loss=losses, optimizer=optimizer, metrics=[tf.keras.metrics.Accuracy()])
 
     checkpoint = ModelCheckpoint(args.model_output_dir + 'checkpoint-{epoch}.h5')
+    reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2,
+                              patience=3, min_lr=0.001,verbose=1)
 
     logging.info("Starting to train")
-    model.fit(train_ds, epochs=args.epochs, validation_data=valid_ds, callbacks=[checkpoint])
+    model.fit(train_ds, epochs=args.epochs, validation_data=valid_ds, callbacks=[reduce_lr, checkpoint])
 
     return save_model(model, args.model_output_dir, args.model_version)
 
@@ -94,14 +97,14 @@ if __name__ == '__main__':
     parser.add_argument(
         '--train',
         type=str,
-        required=True,
+        required=False,
         default=os.environ.get('SM_CHANNEL_TRAIN'),
         help='Directory where the robot reboot training data is stored'
     )
     parser.add_argument(
-        '--validation',
+        '--valid',
         type=str,
-        required=True,
+        required=False,
         default=os.environ.get('SM_CHANNEL_VALIDATION'),
         help='Directory where the robot reboot validation data is stored'
     )
