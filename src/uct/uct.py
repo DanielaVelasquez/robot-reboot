@@ -50,4 +50,4 @@ class UCT(MonteCarloTreeSearch, Model):
         return v
 
     def predict(self, state: State):
-        return None, self.search(state)
+        return self.game.get_value(state), self.search(state)
