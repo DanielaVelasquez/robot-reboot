@@ -1,12 +1,13 @@
 from exceptions.exceptions import RequiredValueException
 from exceptions.mcts.util import InvalidDepthException
 from exceptions.util import assertOrThrow
+from src.alphazero.model import Model
 from src.game.state import State
 from src.mcts.monte_carlo_tree_search import MonteCarloTreeSearch
 from src.uct.heuristic_function import uct_heuristic_fn
 
 
-class UCT(MonteCarloTreeSearch):
+class UCT(MonteCarloTreeSearch, Model):
     """Upper confidence bounds applied to trees. It computes a cheap hard-coded heuristic approximation
     to choose a move in a playout
     Attributes:
@@ -17,6 +18,7 @@ class UCT(MonteCarloTreeSearch):
 
     def __init__(self, game, max_depth, heuristic_fn=uct_heuristic_fn, playouts=100):
         MonteCarloTreeSearch.__init__(self, game, playouts)
+        Model.__init__(self, 'UCT Model', game)
         assertOrThrow(max_depth > 0, InvalidDepthException())
         assertOrThrow(heuristic_fn is not None, RequiredValueException("heuristic_fn"))
         self.__max_depth = max_depth
@@ -46,3 +48,6 @@ class UCT(MonteCarloTreeSearch):
         state_stats.add_value(i_best, v)
 
         return v
+
+    def predict(self, state: State):
+        return self.game.get_value(state), self.search(state)

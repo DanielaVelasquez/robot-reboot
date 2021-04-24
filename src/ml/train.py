@@ -54,7 +54,7 @@ def _input(epochs, channel, channel_name):
 
 def save_model(model, dir, version):
     output = os.path.join(dir, 'model_' + version)
-    model.save(output)
+    model.save_weights(output)
 
     logging.info("Model successfully saved at: {}".format(output))
 

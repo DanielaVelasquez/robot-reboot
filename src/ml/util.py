@@ -30,3 +30,13 @@ def deserialize(serialized_sample):
     p = tf.reshape(tf.sparse.to_dense(parsed['p']), (1, 16))
     v = tf.reshape(parsed['v'], (1, 1))
     return s, v, p
+
+
+def get_test_data(filenames):
+    dataset = tf.data.TFRecordDataset(filenames)
+    states = list()
+    for serialized in dataset:
+        parsed = tf.io.parse_single_example(serialized, {'s': tf.io.VarLenFeature(tf.float32)})
+        s = tf.reshape(tf.sparse.to_dense(parsed['s']), (rows, cols, layers)).numpy()
+        states.append(s)
+    return states
