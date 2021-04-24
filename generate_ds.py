@@ -13,7 +13,7 @@ logging.getLogger().setLevel(logging.INFO)
 rows, cols, layers = 31, 31, 9
 
 
-def write_tf_record(i, max_movements, model_dir):
+def write_tf_record(i, max_movements, model_dir, iteration):
     cnn = get_model()
     cnn.load_weights(model_dir)
     ds_factory = RobotRebootDataSetFactory(31, cnn, max_depth=20, playouts=50)
@@ -28,13 +28,13 @@ def write_tf_record(i, max_movements, model_dir):
             }
         )
     )
-    filename = f'robot_reboot_data/iter_0/robot_reboot_{i}.tfrecords'
+    filename = f'robot_reboot_data/iter_{iteration}/robot_reboot_{i}.tfrecords'
     logging.info(f'Saving file {filename}')
     with tf.io.TFRecordWriter(filename) as f:
         f.write(sample.SerializeToString())
 
 
-def create_tfrecord(offset, threshold, model_dir, time_threshold):
+def create_tfrecord(offset, threshold, model_dir, time_threshold, iteration):
     processes = list()
     num_cores = multiprocessing.cpu_count()
     logging.info(f"Working with {num_cores} cores")
@@ -51,7 +51,7 @@ def create_tfrecord(offset, threshold, model_dir, time_threshold):
             [t.join() for t in processes]
             processes = list()
         max_movements = np.random.randint(1, 6)
-        process = multiprocessing.Process(target=write_tf_record, args=(i + offset, max_movements, model_dir))
+        process = multiprocessing.Process(target=write_tf_record, args=(i + offset, max_movements, model_dir, iteration))
         process.start()
         processes.append(process)
         total_seconds_running = time.time() - start_time
@@ -100,6 +100,15 @@ if __name__ == '__main__':
         required=True,
         help='Model used to generate the dataset'
     )
+
+    parser.add_argument(
+        '--iter',
+        type=int,
+        required=False,
+        default=0,
+        help='Iteration number'
+    )
+
     args = parser.parse_args()
 
     if args.time_threshold > 0:
@@ -108,4 +117,4 @@ if __name__ == '__main__':
         logging.info(f'Running to generate {args.threshold} samples with seed {args.seed}')
     np.random.seed(args.seed)
 
-    create_tfrecord(args.offset, args.threshold, args.model_dir, args.time_threshold > 0)
+    create_tfrecord(args.offset, args.threshold, args.model_dir, args.time_threshold > 0, args.iter)
