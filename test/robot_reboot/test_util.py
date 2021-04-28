@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 from src.robot_reboot.util import get_cell_at, Direction, join_quadrants, transpose_position_to_quadrant, build_matrix, \
-    generate_positions_except
+    generate_positions_except, generate_even_number
 
 
 class TestUtil(unittest.TestCase):
@@ -146,6 +146,20 @@ class TestUtil(unittest.TestCase):
         positions = generate_positions_except(3, 5, (3, 4))
         self.assertEqual(3, len(positions))
         self.assertTrue((3, 4) not in positions)
+
+    def test_generate_positions_only_on_even_cells_positions(self):
+        np.random.seed(26)
+        positions = generate_positions_except(3, 5, (2, 4))
+        for p in positions:
+            self.assertTrue(p[0] % 2 == 0, f'{p[0]} should be an even value')
+            self.assertTrue(p[1] % 2 == 0, f'{p[1]} should be an even value')
+
+    def test_generate_even_number(self):
+        np.random.seed(26)
+        for i in range(100):
+            number = generate_even_number(5)
+            self.assertEqual(number % 2, 0)
+            self.assertTrue(number < 5)
 
     def assert_position_not_square_quadrant(self, origin, target, q):
         quadrant = np.arange(1, 7).reshape(3, 2)

@@ -121,10 +121,15 @@ def generate_positions_except(n, size, pos):
     """
     positions = set()
     for i in range(n):
-        rnd = np.random.randint(0, size, size=2)
-        p = (rnd[0], rnd[1])
+        p = (generate_even_number(size), generate_even_number(size))
         while p == pos or p in positions:
-            rnd = np.random.randint(0, size, size=2)
-            p = (rnd[0], rnd[1])
+            p = (generate_even_number(size), generate_even_number(size))
         positions.add(p)
     return positions
+
+
+def generate_even_number(size):
+    rnd = np.random.randint(0, size)
+    while rnd % 2 != 0:
+        rnd = np.random.randint(0, size)
+    return rnd
