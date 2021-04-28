@@ -98,66 +98,59 @@ class RobotRebootGame(Game):
         if action.direction == Direction.NORTH:
             walls = np.argwhere(self.__maze[:robot_x, robot_y] == MazeCellType.WALL.value)
             if walls.size == 0:
-                robots_positions = state.robots_positions.copy()
-                robots_positions[action.robot_id] = (0, robot_y)
-                return RobotRebootState(self, robots_positions, state.sequence_i + 1)
+                return self.__move_to(action.robot_id, (0, robot_y), state)
             else:
                 new_x = walls[walls.size - 1][0] + 1
                 new_pos = (new_x, robot_y)
                 if state.is_robot_on(new_pos) and new_pos != pos:
                     new_x += 2
-                robots_positions = state.robots_positions.copy()
-                robots_positions[action.robot_id] = (new_x, robot_y)
-                return RobotRebootState(self, robots_positions, state.sequence_i + 1)
+                return self.__move_to(action.robot_id, (new_x, robot_y), state)
         elif action.direction == Direction.SOUTH:
             walls = np.argwhere(self.__maze[robot_x + 1:, robot_y] == MazeCellType.WALL.value)
             if walls.size == 0:
-                robots_positions = state.robots_positions.copy()
-                robots_positions[action.robot_id] = (rows - 1, robot_y)
-                return RobotRebootState(self, robots_positions, state.sequence_i + 1)
+                return self.__move_to(action.robot_id, (rows - 1, robot_y), state)
             else:
                 new_x = walls[0][0] + robot_x
                 new_pos = (new_x, robot_y)
-                if state.is_robot_on((new_x, robot_y)) and new_pos != pos:
+                if state.is_robot_on(new_pos) and new_pos != pos:
                     new_x -= 2
-                robots_positions = state.robots_positions.copy()
-                robots_positions[action.robot_id] = (new_x, robot_y)
-                return RobotRebootState(self, robots_positions, state.sequence_i + 1)
+                return self.__move_to(action.robot_id, (new_x, robot_y), state)
         elif action.direction == Direction.WEST:
             walls = np.argwhere(self.__maze[robot_x, :robot_y] == MazeCellType.WALL.value)
             if walls.size == 0:
-                robots_positions = state.robots_positions.copy()
-                robots_positions[action.robot_id] = (robot_x, 0)
-                return RobotRebootState(self, robots_positions, state.sequence_i + 1)
+                return self.__move_to(action.robot_id, (robot_x, 0), state)
             else:
                 new_y = walls[walls.size - 1][0] + 1
                 new_pos = (robot_x, new_y)
                 if state.is_robot_on(new_pos) and new_pos != pos:
                     new_y += 2
-                robots_positions = state.robots_positions.copy()
-                robots_positions[action.robot_id] = (robot_x, new_y)
-                return RobotRebootState(self, robots_positions, state.sequence_i + 1)
+                return self.__move_to(action.robot_id, (robot_x, new_y), state)
         elif action.direction == Direction.EAST:
             walls = np.argwhere(self.__maze[robot_x, robot_y + 1:] == MazeCellType.WALL.value)
             if walls.size == 0:
-                robots_positions = state.robots_positions.copy()
-                robots_positions[action.robot_id] = (robot_x, cols - 1)
-                return RobotRebootState(self, robots_positions, state.sequence_i + 1)
+                return self.__move_to(action.robot_id, (robot_x, cols - 1), state)
             else:
                 new_y = walls[0][0] + robot_y
                 new_pos = (robot_x, new_y)
                 if state.is_robot_on(new_pos) and new_pos != pos:
                     new_y -= 2
-                robots_positions = state.robots_positions.copy()
-                robots_positions[action.robot_id] = (robot_x, new_y)
-                return RobotRebootState(self, robots_positions, state.sequence_i + 1)
+                return self.__move_to(action.robot_id, (robot_x, new_y), state)
         else:
             raise Exception("Unsupported direction")
+
+    def __move_to(self, robot_id, new_pos, state: RobotRebootState):
+        if state.is_robot_on(new_pos):
+            return RobotRebootState(self, state.robots_positions.copy(), state.sequence_i + 1)
+
+        robots_positions = state.robots_positions.copy()
+        robots_positions[robot_id] = new_pos
+        return RobotRebootState(self, robots_positions, state.sequence_i + 1)
 
     def get_valid_actions(self, state: RobotRebootState):
         valid_actions = list()
         for action in self.actions:
-            if not self.__is_wall_at(state.robots_positions[action.robot_id], action.direction):
+            pos = state.robots_positions[action.robot_id]
+            if not self.__is_wall_at(pos, action.direction) and not self.__is_robot_at(pos, action.direction, state):
                 valid_actions.append(action)
         return valid_actions
 
@@ -186,3 +179,21 @@ class RobotRebootGame(Game):
                ) or (
                        direction == Direction.EAST and (
                        (y + 1 < cols and self.__maze[x, y + 1] == MazeCellType.WALL.value) or (y + 1 >= cols)))
+
+    def __is_robot_at(self, position: tuple, direction: Direction, state: RobotRebootState):
+        """Determines if there is an immediate robot in the direction of a position,
+        Args:
+            position (tuple): reference position to check a direction with
+            direction (Direction): direction to check from the position
+            state (State): current state that is checking
+        Returns:
+            boolean: True if there is wall at the immediate direction or the immediate  position in that direction is out
+                     of the maze. False otherwise.
+        """
+        x, y = position
+        rows, cols = self.__maze.shape
+
+        return (direction == Direction.NORTH and x - 2 >= 0 and state.is_robot_on((x - 2, y))) or \
+               (direction == Direction.SOUTH and x + 2 < rows and state.is_robot_on((x + 2, y))) or \
+               (direction == Direction.WEST and y - 2 >= 0 and state.is_robot_on((x, y - 2))) or \
+               (direction == Direction.EAST and y + 1 < cols and state.is_robot_on((x, y + 2)))
