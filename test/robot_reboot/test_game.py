@@ -773,12 +773,14 @@ class TestGame(unittest.TestCase):
 
     def test_get_valid_actions_without_north_movement_actions_when_north_wall(self):
         house = RobotRebootGoalHouse(0, (0, 0))
-        maze = np.array([[0, 1, 0],
-                         [0, 0, 0],
-                         [0, 0, 0],
+        maze = np.array([[0, 0, 0, 0, 0],
+                         [0, 0, 1, 0, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0]
                          ])
         game = RobotRebootGame(1, maze, house)
-        s = RobotRebootState(game, [(1, 1)])
+        s = RobotRebootState(game, [(2, 2)])
         valid_actions = game.get_valid_actions(s)
         self.assertEqual(len(game.actions) - 1, len(valid_actions),
                          "All actions must be present except for the action that moves robot 0 in north direction")
@@ -786,12 +788,14 @@ class TestGame(unittest.TestCase):
 
     def test_get_valid_actions_without_south_movement_actions_when_south_wall(self):
         house = RobotRebootGoalHouse(0, (0, 0))
-        maze = np.array([[0, 0, 0],
-                         [0, 0, 0],
-                         [0, 1, 0],
+        maze = np.array([[0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 0, 1, 0, 0],
+                         [0, 0, 0, 0, 0]
                          ])
         game = RobotRebootGame(1, maze, house)
-        s = RobotRebootState(game, [(1, 1)])
+        s = RobotRebootState(game, [(2, 2)])
         valid_actions = game.get_valid_actions(s)
         self.assertEqual(len(game.actions) - 1, len(valid_actions),
                          "All actions must be present except for the action that moves robot =0 in north direction")
@@ -799,12 +803,14 @@ class TestGame(unittest.TestCase):
 
     def test_get_valid_actions_without_west_movement_actions_when_west_wall(self):
         house = RobotRebootGoalHouse(0, (0, 0))
-        maze = np.array([[0, 0, 0],
-                         [1, 0, 0],
-                         [0, 0, 0],
+        maze = np.array([[0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 1, 0, 0, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0]
                          ])
         game = RobotRebootGame(1, maze, house)
-        s = RobotRebootState(game, [(1, 1)])
+        s = RobotRebootState(game, [(2, 2)])
         valid_actions = game.get_valid_actions(s)
         self.assertEqual(len(game.actions) - 1, len(valid_actions),
                          "All actions must be present except for the action that moves robot =0 in north direction")
@@ -812,12 +818,14 @@ class TestGame(unittest.TestCase):
 
     def test_get_valid_actions_without_east_movement_actions_when_west_wall(self):
         house = RobotRebootGoalHouse(0, (0, 0))
-        maze = np.array([[0, 0, 0],
-                         [0, 0, 1],
-                         [0, 0, 0],
+        maze = np.array([[0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 0, 0, 1, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0]
                          ])
         game = RobotRebootGame(1, maze, house)
-        s = RobotRebootState(game, [(1, 1)])
+        s = RobotRebootState(game, [(2, 2)])
         valid_actions = game.get_valid_actions(s)
         self.assertEqual(len(game.actions) - 1, len(valid_actions),
                          "All actions must be present except for the action that moves robot =0 in north direction")
@@ -825,12 +833,14 @@ class TestGame(unittest.TestCase):
 
     def test_get_valid_actions_empty_when_robot_trapped_within_walls(self):
         house = RobotRebootGoalHouse(0, (0, 0))
-        maze = np.array([[0, 1, 0],
-                         [1, 0, 1],
-                         [0, 1, 0],
+        maze = np.array([[0, 0, 0, 0, 0],
+                         [0, 0, 1, 0, 0],
+                         [0, 1, 0, 1, 0],
+                         [0, 0, 1, 0, 0],
+                         [0, 0, 0, 0, 0]
                          ])
         game = RobotRebootGame(1, maze, house)
-        s = RobotRebootState(game, [(1, 1)])
+        s = RobotRebootState(game, [(2, 2)])
         self.assertEqual([], game.get_valid_actions(s))
 
     def test_get_valid_actions_empty_when_maze_has_one_cell(self):
