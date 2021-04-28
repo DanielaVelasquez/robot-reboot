@@ -4,7 +4,8 @@ import numpy as np
 
 from exceptions.game.state import InvalidStateSequence
 from exceptions.robot_reboot.state import EmptyRobotsPositionException, InvalidRobotsPositionException, \
-    RobotsPositionOutOfMazeBoundsException, NumberRobotsNotMatchingException, InvalidRobotsList
+    RobotsPositionOutOfMazeBoundsException, NumberRobotsNotMatchingException, InvalidRobotsList, \
+    RobotsPositionsOnWallsPositionsExceptions
 from src.robot_reboot.factory import RobotRebootFactory
 from src.robot_reboot.game import RobotRebootGame
 from src.robot_reboot.goal_house import RobotRebootGoalHouse
@@ -67,6 +68,10 @@ class TestRobotRebootState(unittest.TestCase):
     def test_init_fails_robots_not_list(self):
         self.assertRaises(InvalidRobotsList,
                           lambda: RobotRebootState(RobotRebootState(get_game(n_robots=1), {(1, 0)})))
+
+    def test_init_fails_robots_on_wall_position(self):
+        self.assertRaises(RobotsPositionsOnWallsPositionsExceptions,
+                          lambda: RobotRebootState(RobotRebootState(get_game(n_robots=1), [(1, 0)])))
 
     def test_get_state(self):
         np.random.seed(26)

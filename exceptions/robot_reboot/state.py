@@ -5,7 +5,12 @@ class EmptyRobotsPositionException(Exception):
 
 class InvalidRobotsPositionException(Exception):
     def __init__(self):
-        self.message = "Robot positions can be negative values"
+        self.message = "Robot positions can't be negative values"
+
+
+class RobotsPositionsOnWallsPositionsExceptions(Exception):
+    def __init__(self):
+        self.message = "Robot can't be located where walls should go"
 
 
 class RobotsPositionOutOfMazeBoundsException(Exception):
