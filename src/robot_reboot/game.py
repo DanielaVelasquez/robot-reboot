@@ -10,7 +10,7 @@ from src.robot_reboot.state import RobotRebootState
 from .direction import Direction
 from .goal_house import RobotRebootGoalHouse
 from .maze_cell_type import MazeCellType
-from .util import valid_maze
+from .util import valid_maze, is_even
 
 
 def get_game_from_matrix(matrix):
@@ -94,54 +94,54 @@ class RobotRebootGame(Game):
     def apply(self, action: RobotRebootAction, state: RobotRebootState):
         pos = state.robots_positions[action.robot_id]
         robot_x, robot_y = pos
-        rows, cols = self.__maze.shape
+        maze = self.__place_robots_on_maze(state.robots_positions)
+        rows, cols = maze.shape
         if action.direction == Direction.NORTH:
-            walls = np.argwhere(self.__maze[:robot_x, robot_y] == MazeCellType.WALL.value)
+            walls = np.argwhere(maze[:robot_x, robot_y] == MazeCellType.WALL.value)
             if walls.size == 0:
                 return self.__move_to(action.robot_id, (0, robot_y), state)
             else:
                 new_x = walls[walls.size - 1][0] + 1
-                new_pos = (new_x, robot_y)
-                if state.is_robot_on(new_pos) and new_pos != pos:
-                    new_x += 2
+                if not is_even(new_x):
+                    new_x += 1
                 return self.__move_to(action.robot_id, (new_x, robot_y), state)
         elif action.direction == Direction.SOUTH:
-            walls = np.argwhere(self.__maze[robot_x + 1:, robot_y] == MazeCellType.WALL.value)
+            walls = np.argwhere(maze[robot_x + 1:, robot_y] == MazeCellType.WALL.value)
             if walls.size == 0:
                 return self.__move_to(action.robot_id, (rows - 1, robot_y), state)
             else:
                 new_x = walls[0][0] + robot_x
-                new_pos = (new_x, robot_y)
-                if state.is_robot_on(new_pos) and new_pos != pos:
-                    new_x -= 2
+                if not is_even(new_x):
+                    new_x -= 1
                 return self.__move_to(action.robot_id, (new_x, robot_y), state)
         elif action.direction == Direction.WEST:
-            walls = np.argwhere(self.__maze[robot_x, :robot_y] == MazeCellType.WALL.value)
+            walls = np.argwhere(maze[robot_x, :robot_y] == MazeCellType.WALL.value)
             if walls.size == 0:
                 return self.__move_to(action.robot_id, (robot_x, 0), state)
             else:
                 new_y = walls[walls.size - 1][0] + 1
-                new_pos = (robot_x, new_y)
-                if state.is_robot_on(new_pos) and new_pos != pos:
-                    new_y += 2
+                if not is_even(new_y):
+                    new_y += 1
                 return self.__move_to(action.robot_id, (robot_x, new_y), state)
         elif action.direction == Direction.EAST:
-            walls = np.argwhere(self.__maze[robot_x, robot_y + 1:] == MazeCellType.WALL.value)
+            walls = np.argwhere(maze[robot_x, robot_y + 1:] == MazeCellType.WALL.value)
             if walls.size == 0:
                 return self.__move_to(action.robot_id, (robot_x, cols - 1), state)
             else:
                 new_y = walls[0][0] + robot_y
-                new_pos = (robot_x, new_y)
-                if state.is_robot_on(new_pos) and new_pos != pos:
-                    new_y -= 2
+                if not is_even(new_y):
+                    new_y -= 1
                 return self.__move_to(action.robot_id, (robot_x, new_y), state)
         else:
             raise Exception("Unsupported direction")
 
-    def __move_to(self, robot_id, new_pos, state: RobotRebootState):
-        if state.is_robot_on(new_pos):
-            return RobotRebootState(self, state.robots_positions.copy(), state.sequence_i + 1)
+    def __place_robots_on_maze(self, robots_positions):
+        maze = self.__maze.copy()
+        for x, y in robots_positions:
+            maze[x, y] = MazeCellType.WALL.value
+        return maze
 
+    def __move_to(self, robot_id, new_pos, state: RobotRebootState):
         robots_positions = state.robots_positions.copy()
         robots_positions[robot_id] = new_pos
         return RobotRebootState(self, robots_positions, state.sequence_i + 1)

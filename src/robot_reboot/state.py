@@ -1,7 +1,8 @@
 import numpy as np
 
 from exceptions.robot_reboot.state import EmptyRobotsPositionException, InvalidRobotsPositionException, \
-    RobotsPositionOutOfMazeBoundsException, NumberRobotsNotMatchingException, InvalidRobotsList
+    RobotsPositionOutOfMazeBoundsException, NumberRobotsNotMatchingException, InvalidRobotsList, \
+    RobotsPositionsOnWallsPositionsExceptions
 from exceptions.util import assertOrThrow
 from src.game.state import State
 
@@ -28,6 +29,8 @@ class RobotRebootState(State):
         assertOrThrow(len(robots_positions) != 0, EmptyRobotsPositionException)
         assertOrThrow(len([rp for rp in robots_positions if rp[0] < 0 or rp[1] < 0]) == 0,
                       InvalidRobotsPositionException())
+        assertOrThrow(len([rp for rp in robots_positions if rp[0] % 2 != 0 or rp[1] % 2 != 0]) == 0,
+                      RobotsPositionsOnWallsPositionsExceptions())
         assertOrThrow(len([rp for rp in robots_positions if rp[0] >= game.maze.shape[0] or rp[1] >= game.maze.shape[
             1]]) == 0, RobotsPositionOutOfMazeBoundsException())
         assertOrThrow(len(robots_positions) == game.n_robots, NumberRobotsNotMatchingException())

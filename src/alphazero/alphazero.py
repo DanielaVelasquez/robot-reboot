@@ -4,10 +4,11 @@ from exceptions.util import assertOrThrow
 from src.game.state import State
 from .game_player import GamePlayer
 from .heuristic_function import alpha_zero_heuristic_fn
+from .model import Model
 from ..mcts.monte_carlo_tree_search import MonteCarloTreeSearch
 
 
-class AlphaZero(MonteCarloTreeSearch):
+class AlphaZero(MonteCarloTreeSearch, Model):
     """AlphaZero algorithm, it uses MCTS and a neural network to lead the search
     Attributes:
         heuristic_fn      (function):   function to evaluate how good is each action, receives probability and a state statistics
@@ -54,3 +55,6 @@ class AlphaZero(MonteCarloTreeSearch):
         state_stats.add_value(i_best, v)
 
         return v
+
+    def predict(self, state: State):
+        return self.game.get_value(state), self.search(state)

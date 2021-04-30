@@ -133,3 +133,7 @@ def generate_even_number(size):
     while rnd % 2 != 0:
         rnd = np.random.randint(0, size)
     return rnd
+
+
+def is_even(n):
+    return n % 2 == 0
