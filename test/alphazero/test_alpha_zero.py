@@ -330,5 +330,5 @@ class TestAlphaZero(unittest.TestCase):
         alpha_zero = AlphaZero(5, game_player, heuristic_fn=alpha_zero_heuristic_fn, playouts=5)
         self.assertEqual(alpha_zero.game, game)
         p = alpha_zero.search(state)
-        np.testing.assert_equal([0.4, 0.4, 0., 0.6, 0.2, 0.2, 0.2, 0.4, 0., 0., 1., 0., 0.2, 0.8, 0.2, 0.4], p)
+        np.testing.assert_equal([0.,  0.,  0.2, 0.,  0.,  0.,  0.2, 0.,  0.,  0.,  0.,  1.,  0.,  0.2, 0.,  0. ], p)
         self.assertEqual(119, len(alpha_zero.states_statistics))
