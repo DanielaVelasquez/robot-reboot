@@ -1,9 +1,8 @@
 import numpy as np
 import pygame
-from models.robotreboot import RobotReboot
-from models.instance_game import load_game
 
 from models.instance_game import get_robot_reboot
+from models.robotreboot import RobotReboot
 
 
 class RobotView:
