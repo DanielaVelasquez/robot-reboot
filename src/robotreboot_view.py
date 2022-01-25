@@ -202,6 +202,6 @@ class RobotRebootView:
 
 
 if __name__ == "__main__":
-    rr, movements = load_game('data/done_games/result.json', index=2)
-    rrView = RobotRebootView(rr)
-    # rrView = RobotRebootView(get_robot_reboot())
+    # rr, movements = load_game('data/done_games/result.json', index=2)
+    # rrView = RobotRebootView(rr)
+    rrView = RobotRebootView(get_robot_reboot())
