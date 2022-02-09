@@ -2,9 +2,9 @@ import unittest
 from unittest.mock import Mock
 import numpy as np
 
-from exceptions.exceptions import RequiredValueException
-from exceptions.mcts.monte_carlo_tree_search import InvalidPlayoutException
-from exceptions.mcts.util import InvalidDepthException
+from src.exceptions.exceptions import RequiredValueException
+from src.exceptions.mcts.monte_carlo_tree_search import InvalidPlayoutException
+from src.exceptions.mcts.util import InvalidDepthException
 from src.mcts.state_statistics import StateStatistics
 from src.robot_reboot.factory import RobotRebootFactory
 from src.uct.heuristic_function import uct_heuristic_fn

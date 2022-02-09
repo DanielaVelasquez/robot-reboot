@@ -1,7 +1,7 @@
 import numpy as np
 
-from exceptions.exceptions import RequiredValueException
-from exceptions.util import assertOrThrow
+from src.exceptions.exceptions import RequiredValueException
+from src.exceptions.util import assertOrThrow
 from src.game.game import Game
 from src.alphazero.model import Model
 from src.game.state import State

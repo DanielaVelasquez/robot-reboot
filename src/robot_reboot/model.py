@@ -1,5 +1,5 @@
-from exceptions.robot_reboot.model import NeuralNetworkOutputNotMatchingGameActions
-from exceptions.util import assertOrThrow
+from src.exceptions.robot_reboot import NeuralNetworkOutputNotMatchingGameActions
+from src.exceptions.util import assertOrThrow
 from src.alphazero.model import Model
 from src.robot_reboot.game import RobotRebootGame
 from src.robot_reboot.state import RobotRebootState

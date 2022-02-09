@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 
-from exceptions.robot_reboot.factory import UnsupportedMazeSize
+from src.exceptions.robot_reboot import UnsupportedMazeSize
 from src.robot_reboot.factory import RobotRebootFactory
 from src.robot_reboot.util import join_quadrants
 

@@ -1,6 +1,6 @@
-from exceptions.exceptions import RequiredValueException
+from src.exceptions.exceptions import RequiredValueException
 from src.game.action import Action
-from exceptions.util import assertOrThrow
+from src.exceptions.util import assertOrThrow
 
 
 class RobotRebootAction(Action):

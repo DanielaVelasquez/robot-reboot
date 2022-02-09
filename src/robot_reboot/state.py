@@ -1,9 +1,9 @@
 import numpy as np
 
-from exceptions.robot_reboot.state import EmptyRobotsPositionException, InvalidRobotsPositionException, \
+from src.exceptions.robot_reboot.state import EmptyRobotsPositionException, InvalidRobotsPositionException, \
     RobotsPositionOutOfMazeBoundsException, NumberRobotsNotMatchingException, InvalidRobotsList, \
     RobotsPositionsOnWallsPositionsExceptions
-from exceptions.util import assertOrThrow
+from src.exceptions.util import assertOrThrow
 from src.game.state import State
 
 

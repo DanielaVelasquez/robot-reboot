@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from exceptions.game.state import InvalidStateSequence
-from exceptions.util import assertOrThrow
+from src.exceptions.game.state import InvalidStateSequence
+from src.exceptions.util import assertOrThrow
 
 
 class State(ABC):

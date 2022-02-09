@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock
 
-from exceptions.exceptions import RequiredValueException
+from src.exceptions.exceptions import RequiredValueException
 from src.alphazero.game_player import GamePlayer
 from test.alphazero.fake_data import fn_predict_probability_1_for_next_action, FakeModel, FakeGame, FakeState
 

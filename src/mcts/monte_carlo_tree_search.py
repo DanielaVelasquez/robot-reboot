@@ -2,9 +2,9 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
-from exceptions.exceptions import RequiredValueException
-from exceptions.mcts.monte_carlo_tree_search import InvalidPlayoutException
-from exceptions.util import assertOrThrow
+from src.exceptions.exceptions import RequiredValueException
+from src.exceptions.mcts.monte_carlo_tree_search import InvalidPlayoutException
+from src.exceptions.util import assertOrThrow
 from src.game.game import Game
 from src.game.state import State
 from src.mcts.state_statistics import StateStatistics

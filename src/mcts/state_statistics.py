@@ -1,8 +1,8 @@
 import numpy as np
 
-from exceptions.mcts.state_statistics import EdgeNotVisitedException, InvalidNumberActionsException, \
+from src.exceptions.mcts.state_statistics import EdgeNotVisitedException, InvalidNumberActionsException, \
     InvalidActionsTypeException
-from exceptions.util import assertOrThrow
+from src.exceptions.util import assertOrThrow
 
 
 class StateStatistics:

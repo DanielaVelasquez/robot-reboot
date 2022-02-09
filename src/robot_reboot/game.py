@@ -1,9 +1,9 @@
 import numpy as np
 
-from exceptions.robot_reboot.game import NoRobotsGameException, InvalidMazeException, \
+from src.exceptions.robot_reboot import NoRobotsGameException, InvalidMazeException, \
     RobotHouseOutOfMazeBoundsException, \
     MazeNotSquareException, MazeSizeInvalidException, RobotHouseInvalidRobotIdException
-from exceptions.util import assertOrThrow
+from src.exceptions.util import assertOrThrow
 from src.game.game import Game
 from src.robot_reboot.action import RobotRebootAction
 from src.robot_reboot.state import RobotRebootState
