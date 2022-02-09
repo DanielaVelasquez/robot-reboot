@@ -96,7 +96,7 @@ class RobotRebootGame(Game):
         robot_x, robot_y = pos
         maze = self.__place_robots_on_maze(state.robots_positions)
         rows, cols = maze.shape
-        if action.direction == Direction.NORTH:
+        if action.direction == Direction.North:
             walls = np.argwhere(maze[:robot_x, robot_y] == MazeCellType.WALL.value)
             if walls.size == 0:
                 return self.__move_to(action.robot_id, (0, robot_y), state)
@@ -105,7 +105,7 @@ class RobotRebootGame(Game):
                 if not is_even(new_x):
                     new_x += 1
                 return self.__move_to(action.robot_id, (new_x, robot_y), state)
-        elif action.direction == Direction.SOUTH:
+        elif action.direction == Direction.South:
             walls = np.argwhere(maze[robot_x + 1:, robot_y] == MazeCellType.WALL.value)
             if walls.size == 0:
                 return self.__move_to(action.robot_id, (rows - 1, robot_y), state)
@@ -114,7 +114,7 @@ class RobotRebootGame(Game):
                 if not is_even(new_x):
                     new_x -= 1
                 return self.__move_to(action.robot_id, (new_x, robot_y), state)
-        elif action.direction == Direction.WEST:
+        elif action.direction == Direction.West:
             walls = np.argwhere(maze[robot_x, :robot_y] == MazeCellType.WALL.value)
             if walls.size == 0:
                 return self.__move_to(action.robot_id, (robot_x, 0), state)
@@ -123,7 +123,7 @@ class RobotRebootGame(Game):
                 if not is_even(new_y):
                     new_y += 1
                 return self.__move_to(action.robot_id, (robot_x, new_y), state)
-        elif action.direction == Direction.EAST:
+        elif action.direction == Direction.East:
             walls = np.argwhere(maze[robot_x, robot_y + 1:] == MazeCellType.WALL.value)
             if walls.size == 0:
                 return self.__move_to(action.robot_id, (robot_x, cols - 1), state)
@@ -168,16 +168,16 @@ class RobotRebootGame(Game):
         x, y = position
         rows, cols = self.__maze.shape
 
-        return (direction == Direction.NORTH and (
+        return (direction == Direction.North and (
                 (x - 1 >= 0 and self.__maze[x - 1, y] == MazeCellType.WALL.value) or (x - 1 < 0))
                 ) or (
-                       direction == Direction.SOUTH and (
+                direction == Direction.South and (
                        (x + 1 < rows and self.__maze[x + 1, y] == MazeCellType.WALL.value) or (x + 1 >= rows))
                ) or (
-                       direction == Direction.WEST and (
+                direction == Direction.West and (
                        (y - 1 >= 0 and self.__maze[x, y - 1] == MazeCellType.WALL.value) or (y - 1 < 0))
                ) or (
-                       direction == Direction.EAST and (
+                direction == Direction.East and (
                        (y + 1 < cols and self.__maze[x, y + 1] == MazeCellType.WALL.value) or (y + 1 >= cols)))
 
     def __is_robot_at(self, position: tuple, direction: Direction, state: RobotRebootState):
@@ -193,7 +193,7 @@ class RobotRebootGame(Game):
         x, y = position
         rows, cols = self.__maze.shape
 
-        return (direction == Direction.NORTH and x - 2 >= 0 and state.is_robot_on((x - 2, y))) or \
-               (direction == Direction.SOUTH and x + 2 < rows and state.is_robot_on((x + 2, y))) or \
-               (direction == Direction.WEST and y - 2 >= 0 and state.is_robot_on((x, y - 2))) or \
-               (direction == Direction.EAST and y + 1 < cols and state.is_robot_on((x, y + 2)))
+        return (direction == Direction.North and x - 2 >= 0 and state.is_robot_on((x - 2, y))) or \
+               (direction == Direction.South and x + 2 < rows and state.is_robot_on((x + 2, y))) or \
+               (direction == Direction.West and y - 2 >= 0 and state.is_robot_on((x, y - 2))) or \
+               (direction == Direction.East and y + 1 < cols and state.is_robot_on((x, y + 2)))

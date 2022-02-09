@@ -15,14 +15,14 @@ def maze_only_walls_empty_cells(maze):
 
 
 def get_opposite_direction(movement: Direction):
-    if movement == Direction.NORTH:
-        return Direction.SOUTH
-    elif movement == Direction.SOUTH:
-        return Direction.NORTH
-    elif movement == Direction.EAST:
-        return Direction.WEST
-    elif movement == Direction.WEST:
-        return Direction.EAST
+    if movement == Direction.North:
+        return Direction.South
+    elif movement == Direction.South:
+        return Direction.North
+    elif movement == Direction.East:
+        return Direction.West
+    elif movement == Direction.West:
+        return Direction.East
     else:
         raise Exception("Invalid movement")
 
@@ -45,13 +45,13 @@ def get_cell_at(direction: Direction, position: tuple, max_rows, max_cols):
                     when the starting point is at a border
     """
     x, y = position
-    if direction == Direction.NORTH and x != 0:
+    if direction == Direction.North and x != 0:
         return x - 1, y
-    elif direction == Direction.SOUTH and x != max_rows - 1:
+    elif direction == Direction.South and x != max_rows - 1:
         return x + 1, y
-    elif direction == Direction.WEST and y != 0:
+    elif direction == Direction.West and y != 0:
         return x, y - 1
-    elif direction == Direction.EAST and y != max_cols - 1:
+    elif direction == Direction.East and y != max_cols - 1:
         return x, y + 1
     else:
         raise Exception("Not cell available")

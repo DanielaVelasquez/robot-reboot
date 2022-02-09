@@ -6,12 +6,12 @@ from src.robot_reboot.util import Direction
 
 class TestRobotRebootAction(unittest.TestCase):
     def test_init(self):
-        a = RobotRebootAction(1, Direction.WEST)
+        a = RobotRebootAction(1, Direction.West)
         self.assertEqual(a.robot_id, 1)
-        self.assertEqual(a.direction, Direction.WEST)
+        self.assertEqual(a.direction, Direction.West)
 
     def test_init_fails_when_robot_id_is_none(self):
-        self.assertRaises(RequiredValueException, lambda: RobotRebootAction(None, Direction.WEST))
+        self.assertRaises(RequiredValueException, lambda: RobotRebootAction(None, Direction.West))
 
     def test_init_fails_when_direction_is_none(self):
         self.assertRaises(RequiredValueException, lambda: RobotRebootAction(1, None))

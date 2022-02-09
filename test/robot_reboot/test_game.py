@@ -197,7 +197,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(2, 0), (0, 0)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(0, Direction.NORTH)
+        a = RobotRebootAction(0, Direction.North)
         self.assertRaises(Exception, game.apply(a, s))
 
     def test_apply_robot_moves_north_when_no_walls_in_maze(self):
@@ -207,7 +207,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(4, 4), (0, 0)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(0, Direction.NORTH)
+        a = RobotRebootAction(0, Direction.North)
         next_state = game.apply(a, s)
         self.assertEqual([(0, 4), (0, 0)], next_state.robots_positions, "Robot should move to the north of the maze")
         self.assertEqual(1, next_state.sequence_i, "Sequence should be update")
@@ -221,7 +221,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(4, 4), (0, 0)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(0, Direction.SOUTH)
+        a = RobotRebootAction(0, Direction.South)
         next_state = game.apply(a, s)
         self.assertEqual([(8, 4), (0, 0)], next_state.robots_positions, "Robot should move to the south of the maze")
         self.assertEqual(1, next_state.sequence_i, "Sequence should be update")
@@ -235,7 +235,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(4, 4), (0, 0)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(0, Direction.WEST)
+        a = RobotRebootAction(0, Direction.West)
         next_state = game.apply(a, s)
         self.assertEqual([(4, 0), (0, 0)], next_state.robots_positions,
                          "Robot should move to the west side of the maze")
@@ -250,7 +250,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(4, 4), (0, 0)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(0, Direction.EAST)
+        a = RobotRebootAction(0, Direction.East)
         next_state = game.apply(a, s)
         self.assertEqual([(4, 8), (0, 0)], next_state.robots_positions,
                          "Robot should move to the east side of the maze")
@@ -283,7 +283,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(8, 8), (0, 8)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(0, Direction.NORTH)
+        a = RobotRebootAction(0, Direction.North)
         next_state = game.apply(a, s)
         self.assertEqual([(4, 8), (0, 8)], next_state.robots_positions,
                          "Robot should move to the north of the maze, until it finds the wall")
@@ -316,7 +316,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(8, 8), (16, 8)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(0, Direction.SOUTH)
+        a = RobotRebootAction(0, Direction.South)
         next_state = game.apply(a, s)
         self.assertEqual([(12, 8), (16, 8)], next_state.robots_positions,
                          "Robot should move to the south of the maze, until it finds the wall")
@@ -349,7 +349,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(8, 8), (8, 0)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(0, Direction.WEST)
+        a = RobotRebootAction(0, Direction.West)
         next_state = game.apply(a, s)
         self.assertEqual([(8, 4), (8, 0)], next_state.robots_positions,
                          "Robot should move to the west of the maze, until it finds the wall")
@@ -382,7 +382,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(8, 8), (8, 16)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(0, Direction.EAST)
+        a = RobotRebootAction(0, Direction.East)
         next_state = game.apply(a, s)
         self.assertEqual([(8, 12), (8, 16)], next_state.robots_positions,
                          "Robot should move to the east of the maze, until it finds the wall")
@@ -402,7 +402,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(2, 2), (0, 0)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(0, Direction.NORTH)
+        a = RobotRebootAction(0, Direction.North)
         next_state = game.apply(a, s)
         self.assertEqual(robots_positions, next_state.robots_positions,
                          "Robot shouldn't move to the north of the maze there is a wall in the next cell")
@@ -422,7 +422,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(2, 2), (0, 0)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(0, Direction.SOUTH)
+        a = RobotRebootAction(0, Direction.South)
         next_state = game.apply(a, s)
         self.assertEqual(robots_positions, next_state.robots_positions,
                          "Robot shouldn't move to the south of the maze there is a wall in the next cell")
@@ -442,7 +442,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(2, 2), (0, 0)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(0, Direction.WEST)
+        a = RobotRebootAction(0, Direction.West)
         next_state = game.apply(a, s)
         self.assertEqual(robots_positions, next_state.robots_positions,
                          "Robot shouldn't move to the west of the maze there is a wall in the next cell")
@@ -462,7 +462,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(2, 2), (0, 0)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(0, Direction.EAST)
+        a = RobotRebootAction(0, Direction.East)
         next_state = game.apply(a, s)
         self.assertEqual(robots_positions, next_state.robots_positions,
                          "Robot shouldn't move to the east of the maze there is a wall in the next cell")
@@ -482,7 +482,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(2, 2), (4, 2)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(1, Direction.NORTH)
+        a = RobotRebootAction(1, Direction.North)
         next_state = game.apply(a, s)
         self.assertEqual(robots_positions, next_state.robots_positions,
                          "Robot shouldn't move to the east of the maze there is a wall in the next cell")
@@ -504,7 +504,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(2, 2), (4, 2)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(1, Direction.NORTH)
+        a = RobotRebootAction(1, Direction.North)
         next_state = game.apply(a, s)
         self.assertEqual(robots_positions, next_state.robots_positions,
                          "Robot shouldn't move to the east of the maze there is a wall in the next cell")
@@ -525,7 +525,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(2, 0), (0, 0)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(1, Direction.SOUTH)
+        a = RobotRebootAction(1, Direction.South)
         next_state = game.apply(a, s)
         self.assertEqual(robots_positions, next_state.robots_positions,
                          "Robot shouldn't move to the east of the maze there is a wall in the next cell")
@@ -546,7 +546,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(0, 2), (2, 2)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(0, Direction.SOUTH)
+        a = RobotRebootAction(0, Direction.South)
         next_state = game.apply(a, s)
         self.assertEqual(robots_positions, next_state.robots_positions,
                          "Robot shouldn't move to the south, there is a robot in the next cell")
@@ -567,7 +567,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(2, 2), (2, 4)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(1, Direction.WEST)
+        a = RobotRebootAction(1, Direction.West)
         next_state = game.apply(a, s)
         self.assertEqual(robots_positions, next_state.robots_positions,
                          "Robot shouldn't move to the west there is a robot in the next cell")
@@ -588,7 +588,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(2, 2), (2, 4)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(1, Direction.WEST)
+        a = RobotRebootAction(1, Direction.West)
         next_state = game.apply(a, s)
         self.assertEqual(robots_positions, next_state.robots_positions,
                          "Robot shouldn't move to the west there is a robot in the next cell")
@@ -609,7 +609,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(2, 0), (2, 2)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(0, Direction.EAST)
+        a = RobotRebootAction(0, Direction.East)
         next_state = game.apply(a, s)
         self.assertEqual(robots_positions, next_state.robots_positions,
                          "Robot shouldn't move to the east of the maze there is a wall in the next cell")
@@ -630,7 +630,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(2, 0), (2, 2)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(0, Direction.EAST)
+        a = RobotRebootAction(0, Direction.East)
         next_state = game.apply(a, s)
         self.assertEqual(robots_positions, next_state.robots_positions,
                          "Robot shouldn't move to the east of the maze there is a wall in the next cell")
@@ -651,7 +651,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(0, 2), (4, 2)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(1, Direction.NORTH)
+        a = RobotRebootAction(1, Direction.North)
         next_state = game.apply(a, s)
         self.assertEqual([(0, 2), (2, 2)], next_state.robots_positions,
                          "Robot should move north until it finds another robot")
@@ -668,7 +668,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(4, 2), (0, 2)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(1, Direction.SOUTH)
+        a = RobotRebootAction(1, Direction.South)
         next_state = game.apply(a, s)
         self.assertEqual([(4, 2), (2, 2)], next_state.robots_positions,
                          "Robot should move south until it finds another robot")
@@ -685,7 +685,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(2, 0), (2, 4)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(1, Direction.WEST)
+        a = RobotRebootAction(1, Direction.West)
         next_state = game.apply(a, s)
         self.assertEqual([(2, 0), (2, 2)], next_state.robots_positions,
                          "Robot should move west until it finds another robot")
@@ -702,7 +702,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(2, 0), (2, 4)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(1, Direction.WEST)
+        a = RobotRebootAction(1, Direction.West)
         next_state = game.apply(a, s)
         self.assertEqual([(2, 0), (2, 2)], next_state.robots_positions,
                          "Robot should move east until it finds another robot")
@@ -732,7 +732,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(8, 8), (4, 8)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(0, Direction.NORTH)
+        a = RobotRebootAction(0, Direction.North)
         next_state = game.apply(a, s)
         self.assertEqual([(6, 8), (4, 8)], next_state.robots_positions,
                          f"Robot should move to the north of the maze, until it finds the robot on {robots_positions[1]}")
@@ -766,7 +766,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(8, 8), (12, 8)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(0, Direction.SOUTH)
+        a = RobotRebootAction(0, Direction.South)
         next_state = game.apply(a, s)
         self.assertEqual([(10, 8), (12, 8)], next_state.robots_positions,
                          f"Robot should move to the south of the maze, until it finds the robot on {robots_positions[1]}")
@@ -799,7 +799,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(8, 8), (8, 4)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(0, Direction.WEST)
+        a = RobotRebootAction(0, Direction.West)
         next_state = game.apply(a, s)
         self.assertEqual([(8, 6), (8, 4)], next_state.robots_positions,
                          f"Robot should move to the west of the maze, until it finds the robot on {robots_positions[1]}")
@@ -832,7 +832,7 @@ class TestGame(unittest.TestCase):
 
         robots_positions = [(8, 8), (8, 12)]
         s = RobotRebootState(game, robots_positions)
-        a = RobotRebootAction(0, Direction.EAST)
+        a = RobotRebootAction(0, Direction.East)
         next_state = game.apply(a, s)
         self.assertEqual([(8, 10), (8, 12)], next_state.robots_positions,
                          f"Robot should move to the east of the maze, until it finds the robot on {robots_positions[1]}")
@@ -853,7 +853,7 @@ class TestGame(unittest.TestCase):
         valid_actions = game.get_valid_actions(s)
         self.assertEqual(len(game.actions) - 1, len(valid_actions),
                          "All actions must be present except for the action that moves robot 0 in north direction")
-        self.assertEqual([], [a for a in valid_actions if a.direction == Direction.NORTH and a.robot_id == 0])
+        self.assertEqual([], [a for a in valid_actions if a.direction == Direction.North and a.robot_id == 0])
 
     def test_get_valid_actions_without_south_movement_actions_when_south_wall(self):
         house = RobotRebootGoalHouse(0, (0, 0))
@@ -868,7 +868,7 @@ class TestGame(unittest.TestCase):
         valid_actions = game.get_valid_actions(s)
         self.assertEqual(len(game.actions) - 1, len(valid_actions),
                          "All actions must be present except for the action that moves robot =0 in north direction")
-        self.assertEqual([], [a for a in valid_actions if a.direction == Direction.SOUTH and a.robot_id == 0])
+        self.assertEqual([], [a for a in valid_actions if a.direction == Direction.South and a.robot_id == 0])
 
     def test_get_valid_actions_without_west_movement_actions_when_west_wall(self):
         house = RobotRebootGoalHouse(0, (0, 0))
@@ -883,7 +883,7 @@ class TestGame(unittest.TestCase):
         valid_actions = game.get_valid_actions(s)
         self.assertEqual(len(game.actions) - 1, len(valid_actions),
                          "All actions must be present except for the action that moves robot =0 in north direction")
-        self.assertEqual([], [a for a in valid_actions if a.direction == Direction.WEST and a.robot_id == 0])
+        self.assertEqual([], [a for a in valid_actions if a.direction == Direction.West and a.robot_id == 0])
 
     def test_get_valid_actions_without_east_movement_actions_when_west_wall(self):
         house = RobotRebootGoalHouse(0, (0, 0))
@@ -898,7 +898,7 @@ class TestGame(unittest.TestCase):
         valid_actions = game.get_valid_actions(s)
         self.assertEqual(len(game.actions) - 1, len(valid_actions),
                          "All actions must be present except for the action that moves robot =0 in north direction")
-        self.assertEqual([], [a for a in valid_actions if a.direction == Direction.EAST and a.robot_id == 0])
+        self.assertEqual([], [a for a in valid_actions if a.direction == Direction.East and a.robot_id == 0])
 
     def test_get_valid_actions_empty_when_robot_trapped_within_walls(self):
         house = RobotRebootGoalHouse(0, (0, 0))
@@ -934,7 +934,7 @@ class TestGame(unittest.TestCase):
         valid_actions = game.get_valid_actions(s)
         not_valid_directions = {
             0: [],
-            1: [Direction.SOUTH, Direction.WEST, Direction.NORTH],
+            1: [Direction.South, Direction.West, Direction.North],
         }
         self.assertEqual([], [str(a) for a in valid_actions if a.direction in not_valid_directions[a.robot_id]],
                          "Actions listed in the not_valid_directions for each robot should not be retrieved")
@@ -951,11 +951,11 @@ class TestGame(unittest.TestCase):
         s = RobotRebootState(game, [(2, 2), (0, 2), (2, 0), (2, 4), (4, 2)])
         valid_actions = game.get_valid_actions(s)
         not_valid_directions = {
-            0: [Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST],
-            1: [Direction.NORTH, Direction.SOUTH],
-            2: [Direction.EAST, Direction.WEST],
-            3: [Direction.EAST, Direction.WEST],
-            4: [Direction.NORTH, Direction.SOUTH],
+            0: [Direction.North, Direction.South, Direction.East, Direction.West],
+            1: [Direction.North, Direction.South],
+            2: [Direction.East, Direction.West],
+            3: [Direction.East, Direction.West],
+            4: [Direction.North, Direction.South],
         }
         self.assertEqual([], [str(a) for a in valid_actions if a.direction in not_valid_directions[a.robot_id]],
                          "Actions listed in the not_valid_directions for each robot should not be retrieved")
