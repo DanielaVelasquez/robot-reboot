@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.exceptions.robot_reboot import NoRobotsGameException, InvalidMazeException, \
+from src.exceptions.robot_reboot.game import NoRobotsGameException, InvalidMazeException, \
     RobotHouseOutOfMazeBoundsException, \
     MazeNotSquareException, MazeSizeInvalidException, RobotHouseInvalidRobotIdException
 from src.exceptions.util import assertOrThrow

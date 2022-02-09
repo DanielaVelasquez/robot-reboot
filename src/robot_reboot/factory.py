@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.exceptions.robot_reboot import UnsupportedMazeSize
+from src.exceptions.robot_reboot.factory import UnsupportedMazeSize
 from src.robot_reboot.game import RobotRebootGame
 from src.robot_reboot.game_configuration import RobotRebootGameConfiguration
 from src.robot_reboot.goal_house import RobotRebootGoalHouse

@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from src.exceptions.robot_reboot import NeuralNetworkOutputNotMatchingGameActions
+from src.exceptions.robot_reboot.model import NeuralNetworkOutputNotMatchingGameActions
 from src.ml.model import get_model
 from src.robot_reboot.factory import RobotRebootFactory
 from src.robot_reboot.model import RobotRebootModel
