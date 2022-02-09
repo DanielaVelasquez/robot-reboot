@@ -21,7 +21,7 @@ class TestRobotRebootFactory(unittest.TestCase):
         np.testing.assert_equal(expected_maze, game.maze)
         self.assertEqual(n_robots, len(state.robots_positions))
         self.assertTrue(game.goal_house.house not in state.robots_positions)
-        self.assertEqual([(30, 15), (23, 6), (10, 14), (24, 21)], state.robots_positions)
+        self.assertEqual([(24, 30), (6, 24), (18, 12), (10, 14)], state.robots_positions)
 
     def test_create_different_mazes_every_time(self):
         np.random.seed(26)

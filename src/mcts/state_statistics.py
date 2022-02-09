@@ -2,7 +2,7 @@ import numpy as np
 
 from src.exceptions.mcts.state_statistics import EdgeNotVisitedException, InvalidNumberActionsException, \
     InvalidActionsTypeException
-from src.exceptions.util import assertOrThrow
+from src.exceptions.util import assert_or_throw
 
 
 class StateStatistics:
@@ -20,8 +20,8 @@ class StateStatistics:
         Args:
             n_actions (number): number of actions
         """
-        assertOrThrow(n_actions > 0, InvalidNumberActionsException())
-        assertOrThrow(type(n_actions) is int, InvalidActionsTypeException())
+        assert_or_throw(n_actions > 0, InvalidNumberActionsException())
+        assert_or_throw(type(n_actions) is int, InvalidActionsTypeException())
 
         self.__n = np.zeros(n_actions, dtype=float)
         self.__w = np.zeros(n_actions, dtype=float)
@@ -52,7 +52,7 @@ class StateStatistics:
             action_i (int): index of the action taken
             v        (int): value of the leaf state (1 = win, 0 = draw, -1 = lost)
         """
-        assertOrThrow(self.__n[action_i] != 0, EdgeNotVisitedException(action_i))
+        assert_or_throw(self.__n[action_i] != 0, EdgeNotVisitedException(action_i))
         self.__w[action_i] += v
         self.__p[action_i] = self.__w[action_i] / self.__n[action_i]
 

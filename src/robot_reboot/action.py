@@ -1,6 +1,6 @@
 from src.exceptions.exceptions import RequiredValueException
 from src.game.action import Action
-from src.exceptions.util import assertOrThrow
+from src.exceptions.util import assert_or_throw
 
 
 class RobotRebootAction(Action):
@@ -18,8 +18,8 @@ class RobotRebootAction(Action):
             robot_id  (int):       robot's id to move
             direction (Direction): direction where the robot is moving (N, S, E, W)
         """
-        assertOrThrow(robot_id is not None, RequiredValueException("robot_id"))
-        assertOrThrow(direction is not None, RequiredValueException("direction"))
+        assert_or_throw(robot_id is not None, RequiredValueException("robot_id"))
+        assert_or_throw(direction is not None, RequiredValueException("direction"))
         self.__robot_id = robot_id
         self.__direction = direction
 

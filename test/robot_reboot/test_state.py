@@ -63,11 +63,11 @@ class TestRobotRebootState(unittest.TestCase):
 
     def test_init_fails_when_number_robots_in_state_not_match_robots_in_game(self):
         self.assertRaises(NumberRobotsNotMatchingException,
-                          lambda: RobotRebootState(RobotRebootState(get_game(n_robots=1), [(1, 1), (0, 1)])))
+                          lambda: RobotRebootState(RobotRebootState(get_game(n_robots=1), [(0, 2), (2, 2)])))
 
     def test_init_fails_robots_not_list(self):
         self.assertRaises(InvalidRobotsList,
-                          lambda: RobotRebootState(RobotRebootState(get_game(n_robots=1), {(1, 0)})))
+                          lambda: RobotRebootState(RobotRebootState(get_game(n_robots=1), {(1, 1)})))
 
     def test_init_fails_robots_on_wall_position(self):
         self.assertRaises(RobotsPositionsOnWallsPositionsExceptions,
@@ -87,12 +87,12 @@ class TestRobotRebootState(unittest.TestCase):
         np.testing.assert_equal(game.maze, s[:, :, 0], "First layer should be the maze")
         np.testing.assert_equal(np.array(([
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],

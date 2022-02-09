@@ -1,6 +1,6 @@
 from src.exceptions.mcts.util import InvalidDepthException
 from src.exceptions.exceptions import RequiredValueException
-from src.exceptions.util import assertOrThrow
+from src.exceptions.util import assert_or_throw
 from src.game.state import State
 from .game_player import GamePlayer
 from .heuristic_function import alpha_zero_heuristic_fn
@@ -17,10 +17,10 @@ class AlphaZero(MonteCarloTreeSearch, Model):
     """
 
     def __init__(self, max_depth, game_player: GamePlayer, heuristic_fn=alpha_zero_heuristic_fn, playouts=100):
-        assertOrThrow(game_player is not None, RequiredValueException("game_player"))
+        assert_or_throw(game_player is not None, RequiredValueException("game_player"))
         MonteCarloTreeSearch.__init__(self, game_player.game, playouts=playouts)
-        assertOrThrow(heuristic_fn is not None, RequiredValueException("heuristic_fn"))
-        assertOrThrow(max_depth > 0, InvalidDepthException())
+        assert_or_throw(heuristic_fn is not None, RequiredValueException("heuristic_fn"))
+        assert_or_throw(max_depth > 0, InvalidDepthException())
 
         self.__heuristic_fn = heuristic_fn
         self.__max_depth = max_depth

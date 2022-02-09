@@ -3,7 +3,7 @@ import numpy as np
 from src.exceptions.robot_reboot.game import NoRobotsGameException, InvalidMazeException, \
     RobotHouseOutOfMazeBoundsException, \
     MazeNotSquareException, MazeSizeInvalidException, RobotHouseInvalidRobotIdException
-from src.exceptions.util import assertOrThrow
+from src.exceptions.util import assert_or_throw
 from src.game.game import Game
 from src.robot_reboot.action import RobotRebootAction
 from src.robot_reboot.state import RobotRebootState
@@ -56,13 +56,13 @@ class RobotRebootGame(Game):
                                         1 if there is a wall in that cell. 0 if its a cell where the robots can move.
             goal_house     (RobotRebootGoalHouse): robot that needs to get to its house
         """
-        assertOrThrow(n_robots > 0, NoRobotsGameException())
-        assertOrThrow(valid_maze(n_robots, maze), InvalidMazeException())
-        assertOrThrow(goal_house.house[0] < maze.shape[0] and goal_house.house[1] < maze.shape[1],
-                      RobotHouseOutOfMazeBoundsException())
-        assertOrThrow(goal_house.robot_id < n_robots, RobotHouseInvalidRobotIdException())
-        assertOrThrow(maze.shape[0] == maze.shape[1], MazeNotSquareException())
-        assertOrThrow(maze.shape[0] % 2 != 0, MazeSizeInvalidException())
+        assert_or_throw(n_robots > 0, NoRobotsGameException())
+        assert_or_throw(valid_maze(n_robots, maze), InvalidMazeException())
+        assert_or_throw(goal_house.house[0] < maze.shape[0] and goal_house.house[1] < maze.shape[1],
+                        RobotHouseOutOfMazeBoundsException())
+        assert_or_throw(goal_house.robot_id < n_robots, RobotHouseInvalidRobotIdException())
+        assert_or_throw(maze.shape[0] == maze.shape[1], MazeNotSquareException())
+        assert_or_throw(maze.shape[0] % 2 != 0, MazeSizeInvalidException())
         Game.__init__(self, [RobotRebootAction(r, d) for r in range(n_robots) for d in Direction])
         self.__n_robots = n_robots
         self.__maze = maze

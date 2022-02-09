@@ -1,7 +1,7 @@
 import numpy as np
 
 from src.exceptions.exceptions import RequiredValueException
-from src.exceptions.util import assertOrThrow
+from src.exceptions.util import assert_or_throw
 from src.game.game import Game
 from src.alphazero.model import Model
 from src.game.state import State
@@ -24,8 +24,8 @@ class GamePlayer:
             game  (Game):  Game to play
 
         """
-        assertOrThrow(model is not None, RequiredValueException("model"))
-        assertOrThrow(game is not None, RequiredValueException("game"))
+        assert_or_throw(model is not None, RequiredValueException("model"))
+        assert_or_throw(game is not None, RequiredValueException("game"))
         self.__model = model
         self.__game = game
 
@@ -77,5 +77,5 @@ class GamePlayer:
             v (number):     Predicted value
             p (np array):   Predicted probability distribution over each action
         """
-        assertOrThrow(state is not None, RequiredValueException("state"))
+        assert_or_throw(state is not None, RequiredValueException("state"))
         return self.__model.predict(state)

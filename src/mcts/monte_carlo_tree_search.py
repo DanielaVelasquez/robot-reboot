@@ -4,7 +4,7 @@ import numpy as np
 
 from src.exceptions.exceptions import RequiredValueException
 from src.exceptions.mcts.monte_carlo_tree_search import InvalidPlayoutException
-from src.exceptions.util import assertOrThrow
+from src.exceptions.util import assert_or_throw
 from src.game.game import Game
 from src.game.state import State
 from src.mcts.state_statistics import StateStatistics
@@ -31,8 +31,8 @@ class MonteCarloTreeSearch(ABC):
             game      (Game):  game used for the search
             playouts (number): number of playouts per simulation (default 100)
         """
-        assertOrThrow(playouts > 0, InvalidPlayoutException())
-        assertOrThrow(game is not None, RequiredValueException("game"))
+        assert_or_throw(playouts > 0, InvalidPlayoutException())
+        assert_or_throw(game is not None, RequiredValueException("game"))
         self._game = game
         self._playouts = playouts
         self._states_statistics = {}

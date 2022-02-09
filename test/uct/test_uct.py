@@ -77,5 +77,5 @@ class TestUct(unittest.TestCase):
         game, state, _ = f.create(31, locate_robot_close_goal=True, max_movements=3)
         uct = UCT(game, 5, heuristic_fn=uct_heuristic_fn, playouts=5)
         p = uct.search(state)
-        np.testing.assert_equal(p, [0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  0.,  0.2, 0.2, 0.2, 0.2])
-        self.assertEqual(135, len(uct.states_statistics))
+        np.testing.assert_equal(p, [0.2, 0., 0.2, 0., 0.2, 0.2, 0.2, 0.2, 0., 0., 0., 1., 0.2, 0.2, 0.2, 0.2])
+        self.assertEqual(107, len(uct.states_statistics))
