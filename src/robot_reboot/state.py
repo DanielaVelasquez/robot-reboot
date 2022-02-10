@@ -45,6 +45,9 @@ class RobotRebootState(State):
     def is_robot_on(self, pos):
         return len([r for r in self.__robots_positions if r == pos]) != 0
 
+    def get_valid_actions(self):
+        return self.game.get_valid_actions(self)
+
     def __str__(self):
         return f'{self.__robots_positions}'
 

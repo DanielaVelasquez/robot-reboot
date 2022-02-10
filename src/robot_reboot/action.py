@@ -33,3 +33,9 @@ class RobotRebootAction(Action):
 
     def __str__(self):
         return f'Moving robot {self.__robot_id} on {self.__direction}'
+
+    def __eq__(self, obj):
+        return isinstance(obj, RobotRebootAction) and obj.robot_id == self.__robot_id and obj.direction == self.__direction
+
+    def __hash__(self):
+        return hash(tuple((self.robot_id, self.direction)))
