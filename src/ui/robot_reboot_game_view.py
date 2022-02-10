@@ -3,6 +3,7 @@ from time import sleep
 import numpy as np
 import pygame
 
+from src.agent.human import HumanAgent
 from src.robot_reboot.factory import RobotRebootFactory
 from src.robot_reboot.maze_cell_type import MazeCellType
 from src.ui.base import GameStateView
@@ -28,13 +29,12 @@ def get_color_based_on_name(robot_id):
 
 
 class RobotRebootGameView(GameStateView):
-    def __init__(self, state, game, movements: list, screen_size=(600, 600), run=True):
+    def __init__(self, state, game, agent, screen_size=(600, 600), run=True):
+        GameStateView.__init__(self, agent)
         pygame.init()
         pygame.display.set_caption("Robot Reboot")
         self.state = state
         self.game = game
-        self.movements = movements
-        self.movements_index = 0
         # Setting up screen
         self.screen_size = screen_size
         self.screen = pygame.display.set_mode(screen_size)
@@ -58,18 +58,16 @@ class RobotRebootGameView(GameStateView):
                 self.update()
                 sleep(1)
 
-    def update(self, mode='human'):
-        self.__view_update(mode)
-        if self.movements_index < len(self.movements):
-            m = self.movements.__getitem__(self.movements_index)
-            print(m)
-            print(f'Movement {self.movements_index}/{len(self.movements)}')
-            self.state.move_robot(m[0], m[1])
-            self.movements_index += 1
+    def update(self):
 
         for event in pygame.event.get():
+            print(event)
             if event.type == pygame.QUIT:
                 self.quit_game()
+            elif event.type == pygame.KEYUP:
+                action = self.agent.select_action(self.state)
+                self.state = self.game.apply(action, self.state)
+                self.__view_update()
 
     def __move_robot_on_game(self, direction):
         if self.__selected_robot is not None:
@@ -92,7 +90,7 @@ class RobotRebootGameView(GameStateView):
         y = mouse_position[0]
         return int(x / self.cell_height), int(y / self.cell_width)
 
-    def __view_update(self, mode='human'):
+    def __view_update(self):
         self.maze_layer = pygame.Surface(self.screen.get_size()).convert_alpha()
         self.maze_layer.fill((0, 0, 0, 0))
         self.__draw_maze()
@@ -100,9 +98,6 @@ class RobotRebootGameView(GameStateView):
         self.__draw_goal()
         self.screen.blit(self.background, (0, 0))
         self.screen.blit(self.maze_layer, (0, 0))
-        if mode == "human":
-            pygame.display.flip()
-
         return np.flipud(np.rot90(pygame.surfarray.array3d(pygame.display.get_surface())))
 
     def __draw_maze(self):
@@ -181,4 +176,4 @@ if __name__ == "__main__":
     game, state, selected_quadrants = factory.create(31, locate_robot_close_goal=True, max_movements=1)
     print(state.robots_positions)
     print(game.goal_house)
-    rrView = RobotRebootGameView(state, game, list())
+    rrView = RobotRebootGameView(state, game, HumanAgent())
