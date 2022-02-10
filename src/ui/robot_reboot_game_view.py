@@ -120,11 +120,11 @@ class RobotRebootGameView(GameStateView):
                              (x * self.cell_width, self.screen_height))
 
         # Draw walls
-        cells = self.game.maze.transpose()
+        cells = self.game.maze
         for x in range(len(cells)):
             for y in range(len(cells[x])):
                 if cells[x, y] == MazeCellType.WALL.value:
-                    self.__colour_cell((x, y), tuple([224, 76, 76]))
+                    self.__colour_cell((x, y), tuple([0, 0, 0]))
 
     def __draw_robots(self, transparency=255):
         positions = self.state.robots_positions
