@@ -15,13 +15,13 @@ class RobotView:
 
 
 def get_color_based_on_name(robot_id):
-    if robot_id == 0:
+    if robot_id == 0: # Yellow
         return tuple([252, 219, 3])
-    elif robot_id == 1:
+    elif robot_id == 1: # Green
         return tuple([3, 252, 161])
-    elif robot_id == 2:
+    elif robot_id == 2: #Blue
         return tuple([3, 219, 252])
-    elif robot_id == 3:
+    elif robot_id == 3: #Red
         return tuple([224, 76, 76])
     else:
         return tuple(np.random.choice(range(256), size=3))
@@ -176,6 +176,9 @@ class RobotRebootGameView(GameStateView):
 
 
 if __name__ == "__main__":
+    np.random.seed(26)
     factory = RobotRebootFactory()
-    game, state, selected_quadrants = factory.create(31)
+    game, state, selected_quadrants = factory.create(31, locate_robot_close_goal=True, max_movements=1)
+    print(state.robots_positions)
+    print(game.goal_house)
     rrView = RobotRebootGameView(state, game, list())
