@@ -1,5 +1,6 @@
 import numpy as np
 
+from src.robot_reboot.classic_robot_reboot_hash import ClassicRobotRebootZobristHash
 from src.robot_reboot.direction import Direction
 from src.robot_reboot.maze_cell_type import MazeCellType
 
@@ -137,3 +138,13 @@ def generate_even_number(size):
 
 def is_even(n):
     return n % 2 == 0
+
+
+def get_zobrish_hash(robots_count, maze_size):
+    hashes = {
+        (4, (31, 31)): ClassicRobotRebootZobristHash()
+    }
+    zobrish_hash = hashes.get((robots_count, maze_size))
+    if zobrish_hash:
+        return zobrish_hash
+    raise KeyError('No zobrist hash available for the given values')

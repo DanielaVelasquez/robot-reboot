@@ -1,7 +1,9 @@
 import unittest
 import numpy as np
+
+from src.robot_reboot.classic_robot_reboot_hash import ClassicRobotRebootZobristHash
 from src.robot_reboot.util import get_cell_at, Direction, join_quadrants, transpose_position_to_quadrant, build_matrix, \
-    generate_positions_except, generate_even_number
+    generate_positions_except, generate_even_number, get_zobrish_hash
 
 
 class TestUtil(unittest.TestCase):
@@ -168,3 +170,10 @@ class TestUtil(unittest.TestCase):
     def assert_position_square_quadrant(self, origin, target, q):
         quadrant = np.arange(1, 10).reshape(3, 3)
         self.assertEqual(target, transpose_position_to_quadrant(quadrant, origin, q))
+
+    def test_get_zobrish_hash_exists(self):
+        zobrish_hash = get_zobrish_hash(4, (31, 31))
+        self.assertTrue(isinstance(zobrish_hash, ClassicRobotRebootZobristHash))
+
+    def test_get_zobrish_hash_raises_error_when_not_found(self):
+        self.assertRaises(KeyError, lambda: get_zobrish_hash(4, (1, 2)))
