@@ -49,3 +49,8 @@ class MazeAndTwoPlanesPerRobot(Encoder):
     def shape(self):
         planes = 1 + self.__n_robots * 2
         return self.__maze_size_rows, self.__maze_size_cols, planes
+
+
+class MazeAndTwoPlanesPerRobotBuilder:
+    def __call__(self, n_robots, maze_size):
+        return MazeAndTwoPlanesPerRobot(n_robots, maze_size)
