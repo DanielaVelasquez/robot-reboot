@@ -9,7 +9,7 @@ class EncoderFactory:
         self.__builders[name] = builder
 
     def get_by_name(self, name, **kwargs):
-        builder = self.__builders[name]
+        builder = self.__builders.get(name)
         if not builder:
             raise ValueError("Encoder with name " + name + " not found")
         return builder(**kwargs)
