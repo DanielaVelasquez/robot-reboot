@@ -1,5 +1,3 @@
-import numpy as np
-
 from src.exceptions.robot_reboot.state import EmptyRobotsPositionException, InvalidRobotsPositionException, \
     RobotsPositionOutOfMazeBoundsException, NumberRobotsNotMatchingException, InvalidRobotsList, \
     RobotsPositionsOnWallsPositionsExceptions
@@ -8,7 +6,6 @@ from src.game.state import State
 
 
 class RobotRebootState(State):
-
     ROBOT_IN_CELL = 1
 
     """
@@ -34,13 +31,17 @@ class RobotRebootState(State):
                         RobotsPositionsOnWallsPositionsExceptions())
         assert_or_throw(len([rp for rp in robots_positions if rp[0] >= game.maze.shape[0] or rp[1] >= game.maze.shape[
             1]]) == 0, RobotsPositionOutOfMazeBoundsException())
-        assert_or_throw(len(robots_positions) == game.n_robots, NumberRobotsNotMatchingException())
+        assert_or_throw(len(robots_positions) == game.robots_count, NumberRobotsNotMatchingException())
         State.__init__(self, game, sequence_i)
         self.__robots_positions = robots_positions
 
     @property
     def robots_positions(self):
         return self.__robots_positions
+
+    @property
+    def robots_count(self):
+        return len(self.__robots_positions)
 
     def is_robot_on(self, pos):
         return len([r for r in self.__robots_positions if r == pos]) != 0
@@ -50,24 +51,3 @@ class RobotRebootState(State):
 
     def __str__(self):
         return f'{self.__robots_positions}'
-
-    def get_matrix(self):
-        """Gets a matrix that represents this state based on the game, this matrix consists of zeros and ones
-        it's 3-dimensional array where the first layer represents the maze and its walls, and following layers
-        for each robot there are two layers, one represent a robot position in the maze and the following the
-        robots house goal if it exists otherwise that layer is full of zeros
-        Returns:
-            maze : 3-dimensional array representing the state and the game
-        """
-        r, c = self.game.maze.shape
-        n_robots = len(self.__robots_positions)
-        maze = np.zeros((r, c, n_robots * 2 + 1))
-        maze[:, :, 0] = self.game.maze
-        i = 1
-        for x, y in self.__robots_positions:
-            maze[x, y, i] = RobotRebootState.ROBOT_IN_CELL
-            i += 2
-        x, y = self.game.goal_house.house
-        # Goal house
-        maze[x, y, (self.game.goal_house.robot_id + 1) * 2] = RobotRebootState.ROBOT_IN_CELL
-        return maze

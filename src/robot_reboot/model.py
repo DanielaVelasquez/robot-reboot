@@ -1,3 +1,4 @@
+from src.encoders.maze_and_two_planes_per_robot import MazeAndTwoPlanesPerRobotEncoder
 from src.exceptions.robot_reboot.model import NeuralNetworkOutputNotMatchingGameActions
 from src.exceptions.util import assert_or_throw
 from src.alphazero.model import Model
@@ -17,7 +18,8 @@ class RobotRebootModel(Model):
         return self.__network
 
     def predict(self, state: RobotRebootState):
-        s = state.get_matrix()
+        encoder = MazeAndTwoPlanesPerRobotEncoder(state.robots_count, state.game.maze_shape)
+        s = encoder.encode(state)
         rows, cols, layers = s.shape
         pred = self.__network.predict(s.reshape((1, rows, cols, layers)))
         return pred[0][0, 0], pred[1][0]

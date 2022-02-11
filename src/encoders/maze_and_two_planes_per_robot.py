@@ -6,7 +6,7 @@ from src.robot_reboot.direction import Direction
 from src.robot_reboot.state import RobotRebootState
 
 
-class MazeAndTwoPlanesPerRobot(Encoder):
+class MazeAndTwoPlanesPerRobotEncoder(Encoder):
     """Encodes a game state into a matrix with zeros and ones. It's 3-dimensional array where:
      - The first plane represents the maze and its walls. 1 For a wall and Zero for an empty cell.
      - Next planes, for each robot
@@ -53,4 +53,4 @@ class MazeAndTwoPlanesPerRobot(Encoder):
 
 class MazeAndTwoPlanesPerRobotBuilder:
     def __call__(self, n_robots, maze_size):
-        return MazeAndTwoPlanesPerRobot(n_robots, maze_size)
+        return MazeAndTwoPlanesPerRobotEncoder(n_robots, maze_size)

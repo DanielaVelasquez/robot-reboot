@@ -2,26 +2,26 @@ import unittest
 
 import numpy as np
 
-from src.encoders.maze_and_two_planes_per_robot import MazeAndTwoPlanesPerRobot
+from src.encoders.maze_and_two_planes_per_robot import MazeAndTwoPlanesPerRobotEncoder
 from src.robot_reboot.action import RobotRebootAction
 from src.robot_reboot.direction import Direction
 from src.robot_reboot.factory import RobotRebootFactory
 from src.robot_reboot.state import RobotRebootState
 
 
-class TestMazeAndTwoPlanesPerRobot(unittest.TestCase):
+class TestMazeAndTwoPlanesPerRobotEncoder(unittest.TestCase):
 
     def test_name(self):
-        encoder = MazeAndTwoPlanesPerRobot(4, (31, 31))
+        encoder = MazeAndTwoPlanesPerRobotEncoder(4, (31, 31))
         self.assertEqual('maze-and-two-planes-per-robot', encoder.name())
 
     def test_shape(self):
-        encoder = MazeAndTwoPlanesPerRobot(4, (31, 31))
+        encoder = MazeAndTwoPlanesPerRobotEncoder(4, (31, 31))
         self.assertEqual((31, 31, 9), encoder.shape())
 
     def test_encode(self):
         np.random.seed(26)
-        encoder = MazeAndTwoPlanesPerRobot(4, (31, 31))
+        encoder = MazeAndTwoPlanesPerRobotEncoder(4, (31, 31))
         game, game_state, quadrants_ids = RobotRebootFactory().create(31, locate_robot_close_goal=True, max_movements=4)
         # Robot 2 needs to get home.
         matrix = encoder.encode(game_state)
@@ -40,7 +40,7 @@ class TestMazeAndTwoPlanesPerRobot(unittest.TestCase):
 
     def test_encode_action(self):
         n_robots = 4
-        encoder = MazeAndTwoPlanesPerRobot(n_robots, (31, 31))
+        encoder = MazeAndTwoPlanesPerRobotEncoder(n_robots, (31, 31))
         actions = [RobotRebootAction(r, d) for r in range(n_robots) for d in Direction]
         for i in range(len(actions)):
             action = actions[i]
@@ -48,7 +48,7 @@ class TestMazeAndTwoPlanesPerRobot(unittest.TestCase):
 
     def test_decode_action(self):
         n_robots = 4
-        encoder = MazeAndTwoPlanesPerRobot(n_robots, (31, 31))
+        encoder = MazeAndTwoPlanesPerRobotEncoder(n_robots, (31, 31))
         actions = [RobotRebootAction(r, d) for r in range(n_robots) for d in Direction]
         for i in range(len(actions)):
             action = actions[i]

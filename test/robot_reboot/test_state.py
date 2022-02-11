@@ -6,7 +6,6 @@ from src.exceptions.game.state import InvalidStateSequence
 from src.exceptions.robot_reboot.state import EmptyRobotsPositionException, InvalidRobotsPositionException, \
     RobotsPositionOutOfMazeBoundsException, NumberRobotsNotMatchingException, InvalidRobotsList, \
     RobotsPositionsOnWallsPositionsExceptions
-from src.robot_reboot.factory import RobotRebootFactory
 from src.robot_reboot.game import RobotRebootGame
 from src.robot_reboot.goal_house import RobotRebootGoalHouse
 from src.robot_reboot.state import RobotRebootState
@@ -73,82 +72,9 @@ class TestRobotRebootState(unittest.TestCase):
         self.assertRaises(RobotsPositionsOnWallsPositionsExceptions,
                           lambda: RobotRebootState(RobotRebootState(get_game(n_robots=1), [(1, 0)])))
 
-    def test_get_state(self):
-        np.random.seed(26)
-        factory = RobotRebootFactory()
-        game, state, _ = factory.create(11)
-        s = state.get_matrix()
-        self.assertEqual((11, 11, 5), s.shape, "State should have the size of the maze for rows and columns and"
-                                               "one layer for the maze"
-                                               "one layer for robot 0 position"
-                                               "one layer for robot 0 house goal, "
-                                               "one layer for robot 1 position and "
-                                               "one layer for robot 1 house goal")
-        np.testing.assert_equal(game.maze, s[:, :, 0], "First layer should be the maze")
-        np.testing.assert_equal(np.array(([
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        ])), s[:, :, 1], "Second layer should have a one where the first robot is located and the rest should be zero")
-
-        np.testing.assert_equal(np.array(([
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        ])), s[:, :, 2],
-            "Third layer should have a one where the first robot's goal is located and the rest should be zero")
-
-        np.testing.assert_equal(np.array(([
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        ])), s[:, :, 3],
-            "Fourth layer should have a one where the second robot is located and the rest should be zero")
-
-        np.testing.assert_equal(np.zeros((11, 11)), s[:, :, 4],
-                                "Fifth layer should be all zero because second robot doesn't need to get to its house")
-
-    def test_get_matrix(self):
-        np.random.seed(26)
-        game, state, quadrants_ids = RobotRebootFactory().create(31, locate_robot_close_goal=True, max_movements=4)
-        # Knowledge robot 2 needs to get home with seed 26
-        matrix = state.get_matrix()
-        np.testing.assert_equal(matrix[:, :, 0], game.maze)
-        self.assert_robot(state.robots_positions, matrix, 0)
-        self.assert_empty_houses(0, matrix)
-
-        self.assert_robot(state.robots_positions, matrix, 1)
-        self.assert_empty_houses(1, matrix)
-
-        self.assert_robot(state.robots_positions, matrix, 2)
-        self.assert_house(game.goal_house, matrix)
-
-        self.assert_robot(state.robots_positions, matrix, 3)
-        self.assert_empty_houses(3, matrix)
+    def test_robots_count(self):
+        s = RobotRebootState(get_game(), [(0, 2), (0, 0)])
+        self.assertEqual(2, s.robots_count)
 
     def assert_robot(self, robots_positions, matrix, robot_id):
         x, y = robots_positions[robot_id]

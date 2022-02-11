@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 
+from src.encoders.maze_and_two_planes_per_robot import MazeAndTwoPlanesPerRobotEncoder
 from src.exceptions.robot_reboot.game import NoRobotsGameException, InvalidMazeException, \
     RobotHouseOutOfMazeBoundsException, \
     MazeNotSquareException, MazeSizeInvalidException, RobotHouseInvalidRobotIdException
@@ -15,7 +16,7 @@ class TestGame(unittest.TestCase):
         house = RobotRebootGoalHouse(1, (0, 0))
         maze = np.array([[0, 1, 0], [0, 1, 0], [0, 1, 0]])
         g = RobotRebootGame(2, maze, house)
-        self.assertEqual(g.n_robots, 2)
+        self.assertEqual(g.robots_count, 2)
         self.assertEqual(g.goal_house, house)
         np.testing.assert_equal(g.maze, maze)
         directions = [d for d in Direction]
@@ -89,6 +90,12 @@ class TestGame(unittest.TestCase):
         house = RobotRebootGoalHouse(0, (0, 0))
         maze = np.array([[0, 0], [0, 0]])
         self.assertRaises(MazeSizeInvalidException, lambda: RobotRebootGame(1, maze, house))
+
+    def test_get_maze_shape(self):
+        house = RobotRebootGoalHouse(1, (0, 0))
+        maze = np.array([[0, 1, 0], [0, 1, 0], [0, 1, 0]])
+        g = RobotRebootGame(2, maze, house)
+        self.assertEqual((3, 3), g.maze_shape)
 
     def test_get_value_when_robot_reached_its_house(self):
         """
@@ -962,10 +969,12 @@ class TestGame(unittest.TestCase):
 
     def test_get_game_from_matrix(self):
         game, state, quadrants_ids = RobotRebootFactory().create(31, locate_robot_close_goal=True, max_movements=4)
-        matrix = state.get_matrix()
+        encoder = MazeAndTwoPlanesPerRobotEncoder(state.robots_count, state.game.maze_shape)
+        matrix = encoder.encode(state)
         result_game, result_state = get_game_from_matrix(matrix)
         self.assertEqual(state.robots_positions, result_state.robots_positions, "Robot should be in the same position")
         self.assertEqual(game.goal_house.robot_id, result_game.goal_house.robot_id)
         self.assertEqual(game.goal_house.house, result_game.goal_house.house)
         np.testing.assert_equal(game.maze, result_game.maze, "Mazes should be equal")
-        np.testing.assert_equal(result_state.get_matrix(), matrix, "Matrices should be equal")
+        s = encoder.encode(state)
+        np.testing.assert_equal(s, matrix, "Matrices should be equal")

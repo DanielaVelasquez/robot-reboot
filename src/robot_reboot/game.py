@@ -69,12 +69,16 @@ class RobotRebootGame(Game):
         self.__goal_house = goal_house
 
     @property
-    def n_robots(self):
+    def robots_count(self):
         return self.__n_robots
 
     @property
     def maze(self):
         return self.__maze
+
+    @property
+    def maze_shape(self):
+        return self.__maze.shape
 
     @property
     def goal_house(self):

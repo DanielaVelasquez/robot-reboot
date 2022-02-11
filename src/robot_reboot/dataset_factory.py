@@ -3,6 +3,7 @@ import logging
 from src.alphazero.alphazero import AlphaZero
 from src.alphazero.game_player import GamePlayer
 from src.alphazero.heuristic_function import alpha_zero_heuristic_fn
+from src.encoders.maze_and_two_planes_per_robot import MazeAndTwoPlanesPerRobotEncoder
 from src.robot_reboot.factory import RobotRebootFactory
 from src.robot_reboot.model import RobotRebootModel
 
@@ -69,4 +70,5 @@ class RobotRebootDataSetFactory:
         final_state = game_player.play(state, self.max_depth)
         logging.info("Game outcome calculated")
         v = game.get_value(final_state)
-        return v, p, state.get_matrix()
+        encoder = MazeAndTwoPlanesPerRobotEncoder(state.robots_count, state.game.maze_shape)
+        return v, p, encoder.encode(state)
