@@ -63,6 +63,10 @@ class RobotRebootState(State):
         return self.__zobrist_hash
 
     @property
+    def zobrist_hash_generator(self):
+        return self.__zobrist_hash_generator
+
+    @property
     def previous_states(self):
         return self.__previous_states
 

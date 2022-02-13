@@ -148,13 +148,14 @@ class RobotRebootGame(Game):
     def __move_to(self, robot_id, new_pos, state: RobotRebootState):
         robots_positions = state.robots_positions.copy()
         robots_positions[robot_id] = new_pos
-        return RobotRebootState(self, robots_positions, state.sequence_i + 1, previous_state=self)
+        return RobotRebootState(self, robots_positions, state.sequence_i + 1, previous_state=state,
+                                zobrist_hash_generator=state.zobrist_hash_generator)
 
     def get_valid_actions(self, state: RobotRebootState):
-        valid_actions = list()
+        valid_actions = {}
         for action in self.actions:
             next_state = self.apply(action, state)
             if next_state.robots_positions != state.robots_positions and \
                     next_state.zobrist_hash not in state.previous_states:
-                valid_actions.append(action)
+                valid_actions[action] = next_state
         return valid_actions

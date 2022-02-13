@@ -6,6 +6,7 @@ from src.encoders.maze_and_two_planes_per_robot import MazeAndTwoPlanesPerRobotE
 from src.exceptions.robot_reboot.game import NoRobotsGameException, InvalidMazeException, \
     RobotHouseOutOfMazeBoundsException, \
     MazeNotSquareException, MazeSizeInvalidException, RobotHouseInvalidRobotIdException
+from src.robot_reboot.classic_robot_reboot_hash import ClassicRobotRebootZobristHash
 from src.robot_reboot.factory import RobotRebootFactory
 from src.robot_reboot.game import RobotRebootGame, Direction, RobotRebootGoalHouse, RobotRebootState, RobotRebootAction, \
     get_game_from_matrix
@@ -917,7 +918,7 @@ class TestGame(unittest.TestCase):
                          ])
         game = RobotRebootGame(1, maze, house)
         s = RobotRebootState(game, [(2, 2)])
-        self.assertEqual([], game.get_valid_actions(s))
+        self.assertEqual({}, game.get_valid_actions(s))
 
     def test_get_valid_actions_empty_when_maze_has_one_cell(self):
         house = RobotRebootGoalHouse(0, (0, 0))
@@ -925,7 +926,7 @@ class TestGame(unittest.TestCase):
                          ])
         game = RobotRebootGame(1, maze, house)
         s = RobotRebootState(game, [(0, 0)])
-        self.assertEqual([], game.get_valid_actions(s),
+        self.assertEqual({}, game.get_valid_actions(s),
                          "No valid actions should be retrieve, the robot doesnt' have cells to move")
 
     def test_get_valid_actions_with_two_robots(self):
@@ -966,6 +967,38 @@ class TestGame(unittest.TestCase):
         }
         self.assertEqual([], [str(a) for a in valid_actions if a.direction in not_valid_directions[a.robot_id]],
                          "Actions listed in the not_valid_directions for each robot should not be retrieved")
+
+    def test_get_valid_actions_when_repeated_board_game(self):
+        house = RobotRebootGoalHouse(0, (2, 2))
+        maze = np.array([[0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0]
+                         ])
+        game = RobotRebootGame(4, maze, house)
+        game_state_1 = RobotRebootState(game, [(0, 0), (2, 2), (2, 0), (2, 4)],
+                                        zobrist_hash_generator=ClassicRobotRebootZobristHash())
+        game_state_2 = game.apply(RobotRebootAction(0, Direction.East), game_state_1)
+        valid_actions = game.get_valid_actions(game_state_2)
+        # Moving robot 0 to West should not be valid because it would return to a previous state 1
+        self.assertFalse(RobotRebootAction(0, Direction.West) in valid_actions)
+
+    def test_get_valid_actions_when_repeated_board_game_none_zobrist_hash_generator(self):
+        house = RobotRebootGoalHouse(0, (2, 2))
+        maze = np.array([[0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0]
+                         ])
+        game = RobotRebootGame(4, maze, house)
+        game_state_1 = RobotRebootState(game, [(0, 0), (2, 2), (2, 0), (2, 4)],
+                                        zobrist_hash_generator=None)
+        game_state_2 = game.apply(RobotRebootAction(0, Direction.East), game_state_1)
+        valid_actions = game.get_valid_actions(game_state_2)
+        # Moving robot 0 to West should not be valid because it would return to a previous state 1
+        self.assertTrue(RobotRebootAction(0, Direction.West) in valid_actions)
 
     def test_get_game_from_matrix(self):
         game, state, quadrants_ids = RobotRebootFactory().create(31, locate_robot_close_goal=True, max_movements=4)

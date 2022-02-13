@@ -1,9 +1,9 @@
 import numpy as np
 
 from src.agent.human import HumanAgent
-from src.view.base import view_play
 from src.robot_reboot.factory import RobotRebootFactory
 from src.ui.robot_reboot_game_view import RobotRebootGameView
+from src.view.base import view_play
 
 
 def main():

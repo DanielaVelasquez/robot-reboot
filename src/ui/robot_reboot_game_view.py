@@ -6,6 +6,7 @@ import pygame
 from src.agent.human import HumanAgent
 from src.robot_reboot.factory import RobotRebootFactory
 from src.robot_reboot.maze_cell_type import MazeCellType
+from src.robot_reboot.util import is_even
 from src.ui.base import GameStateView
 
 
@@ -97,6 +98,8 @@ class RobotRebootGameView(GameStateView):
             for y in range(len(cells[x])):
                 if cells[x, y] == MazeCellType.WALL.value:
                     self.__colour_cell((x, y), tuple([0, 0, 0]))
+                elif not is_even(x) or not is_even(y):
+                    self.__colour_cell((x, y), tuple([200, 200, 200]))
 
     def __draw_robots(self, transparency=255):
         positions = self.__state.robots_positions
