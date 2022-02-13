@@ -1,9 +1,10 @@
 import numpy as np
 
+from src.encoders.action_encoder import get_map_actions_to_index_and_actions_list
 from src.encoders.base import Encoder
-from src.robot_reboot.action import RobotRebootAction
-from src.robot_reboot.direction import Direction
 from src.robot_reboot.state import RobotRebootState
+
+MAZE_AND_TWO_PLANES_PER_ROBOT_ENCODER_NAME = 'maze-and-two-planes-per-robot'
 
 
 class MazeAndTwoPlanesPerRobotEncoder(Encoder):
@@ -15,17 +16,13 @@ class MazeAndTwoPlanesPerRobotEncoder(Encoder):
     If the robot goal house doesn't exists, the layer is full of zeros
     """
 
-    def __init__(self, n_robots, maze_size):
-        self.__n_robots = n_robots
-        self.__maze_size_rows, self.__maze_size_cols = maze_size
-        self.__map_actions_to_index, self.__actions_list = self.__get_encoded_decoded_actions()
-
-    def __get_encoded_decoded_actions(self):
-        actions = [RobotRebootAction(r, d) for r in range(self.__n_robots) for d in Direction]
-        return {actions[i]: i for i in range(len(actions))}, actions
+    def __init__(self, game):
+        self.__n_robots = game.robots_count
+        self.__maze_size_rows, self.__maze_size_cols = game.maze_shape
+        self.__map_actions_to_index, self.__actions_list = get_map_actions_to_index_and_actions_list(game)
 
     def name(self):
-        return 'maze-and-two-planes-per-robot'
+        return MAZE_AND_TWO_PLANES_PER_ROBOT_ENCODER_NAME
 
     def encode(self, game_state):
         maze_matrix = np.zeros(self.shape())
@@ -52,5 +49,5 @@ class MazeAndTwoPlanesPerRobotEncoder(Encoder):
 
 
 class MazeAndTwoPlanesPerRobotBuilder:
-    def __call__(self, n_robots, maze_size):
-        return MazeAndTwoPlanesPerRobotEncoder(n_robots, maze_size)
+    def __call__(self, game):
+        return MazeAndTwoPlanesPerRobotEncoder(game)

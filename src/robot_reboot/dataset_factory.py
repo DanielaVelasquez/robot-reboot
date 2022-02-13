@@ -70,5 +70,5 @@ class RobotRebootDataSetFactory:
         final_state = game_player.play(state, self.max_depth)
         logging.info("Game outcome calculated")
         v = game.get_value(final_state)
-        encoder = MazeAndTwoPlanesPerRobotEncoder(state.robots_count, state.game.maze_shape)
+        encoder = MazeAndTwoPlanesPerRobotEncoder(game)
         return v, p, encoder.encode(state)

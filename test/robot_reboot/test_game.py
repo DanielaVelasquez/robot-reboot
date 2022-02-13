@@ -1002,7 +1002,7 @@ class TestGame(unittest.TestCase):
 
     def test_get_game_from_matrix(self):
         game, state, quadrants_ids = RobotRebootFactory().create(31, locate_robot_close_goal=True, max_movements=4)
-        encoder = MazeAndTwoPlanesPerRobotEncoder(state.robots_count, state.game.maze_shape)
+        encoder = MazeAndTwoPlanesPerRobotEncoder(game)
         matrix = encoder.encode(state)
         result_game, result_state = get_game_from_matrix(matrix)
         self.assertEqual(state.robots_positions, result_state.robots_positions, "Robot should be in the same position")

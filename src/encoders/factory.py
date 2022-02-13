@@ -1,4 +1,7 @@
-from src.encoders.maze_and_two_planes_per_robot import MazeAndTwoPlanesPerRobotBuilder
+from src.encoders.maze_and_robot_positioning_encoder import POSITIONING_ENCODER_NAME, \
+    MazeAndRobotPositioningEncoderBuilder
+from src.encoders.maze_and_two_planes_per_robot import MazeAndTwoPlanesPerRobotBuilder, \
+    MAZE_AND_TWO_PLANES_PER_ROBOT_ENCODER_NAME
 
 
 class EncoderFactory:
@@ -19,11 +22,13 @@ class RobotRebootEncoderFactory:
     def __init__(self, load_default=True):
         self.__encoder_factory = EncoderFactory()
         if load_default:
-            self.__encoder_factory.register_encoder('maze-and-two-planes-per-robot', MazeAndTwoPlanesPerRobotBuilder())
+            self.__encoder_factory.register_encoder(MAZE_AND_TWO_PLANES_PER_ROBOT_ENCODER_NAME,
+                                                    MazeAndTwoPlanesPerRobotBuilder())
+            self.__encoder_factory.register_encoder(POSITIONING_ENCODER_NAME, MazeAndRobotPositioningEncoderBuilder())
 
     def register_encoder(self, name, builder):
         self.__encoder_factory.register_encoder(name, builder)
 
-    def get_by_name(self, name, n_robots, maze_size):
-        args = {'n_robots': n_robots, 'maze_size': maze_size}
+    def get_by_name(self, name, game):
+        args = {'game': game}
         return self.__encoder_factory.get_by_name(name, **args)
