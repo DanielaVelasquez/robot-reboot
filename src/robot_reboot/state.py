@@ -49,7 +49,6 @@ class RobotRebootState(State):
                 self.__previous_states = frozenset(
                     previous_state.previous_states | {self.__zobrist_hash})
 
-
     def __calculate_zobrist_hash(self):
         if self.__zobrist_hash_generator:
             zobrist_hash = self.__zobrist_hash_generator.empty
@@ -80,6 +79,9 @@ class RobotRebootState(State):
 
     def get_valid_actions(self):
         return self.game.get_valid_actions(self)
+
+    def apply_action(self, action):
+        return self.game.apply(action, self)
 
     def __str__(self):
         return f'{self.__robots_positions}'

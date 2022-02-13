@@ -148,56 +148,13 @@ class RobotRebootGame(Game):
     def __move_to(self, robot_id, new_pos, state: RobotRebootState):
         robots_positions = state.robots_positions.copy()
         robots_positions[robot_id] = new_pos
-        return RobotRebootState(self, robots_positions, state.sequence_i + 1)
+        return RobotRebootState(self, robots_positions, state.sequence_i + 1, previous_state=self)
 
     def get_valid_actions(self, state: RobotRebootState):
         valid_actions = list()
         for action in self.actions:
-            pos = state.robots_positions[action.robot_id]
-            if not self.__is_wall_at(pos, action.direction) and not self.__is_robot_at(pos, action.direction, state):
+            next_state = self.apply(action, state)
+            if next_state.robots_positions != state.robots_positions and \
+                    next_state.zobrist_hash not in state.previous_states:
                 valid_actions.append(action)
         return valid_actions
-
-    def __is_wall_at(self, position: tuple, direction: Direction):
-        """Determines if there is an immediate wall in the direction of a position, ie. is there a wall at north of (1,1)
-        if the position is at the edge of the maze, then movement outside the maze bounds is considered a wall, ie. if
-        there is a wall at north of (0,0) it returns true.
-        Args:
-            position (tuple): reference position to check a direction with
-            direction (Direction): direction to check from the position
-        Returns:
-            boolean: True if there is wall at the immediate direction or the immediate  position in that direction is out
-                     of the maze. False otherwise.
-        """
-        x, y = position
-        rows, cols = self.__maze.shape
-
-        return (direction == Direction.North and (
-                (x - 1 >= 0 and self.__maze[x - 1, y] == MazeCellType.WALL.value) or (x - 1 < 0))
-                ) or (
-                direction == Direction.South and (
-                       (x + 1 < rows and self.__maze[x + 1, y] == MazeCellType.WALL.value) or (x + 1 >= rows))
-               ) or (
-                direction == Direction.West and (
-                       (y - 1 >= 0 and self.__maze[x, y - 1] == MazeCellType.WALL.value) or (y - 1 < 0))
-               ) or (
-                direction == Direction.East and (
-                       (y + 1 < cols and self.__maze[x, y + 1] == MazeCellType.WALL.value) or (y + 1 >= cols)))
-
-    def __is_robot_at(self, position: tuple, direction: Direction, state: RobotRebootState):
-        """Determines if there is an immediate robot in the direction of a position,
-        Args:
-            position (tuple): reference position to check a direction with
-            direction (Direction): direction to check from the position
-            state (State): current state that is checking
-        Returns:
-            boolean: True if there is wall at the immediate direction or the immediate  position in that direction is out
-                     of the maze. False otherwise.
-        """
-        x, y = position
-        rows, cols = self.__maze.shape
-
-        return (direction == Direction.North and x - 2 >= 0 and state.is_robot_on((x - 2, y))) or \
-               (direction == Direction.South and x + 2 < rows and state.is_robot_on((x + 2, y))) or \
-               (direction == Direction.West and y - 2 >= 0 and state.is_robot_on((x, y - 2))) or \
-               (direction == Direction.East and y + 1 < cols and state.is_robot_on((x, y + 2)))
