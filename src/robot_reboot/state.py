@@ -15,7 +15,7 @@ class RobotRebootState(State):
                                  each index in the list represents a robot
     """
 
-    def __init__(self, game, robots_positions, sequence_i=0):
+    def __init__(self, game, robots_positions, sequence_i=0, previous_state=None, zobrist_hash_generator=None):
         """ Initializes a robot reboot state
         Args:
             sequence_i       (int):  Moment in time where the state occurred i.e 0  it's how the game started
@@ -32,8 +32,40 @@ class RobotRebootState(State):
         assert_or_throw(len([rp for rp in robots_positions if rp[0] >= game.maze.shape[0] or rp[1] >= game.maze.shape[
             1]]) == 0, RobotsPositionOutOfMazeBoundsException())
         assert_or_throw(len(robots_positions) == game.robots_count, NumberRobotsNotMatchingException())
+
         State.__init__(self, game, sequence_i)
+
         self.__robots_positions = robots_positions
+        self.__previous_state = previous_state
+        self.__zobrist_hash_generator = zobrist_hash_generator
+        self.__zobrist_hash = None
+        self.__previous_states = frozenset()
+
+        if self.__zobrist_hash_generator:
+            self.__zobrist_hash = self.__calculate_zobrist_hash()
+            if self.__previous_state is None:
+                self.__previous_states = frozenset({self.__zobrist_hash})
+            else:
+                self.__previous_states = frozenset(
+                    previous_state.previous_states | {self.__zobrist_hash})
+
+
+    def __calculate_zobrist_hash(self):
+        if self.__zobrist_hash_generator:
+            zobrist_hash = self.__zobrist_hash_generator.empty
+            for robot_id in range(self.robots_count):
+                pos = self.robots_positions[robot_id]
+                zobrist_hash ^= self.__zobrist_hash_generator.get_value(pos, robot_id)
+            return zobrist_hash
+        return None
+
+    @property
+    def zobrist_hash(self):
+        return self.__zobrist_hash
+
+    @property
+    def previous_states(self):
+        return self.__previous_states
 
     @property
     def robots_positions(self):

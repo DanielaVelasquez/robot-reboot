@@ -23,11 +23,11 @@ class ClassicRobotRebootZobristHash(ZobristHash):
         """
         return 0
 
-    def get_value(self, row, col, robot_id):
+    def get_value(self, pos, robot_id):
         """
         Hash with (maze_coordinates, robot_id) = code
         """
-        return self.__values.get(((row, col), robot_id))
+        return self.__values.get((pos, robot_id))
 
     def __init__(self):
         self.__values = {

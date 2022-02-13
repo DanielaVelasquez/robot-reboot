@@ -6,6 +6,7 @@ from src.exceptions.game.state import InvalidStateSequence
 from src.exceptions.robot_reboot.state import EmptyRobotsPositionException, InvalidRobotsPositionException, \
     RobotsPositionOutOfMazeBoundsException, NumberRobotsNotMatchingException, InvalidRobotsList, \
     RobotsPositionsOnWallsPositionsExceptions
+from src.robot_reboot.classic_robot_reboot_hash import ClassicRobotRebootZobristHash
 from src.robot_reboot.game import RobotRebootGame
 from src.robot_reboot.goal_house import RobotRebootGoalHouse
 from src.robot_reboot.state import RobotRebootState
@@ -76,19 +77,40 @@ class TestRobotRebootState(unittest.TestCase):
         s = RobotRebootState(get_game(), [(0, 2), (0, 0)])
         self.assertEqual(2, s.robots_count)
 
-    def assert_robot(self, robots_positions, matrix, robot_id):
-        x, y = robots_positions[robot_id]
-        robot_pos = np.argwhere(matrix[:, :, robot_id * 2 + 1] == RobotRebootState.ROBOT_IN_CELL)
-        self.assertEqual(robot_pos.shape, (1, 2), f'There is more than one robot in the layer for robot {robot_id}')
-        self.assertEqual(robot_pos[0, 0], x, f'Robot {robot_id} is not in the right x position')
-        self.assertEqual(robot_pos[0, 1], y, f'Robot {robot_id} is not in the right y position')
+    def test_init_with_zobrist_generator_same_zobrist_hash_with_robots_same_position(self):
+        game_state_1 = RobotRebootState(get_game(size=31, n_robots=4), [(0, 2), (4, 4), (26, 26), (26, 0)],
+                                        zobrist_hash_generator=ClassicRobotRebootZobristHash())
+        game_state_2 = RobotRebootState(get_game(size=31, n_robots=4), [(0, 2), (4, 4), (26, 26), (26, 0)],
+                                        zobrist_hash_generator=ClassicRobotRebootZobristHash())
 
-    def assert_empty_houses(self, robot_id, matrix):
-        rows, cols, layers = matrix.shape
-        np.testing.assert_equal(np.zeros((rows, cols)), matrix[:, :, (robot_id + 1) * 2],
-                                f'Robot {robot_id} house  should be empty')
+        zobrist_hash_1 = game_state_1.zobrist_hash
+        zobrist_hash_2 = game_state_2.zobrist_hash
+        self.assertIsNotNone(zobrist_hash_1)
+        self.assertEqual(zobrist_hash_1, zobrist_hash_2)
 
-    def assert_house(self, house, matrix):
-        x, y = house.house
-        self.assertEqual(matrix[x, y, (house.robot_id + 1) * 2], RobotRebootState.ROBOT_IN_CELL,
-                         f"House for robot {house.robot_id} not in the correct layer")
+    def test_init_with_zobrist_generator_diff_zobrist_hash_with_robots_diff_position(self):
+        game_state_1 = RobotRebootState(get_game(size=31, n_robots=4), [(0, 2), (4, 4), (26, 26), (26, 0)],
+                                        zobrist_hash_generator=ClassicRobotRebootZobristHash())
+        game_state_2 = RobotRebootState(get_game(size=31, n_robots=4), [(0, 0), (4, 4), (26, 26), (26, 0)],
+                                        zobrist_hash_generator=ClassicRobotRebootZobristHash())
+        zobrist_hash_1 = game_state_1.zobrist_hash
+        zobrist_hash_2 = game_state_2.zobrist_hash
+        self.assertIsNotNone(zobrist_hash_1)
+        self.assertIsNotNone(zobrist_hash_2)
+        self.assertNotEqual(game_state_1.zobrist_hash, game_state_2.zobrist_hash)
+
+    def test_previous_states(self):
+        game_state_1 = RobotRebootState(get_game(size=31, n_robots=4), [(0, 2), (4, 4), (26, 26), (26, 0)],
+                                        zobrist_hash_generator=ClassicRobotRebootZobristHash())
+        game_state_2 = RobotRebootState(get_game(size=31, n_robots=4), [(0, 0), (4, 4), (26, 26), (26, 0)],
+                                        zobrist_hash_generator=ClassicRobotRebootZobristHash(), previous_state= game_state_1)
+        game_state_3 = RobotRebootState(get_game(size=31, n_robots=4), [(0, 0), (4, 2), (28, 26), (30, 0)],
+                                        zobrist_hash_generator=ClassicRobotRebootZobristHash(),
+                                        previous_state=game_state_2)
+
+        zobrist_hash_1 = game_state_1.zobrist_hash
+        zobrist_hash_2 = game_state_2.zobrist_hash
+        zobrist_hash_3 = game_state_3.zobrist_hash
+        self.assertTrue(zobrist_hash_1 in game_state_3.previous_states)
+        self.assertTrue(zobrist_hash_2 in game_state_3.previous_states)
+        self.assertTrue(zobrist_hash_3 in game_state_3.previous_states)

@@ -21,7 +21,7 @@ class TestClassicRobotRebootZobristHash(unittest.TestCase):
         for r in range(0, 31, 2):
             for c in range(0, 31, 2):
                 for robot in range(4):
-                    value = zobrist_hash.get_value(r, c, robot)
+                    value = zobrist_hash.get_value((r, c), robot)
                     if value is None:
                         self.fail("Not value found for robot "+str(robot) + " at position "+ str((r, c)))
 
@@ -30,7 +30,7 @@ class TestClassicRobotRebootZobristHash(unittest.TestCase):
         for r in range(1, 31, 2):
             for c in range(1, 31, 2):
                 for robot in range(4):
-                    value = zobrist_hash.get_value(r, c, robot)
+                    value = zobrist_hash.get_value((r, c), robot)
                     if value is not None:
                         self.fail("Value found for robot "+str(robot) + " at invalid position "+ str((r, c)))
 
