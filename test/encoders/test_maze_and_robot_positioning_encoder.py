@@ -5,10 +5,19 @@ import numpy as np
 from src.encoders.maze_and_robot_positioning_encoder import MazeAndRobotPositioningEncoder
 from src.robot_reboot.action import RobotRebootAction
 from src.robot_reboot.direction import Direction
+from src.robot_reboot.game import RobotRebootGame
+from src.robot_reboot.goal_house import RobotRebootGoalHouse
 from src.robot_reboot.state import RobotRebootState
 from test.robot_reboot.util import get_robot_reboot_game
 
 POSITIONING_ENCODER_NAME = 'maze-and-robot-positioning-encoder'
+
+
+def get_matrix_with_1s_in_positions(cols, rows, positions):
+    robot_position_layer = np.zeros((rows, cols))
+    for x, y in positions:
+        robot_position_layer[x, y] = 1
+    return robot_position_layer
 
 
 class TestMazeAndRobotPositioningEncoder(unittest.TestCase):
@@ -20,24 +29,50 @@ class TestMazeAndRobotPositioningEncoder(unittest.TestCase):
         encoder = MazeAndRobotPositioningEncoder(get_robot_reboot_game())
         self.assertEqual((31, 31, 13), encoder.shape())
 
-    # def test_encode(self):
-    #     np.random.seed(26)
-    #     encoder = MazeAndRobotPositioningEncoder(get_robot_reboot_game())
-    #     game, game_state, quadrants_ids = RobotRebootFactory().create(31, locate_robot_close_goal=True, max_movements=4)
-    #     # Robot 2 needs to get home.
-    #     matrix = encoder.encode(game_state)
-    #     np.testing.assert_equal(matrix[:, :, 0], game.maze)
-    #     self.__assert_robot(game_state.robots_positions, matrix, 0)
-    #     self.__assert_empty_houses(0, matrix)
-    #
-    #     self.__assert_robot(game_state.robots_positions, matrix, 1)
-    #     self.__assert_empty_houses(1, matrix)
-    #
-    #     self.__assert_robot(game_state.robots_positions, matrix, 2)
-    #     self.assert_house(game.goal_house, matrix)
-    #
-    #     self.__assert_robot(game_state.robots_positions, matrix, 3)
-    #     self.__assert_empty_houses(3, matrix)
+    def test_encode(self):
+        goal_house_pos = (0, 0)
+        house = RobotRebootGoalHouse(1, goal_house_pos)
+        maze = np.array([[0, 1, 0, 0, 0],
+                         [0, 0, 0, 1, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 1, 0, 0, 0],
+                         [0, 0, 0, 0, 0]
+                         ])
+        game = RobotRebootGame(4, maze, house)
+        robot_1 = (2, 2)
+        robot_2 = (4, 0)
+        robot_3 = (4, 2)
+        robot_4 = (4, 4)
+        game_state = RobotRebootState(game, [robot_1, robot_2, robot_3, robot_4])
+        encoder = MazeAndRobotPositioningEncoder(game)
+        encoded_state = encoder.encode(game_state)
+        self.assertEqual((5, 5, 13), encoded_state.shape)
+        # First layer is the maze
+        np.testing.assert_equal(encoded_state[:, :, 0], maze)
+        #Robots layers
+        self.__assert_robot_layers(encoded_state[:, :, 1:4], robot_1, [(0, 2), (2, 0), (2, 4)])
+        self.__assert_robot_layers(encoded_state[:, :, 4:7], robot_2, [(0, 0)], goal_house_pos)
+        self.__assert_robot_layers(encoded_state[:, :, 7:10], robot_3, [])
+        self.__assert_robot_layers(encoded_state[:, :, 10:], robot_4, [(0, 4)])
+
+    def __assert_robot_layers(self, robot_encoded_layers, robot_position, robot_future_positions_list,
+                              robot_house_position=None):
+        rows, cols, layers = robot_encoded_layers.shape
+        x, y = robot_position
+        # Robot position layer
+        robot_position_layer = get_matrix_with_1s_in_positions(cols, rows, [(x, y)])
+        np.testing.assert_equal(robot_position_layer, robot_encoded_layers[:, :, 0])
+        # Robot house layer
+        if robot_house_position:
+            robot_house_layer = get_matrix_with_1s_in_positions(cols, rows, [robot_house_position])
+        else:
+            robot_house_layer = np.zeros((rows, cols))
+        np.testing.assert_equal(robot_house_layer, robot_encoded_layers[:, :, 1])
+
+        robot_future_positions_layer = get_matrix_with_1s_in_positions(cols, rows, robot_future_positions_list)
+        np.testing.assert_equal(robot_future_positions_layer, robot_encoded_layers[:, :, 2])
+
+        # Robot future moves layer
 
     def test_encode_action(self):
         n_robots = 4
@@ -54,20 +89,3 @@ class TestMazeAndRobotPositioningEncoder(unittest.TestCase):
         for i in range(len(actions)):
             action = actions[i]
             self.assertEqual(action, encoder.decode_action_index(i))
-
-    def __assert_robot(self, robots_positions, matrix, robot_id):
-        x, y = robots_positions[robot_id]
-        robot_pos = np.argwhere(matrix[:, :, robot_id * 2 + 1] == RobotRebootState.ROBOT_IN_CELL)
-        self.assertEqual(robot_pos.shape, (1, 2), f'There is more than one robot in the layer for robot {robot_id}')
-        self.assertEqual(robot_pos[0, 0], x, f'Robot {robot_id} is not in the right x position')
-        self.assertEqual(robot_pos[0, 1], y, f'Robot {robot_id} is not in the right y position')
-
-    def __assert_empty_houses(self, robot_id, matrix):
-        rows, cols, layers = matrix.shape
-        np.testing.assert_equal(np.zeros((rows, cols)), matrix[:, :, (robot_id + 1) * 2],
-                                f'Robot {robot_id} house  should be empty')
-
-    def assert_house(self, house, matrix):
-        x, y = house.house
-        self.assertEqual(matrix[x, y, (house.robot_id + 1) * 2], RobotRebootState.ROBOT_IN_CELL,
-                         f"House for robot {house.robot_id} not in the correct layer")
