@@ -10,23 +10,9 @@ from src.view.base import simulate_game
 
 
 def main():
-    # np.random.seed(26)
-    # factory = RobotRebootFactory()
-    # game, game_state, selected_quadrants = factory.create(31, locate_robot_close_goal=True, max_movements=1)
-    goal_house_pos = (0, 0)
-    house = RobotRebootGoalHouse(1, goal_house_pos)
-    maze = np.array([[0, 1, 0, 0, 0],
-                     [0, 0, 0, 1, 0],
-                     [0, 0, 0, 0, 0],
-                     [0, 1, 0, 0, 0],
-                     [0, 0, 0, 0, 0]
-                     ])
-    game = RobotRebootGame(4, maze, house)
-    robot_1 = (2, 2)
-    robot_2 = (4, 0)
-    robot_3 = (4, 2)
-    robot_4 = (4, 4)
-    game_state = RobotRebootState(game, [robot_1, robot_2, robot_3, robot_4])
+    np.random.seed(26)
+    factory = RobotRebootFactory()
+    game, game_state, selected_quadrants = factory.create(31, locate_robot_close_goal=True, max_movements=1)
     print(game_state.robots_positions)
     print(game.goal_house)
     human_agent = HumanAgent()

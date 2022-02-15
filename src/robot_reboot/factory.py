@@ -13,7 +13,7 @@ class RobotRebootFactory:
     """Factory to create Robot reboot games
     """
 
-    def create(self, size, locate_robot_close_goal=False, max_movements=5):
+    def create(self, size, locate_robot_close_goal=False, max_movements=5, zobrist_hash_generator=None):
         """Creates a robot reboot game and its initial state.
         The maze is randomly created joining different quadrants and the robots are randomly located in the maze
         avoiding the game goal house for all the robots.
@@ -63,7 +63,7 @@ class RobotRebootFactory:
                 i += 1
             new_pos = s.robots_positions[robot]
             robots_positions[robot] = new_pos
-        state = RobotRebootState(game, robots_positions)
+        state = RobotRebootState(game, robots_positions, zobrist_hash_generator=zobrist_hash_generator)
         return game, state, index[0:4]
 
     def get_game_configurations(self, size):
