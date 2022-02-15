@@ -21,6 +21,7 @@ class RobotRebootFactory:
             size (int): size of the maze (number of rows and cols)
             locate_robot_close_goal (boolean): determine if the robot reaching its house should be located closer to its house
             max_movements: max number of movements away from its house if the robot is reallocated
+            zobrist_hash_generator: if provided only unique states are allowed through out the game
         Returns:
             game: Robot reboot game
             state: Initial robot reboot game state
