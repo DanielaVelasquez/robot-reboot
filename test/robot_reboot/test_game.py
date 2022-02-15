@@ -858,7 +858,7 @@ class TestGame(unittest.TestCase):
                          ])
         game = RobotRebootGame(1, maze, house)
         s = RobotRebootState(game, [(2, 2)])
-        valid_actions = game.get_valid_actions(s)
+        valid_actions = game.get_valid_actions_next_state_map(s)
         self.assertEqual(len(game.actions) - 1, len(valid_actions),
                          "All actions must be present except for the action that moves robot 0 in north direction")
         self.assertEqual([], [a for a in valid_actions if a.direction == Direction.North and a.robot_id == 0])
@@ -873,7 +873,7 @@ class TestGame(unittest.TestCase):
                          ])
         game = RobotRebootGame(1, maze, house)
         s = RobotRebootState(game, [(2, 2)])
-        valid_actions = game.get_valid_actions(s)
+        valid_actions = game.get_valid_actions_next_state_map(s)
         self.assertEqual(len(game.actions) - 1, len(valid_actions),
                          "All actions must be present except for the action that moves robot =0 in north direction")
         self.assertEqual([], [a for a in valid_actions if a.direction == Direction.South and a.robot_id == 0])
@@ -888,7 +888,7 @@ class TestGame(unittest.TestCase):
                          ])
         game = RobotRebootGame(1, maze, house)
         s = RobotRebootState(game, [(2, 2)])
-        valid_actions = game.get_valid_actions(s)
+        valid_actions = game.get_valid_actions_next_state_map(s)
         self.assertEqual(len(game.actions) - 1, len(valid_actions),
                          "All actions must be present except for the action that moves robot =0 in north direction")
         self.assertEqual([], [a for a in valid_actions if a.direction == Direction.West and a.robot_id == 0])
@@ -903,7 +903,7 @@ class TestGame(unittest.TestCase):
                          ])
         game = RobotRebootGame(1, maze, house)
         s = RobotRebootState(game, [(2, 2)])
-        valid_actions = game.get_valid_actions(s)
+        valid_actions = game.get_valid_actions_next_state_map(s)
         self.assertEqual(len(game.actions) - 1, len(valid_actions),
                          "All actions must be present except for the action that moves robot =0 in north direction")
         self.assertEqual([], [a for a in valid_actions if a.direction == Direction.East and a.robot_id == 0])
@@ -918,7 +918,7 @@ class TestGame(unittest.TestCase):
                          ])
         game = RobotRebootGame(1, maze, house)
         s = RobotRebootState(game, [(2, 2)])
-        self.assertEqual({}, game.get_valid_actions(s))
+        self.assertEqual({}, game.get_valid_actions_next_state_map(s))
 
     def test_get_valid_actions_empty_when_maze_has_one_cell(self):
         house = RobotRebootGoalHouse(0, (0, 0))
@@ -926,7 +926,7 @@ class TestGame(unittest.TestCase):
                          ])
         game = RobotRebootGame(1, maze, house)
         s = RobotRebootState(game, [(0, 0)])
-        self.assertEqual({}, game.get_valid_actions(s),
+        self.assertEqual({}, game.get_valid_actions_next_state_map(s),
                          "No valid actions should be retrieve, the robot doesnt' have cells to move")
 
     def test_get_valid_actions_with_two_robots(self):
@@ -939,7 +939,7 @@ class TestGame(unittest.TestCase):
                          ])
         game = RobotRebootGame(2, maze, house)
         s = RobotRebootState(game, [(2, 2), (0, 0)])
-        valid_actions = game.get_valid_actions(s)
+        valid_actions = game.get_valid_actions_next_state_map(s)
         not_valid_directions = {
             0: [],
             1: [Direction.South, Direction.West, Direction.North],
@@ -957,7 +957,7 @@ class TestGame(unittest.TestCase):
                          ])
         game = RobotRebootGame(5, maze, house)
         s = RobotRebootState(game, [(2, 2), (0, 2), (2, 0), (2, 4), (4, 2)])
-        valid_actions = game.get_valid_actions(s)
+        valid_actions = game.get_valid_actions_next_state_map(s)
         not_valid_directions = {
             0: [Direction.North, Direction.South, Direction.East, Direction.West],
             1: [Direction.North, Direction.South],
@@ -980,7 +980,7 @@ class TestGame(unittest.TestCase):
         game_state_1 = RobotRebootState(game, [(0, 0), (2, 2), (2, 0), (2, 4)],
                                         zobrist_hash_generator=ClassicRobotRebootZobristHash())
         game_state_2 = game.apply(RobotRebootAction(0, Direction.East), game_state_1)
-        valid_actions = game.get_valid_actions(game_state_2)
+        valid_actions = game.get_valid_actions_next_state_map(game_state_2)
         # Moving robot 0 to West should not be valid because it would return to a previous state 1
         self.assertFalse(RobotRebootAction(0, Direction.West) in valid_actions)
 
@@ -996,7 +996,7 @@ class TestGame(unittest.TestCase):
         game_state_1 = RobotRebootState(game, [(0, 0), (2, 2), (2, 0), (2, 4)],
                                         zobrist_hash_generator=None)
         game_state_2 = game.apply(RobotRebootAction(0, Direction.East), game_state_1)
-        valid_actions = game.get_valid_actions(game_state_2)
+        valid_actions = game.get_valid_actions_next_state_map(game_state_2)
         # Moving robot 0 to West should not be valid because it would return to a previous state 1
         self.assertTrue(RobotRebootAction(0, Direction.West) in valid_actions)
 

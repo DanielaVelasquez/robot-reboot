@@ -61,7 +61,7 @@ class MonteCarloTreeSearch(ABC):
         p = np.zeros(len(self._game.actions), dtype=float)
         for i in range(len(self._game.actions)):
             a = self._game.actions[i]
-            if a in self._game.get_valid_actions(state):
+            if a in self._game.get_valid_actions_next_state_map(state):
                 next_state = self._game.apply(a, state)
                 p[i] = self._simulations(next_state, self._playouts)
         return p

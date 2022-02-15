@@ -151,7 +151,7 @@ class RobotRebootGame(Game):
         return RobotRebootState(self, robots_positions, state.sequence_i + 1, previous_state=state,
                                 zobrist_hash_generator=state.zobrist_hash_generator)
 
-    def get_valid_actions(self, state: RobotRebootState):
+    def get_valid_actions_next_state_map(self, state: RobotRebootState):
         valid_actions = {}
         for action in self.actions:
             next_state = self.apply(action, state)

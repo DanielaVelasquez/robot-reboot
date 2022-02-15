@@ -59,7 +59,7 @@ class FakeGame(Game):
         """
         return FakeState(self, action.value, state.sequence_i + 1)
 
-    def get_valid_actions(self, state: FakeState):
+    def get_valid_actions_next_state_map(self, state: FakeState):
         if self.valid_state_actions_dict is not None and state.value in self.valid_state_actions_dict:
             return self.valid_state_actions_dict[state.value]
         return self.actions

@@ -64,11 +64,13 @@ class Game(ABC):
         pass
 
     @abstractmethod
-    def get_valid_actions(self, state: State):
-        """Based on a state finds the actions that would produce a change if applied
+    def get_valid_actions_next_state_map(self, state: State):
+        """Based on a state finds the actions that would produce a change if applied and what is the next
+        state produced by that action.
         Args:
             state (State): state to check which actions will produce a different state
         Returns:
-            valid_actions (list): list of actions that produce a changed if applied
+            valid_actions (map): key: valid action to perform and value: next state after applying the action on the
+                                 given state
         """
         pass

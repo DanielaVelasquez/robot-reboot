@@ -25,7 +25,7 @@ class AlphaZeroTreeNode:
         self.last_action = last_action
         self.total_visit_count = 1
         self.branches = {}
-        valid_actions_to_state_map = state.get_valid_actions()
+        valid_actions_to_state_map = state.get_valid_actions_next_state_map()
         for action in valid_actions_to_state_map:
             p = priors[action]
             next_state = valid_actions_to_state_map[action]

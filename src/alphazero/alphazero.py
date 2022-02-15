@@ -39,7 +39,7 @@ class AlphaZero(MonteCarloTreeSearch, Model):
         return self.__heuristic_fn
 
     def _playout(self, state: State, depth=1):
-        valid_actions = self._game.get_valid_actions(state)
+        valid_actions = self._game.get_valid_actions_next_state_map(state)
         if self._game.is_over(state) or depth >= self.__max_depth or len(valid_actions) == 0:
             return self._game.get_value(state)
         v, p = self.__game_player.predict(state)

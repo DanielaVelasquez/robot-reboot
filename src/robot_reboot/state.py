@@ -81,8 +81,8 @@ class RobotRebootState(State):
     def is_robot_on(self, pos):
         return len([r for r in self.__robots_positions if r == pos]) != 0
 
-    def get_valid_actions(self):
-        return self.game.get_valid_actions(self)
+    def get_valid_actions_next_state_map(self):
+        return self.game.get_valid_actions_next_state_map(self)
 
     def apply_action(self, action):
         return self.game.apply(action, self)

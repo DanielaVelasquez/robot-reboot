@@ -36,7 +36,7 @@ class MazeAndRobotPositioningEncoder(Encoder):
         return encoded_state
 
     def __encode_robot_future_positions(self, encoded_state, game_state):
-        valid_actions = game_state.get_valid_actions()
+        valid_actions = game_state.get_valid_actions_next_state_map()
         for action in valid_actions:
             next_state = valid_actions[action]
             next_robot_positions = next_state.robots_positions

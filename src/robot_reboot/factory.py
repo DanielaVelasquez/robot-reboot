@@ -57,7 +57,7 @@ class RobotRebootFactory:
             s = RobotRebootState(game, robots_positions_2)
             i = 0
             while i < max_movements or game.is_over(s):
-                valid_actions = [a for a in game.get_valid_actions(s) if a.robot_id == robot]
+                valid_actions = [a for a in game.get_valid_actions_next_state_map(s) if a.robot_id == robot]
                 action = valid_actions[np.random.randint(0, len(valid_actions))]
                 s = game.apply(action, s)
                 i += 1
