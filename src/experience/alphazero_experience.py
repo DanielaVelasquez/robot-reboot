@@ -33,6 +33,13 @@ class AlphaZeroExperienceCollector:
         self._current_episode_states = []
         self._current_episode_visit_counts = []
 
+    def to_buffer(self):
+        return AlphaZeroExperienceBuffer(
+            states=np.array(self.states),
+            visit_counts=np.array(self.visit_counts),
+            rewards=np.array(self.rewards)
+        )
+
 
 class AlphaZeroExperienceBuffer:
     def __init__(self, states, visit_counts, rewards):

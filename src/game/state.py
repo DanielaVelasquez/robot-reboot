@@ -36,3 +36,15 @@ class State(ABC):
         """" Creates a string representation of a state based on the game it belongs to
         """
         pass
+
+    @abstractmethod
+    def get_valid_actions_next_state_map(self):
+        pass
+
+    @abstractmethod
+    def apply(self, action):
+        pass
+
+    @abstractmethod
+    def get_value(self):
+        pass

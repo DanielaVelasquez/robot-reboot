@@ -2,11 +2,8 @@ import numpy as np
 
 from src.agent.human import HumanAgent
 from src.robot_reboot.factory import RobotRebootFactory
-from src.robot_reboot.game import RobotRebootGame
-from src.robot_reboot.goal_house import RobotRebootGoalHouse
-from src.robot_reboot.state import RobotRebootState
 from src.ui.robot_reboot_game_view import RobotRebootGameView
-from src.view.base import simulate_game
+from src.view.base import simulate_game_with_view
 
 
 def main():
@@ -17,7 +14,7 @@ def main():
     print(game.goal_house)
     human_agent = HumanAgent()
     rrView = RobotRebootGameView(game)
-    simulate_game(human_agent, game, game_state, rrView)
+    simulate_game_with_view(human_agent, game, game_state, rrView)
 
 
 if __name__ == "__main__":

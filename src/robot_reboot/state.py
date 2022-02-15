@@ -84,7 +84,7 @@ class RobotRebootState(State):
     def get_valid_actions_next_state_map(self):
         return self.game.get_valid_actions_next_state_map(self)
 
-    def apply_action(self, action):
+    def apply(self, action):
         return self.game.apply(action, self)
 
     def get_value(self):
