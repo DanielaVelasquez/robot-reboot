@@ -69,28 +69,28 @@ class AlphaZeroTreeNode:
 
 class AlphaZeroAgent(Agent):
 
-    def __init__(self, model, encoder, rounds_per_action=1600, c=2.0):
+    def __init__(self, model, encoder, rounds_per_action=1600, c=2.0, collector=None):
         self.model = model
         self.encoder = encoder
 
-        self.collector = None
+        self.collector = collector
 
         self.num_rounds = rounds_per_action
         self.c = c
 
     def select_action(self, game_state):
 
-        root = self.create_node(game_state)
+        root = self.__create_node(game_state)
 
         for i in range(self.num_rounds):
             node = root
-            next_action = self.select_branch(node)
+            next_action = self.__select_branch(node)
             while node.has_child(next_action):
                 node = node.get_child(next_action)
-                next_action = self.select_branch(node)
+                next_action = self.__select_branch(node)
 
             new_state = node.next_state(next_action)
-            child_node = self.create_node(
+            child_node = self.__create_node(
                 new_state, action=next_action, parent=node)
 
             action = next_action
@@ -113,10 +113,7 @@ class AlphaZeroAgent(Agent):
 
         return max(root.actions(), key=root.visit_count)
 
-    def set_collector(self, collector):
-        self.collector = collector
-
-    def select_branch(self, node):
+    def __select_branch(self, node):
         total_n = node.total_visit_count
 
         def score_branch(action):
@@ -127,7 +124,7 @@ class AlphaZeroAgent(Agent):
 
         return max(node.actions(), key=score_branch)
 
-    def create_node(self, game_state, action=None, parent=None):
+    def __create_node(self, game_state, action=None, parent=None):
         state_tensor = self.encoder.encode(game_state)
         model_input = np.array([state_tensor])
         priors, values = self.model.predict(model_input)

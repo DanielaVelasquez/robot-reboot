@@ -87,5 +87,8 @@ class RobotRebootState(State):
     def apply_action(self, action):
         return self.game.apply(action, self)
 
+    def get_value(self):
+        return self.game.get_value(self)
+
     def __str__(self):
         return f'{self.__robots_positions}'

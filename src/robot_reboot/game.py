@@ -85,9 +85,7 @@ class RobotRebootGame(Game):
         return self.__goal_house
 
     def get_value(self, state: RobotRebootState):
-        if state.robots_positions[self.__goal_house.robot_id] == self.__goal_house.house:
-            return 1
-        return 0
+        return 1 if state.robots_positions[self.__goal_house.robot_id] == self.__goal_house.house else 0
 
     def is_over(self, state: RobotRebootState):
         return state.robots_positions[self.__goal_house.robot_id] == self.__goal_house.house

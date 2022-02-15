@@ -47,6 +47,9 @@ class MazeAndTwoPlanesPerRobotEncoder(Encoder):
         planes = 1 + self.__n_robots * 2
         return self.__maze_size_rows, self.__maze_size_cols, planes
 
+    def num_actions(self):
+        return len(self.__actions_list)
+
 
 class MazeAndTwoPlanesPerRobotBuilder:
     def __call__(self, game):

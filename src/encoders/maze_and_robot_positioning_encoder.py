@@ -17,6 +17,8 @@ class MazeAndRobotPositioningEncoder(Encoder):
         If the robot goal house doesn't exists, the layer is full of zeros
         """
 
+
+
     def __init__(self, game):
         self.__n_robots = game.robots_count
         self.__maze_size_rows, self.__maze_size_cols = game.maze_shape
@@ -63,6 +65,9 @@ class MazeAndRobotPositioningEncoder(Encoder):
     def shape(self):
         planes = 1 + self.__n_robots * 3
         return self.__maze_size_rows, self.__maze_size_cols, planes
+
+    def num_actions(self):
+        return len(self.__actions_list)
 
 
 class MazeAndRobotPositioningEncoderBuilder:
