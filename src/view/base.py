@@ -1,4 +1,4 @@
-def view_play(agent, game, game_state, view):
+def simulate_game(agent, game, game_state, view):
     while not game.is_over(game_state):
         view.display(game_state)
         action = agent.select_action(game_state)

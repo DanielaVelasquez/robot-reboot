@@ -10,10 +10,11 @@ from src.agent.base import Agent
 
 
 class Branch:
-    def __init__(self, prior):
+    def __init__(self, prior, next_state):
         self.prior = prior
         self.visit_count = 0
         self.total_value = 0.0
+        self.next_state = next_state
 
 
 class AlphaZeroTreeNode:
@@ -24,9 +25,11 @@ class AlphaZeroTreeNode:
         self.last_action = last_action
         self.total_visit_count = 1
         self.branches = {}
-        for action, p in priors.items():
-            if state.is_valid_action(action):
-                self.branches[action] = Branch(p)
+        valid_actions_to_state_map = state.get_valid_actions()
+        for action in valid_actions_to_state_map:
+            p = priors[action]
+            next_state = valid_actions_to_state_map[action]
+            self.branches[action] = Branch(p, next_state)
         self.children = {}
 
     def actions(self):
@@ -54,6 +57,9 @@ class AlphaZeroTreeNode:
 
     def prior(self, action):
         return self.branches[action].prior
+
+    def next_state(self, action):
+        return self.branches[action].next_state
 
     def visit_count(self, action):
         if action in self.branches:
@@ -83,7 +89,7 @@ class AlphaZeroAgent(Agent):
                 node = node.get_child(next_action)
                 next_action = self.select_branch(node)
 
-            new_state = node.state.apply_action(next_action)
+            new_state = node.next_state(next_action)
             child_node = self.create_node(
                 new_state, action=next_action, parent=node)
 
@@ -93,7 +99,7 @@ class AlphaZeroAgent(Agent):
                 node.record_visit(action, value)
                 action = node.last_action
                 node = node.parent
-                value = -1 * value
+                # value = -1 * value
 
         if self.collector is not None:
             root_state_tensor = self.encoder.encode(game_state)
