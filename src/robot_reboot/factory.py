@@ -13,7 +13,8 @@ class RobotRebootFactory:
     """Factory to create Robot reboot games
     """
 
-    def create(self, size, locate_robot_close_goal=False, max_movements=5, zobrist_hash_generator=None):
+    def create(self, size, locate_robot_close_goal=False, max_movements=5, zobrist_hash_generator=None,
+               move_all_robots=False):
         """Creates a robot reboot game and its initial state.
         The maze is randomly created joining different quadrants and the robots are randomly located in the maze
         avoiding the game goal house for all the robots.
@@ -49,23 +50,38 @@ class RobotRebootFactory:
         pos = (x, y)
         goal = RobotRebootGoalHouse(selected_house_goal.robot_id, pos)
         game = RobotRebootGame(n_robots, maze, goal)
+        robots_positions = self.move_robots_backwards_from_goal(game, goal, locate_robot_close_goal, max_movements,
+                                                                n_robots, pos, size, zobrist_hash_generator, move_all_robots=move_all_robots)
+        state = RobotRebootState(game, robots_positions, zobrist_hash_generator=zobrist_hash_generator)
+        return game, state, index[0:4]
+
+    def move_robots_backwards_from_goal(self, game, goal, locate_robot_close_goal, max_movements, n_robots, pos, size,
+                                        zobrist_hash_generator, move_all_robots=False):
         robots_positions = list(generate_positions_except(n_robots, size, pos))
         if locate_robot_close_goal:
             robot = goal.robot_id
             goal_pos = goal.house
             robots_positions_2 = robots_positions.copy()
             robots_positions_2[robot] = goal_pos
-            s = RobotRebootState(game, robots_positions_2)
+            s = RobotRebootState(game, robots_positions_2, zobrist_hash_generator=zobrist_hash_generator)
             i = 0
             while i < max_movements or game.is_over(s):
-                valid_actions = [a for a in game.get_valid_actions_next_state_map(s) if a.robot_id == robot]
-                action = valid_actions[np.random.randint(0, len(valid_actions))]
-                s = game.apply(action, s)
-                i += 1
+                valid_actions_next_state_map = game.get_valid_actions_next_state_map(s)
+                if not move_all_robots:
+                    valid_actions = [a for a in valid_actions_next_state_map if a.robot_id == robot]
+                    action = valid_actions[np.random.randint(0, len(valid_actions))]
+                    s = valid_actions_next_state_map[action]
+                    i += 1
+                else:
+                    valid_actions = [a for a in valid_actions_next_state_map]
+                    action = valid_actions[np.random.randint(0, len(valid_actions))]
+                    s = valid_actions_next_state_map[action]
+                    if action.robot_id == robot:
+                        i += 1
+
             new_pos = s.robots_positions[robot]
             robots_positions[robot] = new_pos
-        state = RobotRebootState(game, robots_positions, zobrist_hash_generator=zobrist_hash_generator)
-        return game, state, index[0:4]
+        return robots_positions
 
     def get_game_configurations(self, size):
         """Get all the game configurations for maze size

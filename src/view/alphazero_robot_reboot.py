@@ -1,3 +1,5 @@
+import time
+
 import h5py
 import numpy as np
 from keras.optimizer_v2.gradient_descent import SGD
@@ -5,8 +7,10 @@ from keras.optimizer_v2.gradient_descent import SGD
 from src.agent.alphazero import AlphaZeroAgent
 from src.encoders.maze_and_robot_positioning_encoder import MazeAndRobotPositioningEncoder
 from src.experience.alphazero_experience import AlphaZeroExperienceCollector
+from src.game_simulator.base import simulate_game
 from src.ml.model import get_model_v2
 from src.robot_reboot.classic_robot_reboot_hash import ClassicRobotRebootZobristHash
+from src.robot_reboot.factory import RobotRebootFactory
 from src.robot_reboot.game import RobotRebootGame
 from src.robot_reboot.goal_house import RobotRebootGoalHouse
 from src.robot_reboot.state import RobotRebootState
@@ -53,5 +57,31 @@ def main():
         buffer.serialize(experience_outf)
 
 
+def experiment():
+    np.random.seed(26)
+    factory = RobotRebootFactory()
+    for i in range(30):
+        start = time.time()
+        game, game_state, selected_quadrants = factory.create(31, locate_robot_close_goal=True, max_movements=1,
+                                                          zobrist_hash_generator=ClassicRobotRebootZobristHash(), move_all_robots=True)
+        encoder = MazeAndRobotPositioningEncoder(game)
+        model = get_model_v2(encoder.shape(), len(game.actions))
+        model.compile(
+            SGD(lr=0.01),
+            loss=['categorical_crossentropy', 'mse'])
+        alphazero_agent = AlphaZeroAgent(model, encoder, rounds_per_action=30)
+        collector = AlphaZeroExperienceCollector()
+        final_state = simulate_game(game_state, alphazero_agent, collector, max_actions=100)
+        end = time.time()
+        print(f'Iteration {i}, Time {end - start}, Final state {final_state.get_value()}, sequence {final_state.sequence_i}')
+
+    buffer = collector.to_buffer()
+    with h5py.File('experience_30_actions_per_round_30_games.hdf5', 'w') as experience_outf:
+        buffer.serialize(experience_outf)
+
+
+
 if __name__ == "__main__":
-    main()
+    # main()
+
+    experiment()

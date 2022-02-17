@@ -18,3 +18,4 @@ __pycache__/
 
 # Others
 /src/robotenv/
+/training/models/*
