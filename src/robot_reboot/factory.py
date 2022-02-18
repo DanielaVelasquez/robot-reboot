@@ -51,19 +51,19 @@ class RobotRebootFactory:
         goal = RobotRebootGoalHouse(selected_house_goal.robot_id, pos)
         game = RobotRebootGame(n_robots, maze, goal)
         robots_positions = self.move_robots_backwards_from_goal(game, goal, locate_robot_close_goal, max_movements,
-                                                                n_robots, pos, size, zobrist_hash_generator, move_all_robots=move_all_robots)
+                                                                n_robots, pos, size, move_all_robots=move_all_robots)
         state = RobotRebootState(game, robots_positions, zobrist_hash_generator=zobrist_hash_generator)
         return game, state, index[0:4]
 
     def move_robots_backwards_from_goal(self, game, goal, locate_robot_close_goal, max_movements, n_robots, pos, size,
-                                        zobrist_hash_generator, move_all_robots=False):
+                                        move_all_robots=False):
         robots_positions = list(generate_positions_except(n_robots, size, pos))
         if locate_robot_close_goal:
             robot = goal.robot_id
             goal_pos = goal.house
             robots_positions_2 = robots_positions.copy()
             robots_positions_2[robot] = goal_pos
-            s = RobotRebootState(game, robots_positions_2, zobrist_hash_generator=zobrist_hash_generator)
+            s = RobotRebootState(game, robots_positions_2)
             i = 0
             while i < max_movements or game.is_over(s):
                 valid_actions_next_state_map = game.get_valid_actions_next_state_map(s)
