@@ -1,9 +1,11 @@
 import argparse
 
+from keras.optimizer_v2.gradient_descent import SGD
+
 from src.encoders.maze_and_robot_positioning_encoder import MazeAndRobotPositioningEncoder
-from src.robot_reboot.model import get_model_v2
 from src.robot_reboot.classic_robot_reboot_hash import ClassicRobotRebootZobristHash
 from src.robot_reboot.factory import RobotRebootFactory
+from src.robot_reboot.model import get_model_v2
 
 
 def create_model(models_name):
@@ -15,6 +17,9 @@ def create_model(models_name):
                                                           move_all_robots=True)
     encoder = MazeAndRobotPositioningEncoder(game)
     model = get_model_v2(encoder.shape(), len(game.actions))
+    model.compile(
+        SGD(learning_rate=0.01),
+        loss=['categorical_crossentropy', 'mse'])
     model.save(f'models/{models_name}')
 
 
