@@ -43,9 +43,11 @@ def experiment(seed, number_games, rounds_per_action, locate_robot_close_goal, m
         collector = AlphaZeroExperienceCollector()
         final_state = simulate_game(game_state, alphazero_agent, collector, max_actions=max_actions_per_game)
         total_time_seconds = time.time() - start
-        logging.info('Simulation' + str(i + 1) + ' completed')
         value = final_state.get_value()
         total_actions = final_state.sequence_i
+        logging.info('Finished simulation ' + str(i + 1) + '/' + str(number_games) +
+                     '\nValue= ' + str(value) +
+                     '\nTotal actions = ' + str(total_actions))
 
         result = {
             'experiment_id': experiment_id,
@@ -61,11 +63,6 @@ def experiment(seed, number_games, rounds_per_action, locate_robot_close_goal, m
             'total_actions': total_actions,
         }
         results.append(result)
-    logging.info('Saving experience data for experiment' + experiment_id)
-    # buffer = collector.to_buffer()
-    # with h5py.File(f'{experiment_id}-experience.hdf5', 'w') as experience_outf:
-    #     buffer.serialize(experience_outf)
-
     logging.info('Saving results for experiment' + experiment_id)
     df = pd.DataFrame(results)
     df.to_csv(f'{experiment_id}-results.csv')
