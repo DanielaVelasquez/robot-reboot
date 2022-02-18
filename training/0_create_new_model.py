@@ -1,7 +1,7 @@
 import argparse
 
 from src.encoders.maze_and_robot_positioning_encoder import MazeAndRobotPositioningEncoder
-from src.ml.model import get_model_v2
+from src.robot_reboot.model import get_model_v2
 from src.robot_reboot.classic_robot_reboot_hash import ClassicRobotRebootZobristHash
 from src.robot_reboot.factory import RobotRebootFactory
 

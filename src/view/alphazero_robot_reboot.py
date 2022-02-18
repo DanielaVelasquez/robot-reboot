@@ -1,5 +1,3 @@
-import time
-
 import h5py
 import numpy as np
 from keras.optimizer_v2.gradient_descent import SGD
@@ -7,13 +5,9 @@ from keras.optimizer_v2.gradient_descent import SGD
 from src.agent.alphazero import AlphaZeroAgent
 from src.encoders.maze_and_robot_positioning_encoder import MazeAndRobotPositioningEncoder
 from src.experience.alphazero_experience import AlphaZeroExperienceCollector
-from src.game_simulator.base import simulate_game
-from src.ml.model import get_model_v2
+from src.robot_reboot.model import get_model_v2
 from src.robot_reboot.classic_robot_reboot_hash import ClassicRobotRebootZobristHash
 from src.robot_reboot.factory import RobotRebootFactory
-from src.robot_reboot.game import RobotRebootGame
-from src.robot_reboot.goal_house import RobotRebootGoalHouse
-from src.robot_reboot.state import RobotRebootState
 from src.ui.robot_reboot_game_view import RobotRebootGameView
 from src.view.base import simulate_game_with_view
 

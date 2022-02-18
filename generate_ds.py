@@ -7,7 +7,7 @@ import numpy as np
 import tensorflow as tf
 
 from src.robot_reboot.dataset_factory import RobotRebootDataSetFactory
-from src.ml.model import get_model
+from src.robot_reboot.model import get_model
 
 logging.getLogger().setLevel(logging.INFO)
 rows, cols, layers = 31, 31, 9

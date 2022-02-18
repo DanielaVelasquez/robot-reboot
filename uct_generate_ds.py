@@ -6,7 +6,7 @@ import time
 import numpy as np
 import tensorflow as tf
 
-from src.ml.model import get_model
+from src.robot_reboot.model import get_model
 from src.robot_reboot.uct_dataset_factory import RobotRebootUCTDataSetFactory
 
 logging.getLogger().setLevel(logging.INFO)

@@ -2,7 +2,7 @@ import numpy as np
 from keras.optimizer_v2.gradient_descent import SGD
 
 from src.encoders.maze_and_robot_positioning_encoder import MazeAndRobotPositioningEncoder
-from src.ml.model import get_model_v2
+from src.robot_reboot.model import get_model_v2
 from src.robot_reboot.classic_robot_reboot_hash import ClassicRobotRebootZobristHash
 from src.robot_reboot.game import RobotRebootGame
 from src.robot_reboot.goal_house import RobotRebootGoalHouse
