@@ -65,22 +65,24 @@ class RobotRebootFactory:
             robots_positions_2[robot] = goal_pos
             s = RobotRebootState(game, robots_positions_2)
             i = 0
-            while i < max_movements or game.is_over(s):
-                valid_actions_next_state_map = game.get_valid_actions_next_state_map(s)
-                if not move_all_robots:
-                    valid_actions = [a for a in valid_actions_next_state_map if a.robot_id == robot]
-                    action = valid_actions[np.random.randint(0, len(valid_actions))]
-                    s = valid_actions_next_state_map[action]
-                    i += 1
-                else:
-                    valid_actions = [a for a in valid_actions_next_state_map]
-                    action = valid_actions[np.random.randint(0, len(valid_actions))]
-                    s = valid_actions_next_state_map[action]
-                    if action.robot_id == robot:
-                        i += 1
 
-            new_pos = s.robots_positions[robot]
-            robots_positions[robot] = new_pos
+            valid_actions = game.actions
+            if not move_all_robots:
+                valid_actions = [a for a in valid_actions if a.robot_id == robot]
+
+            # while i < max_movements or game.is_over(s):
+            #     action = valid_actions[np.random.randint(0, len(valid_actions))]
+            #     nex_state = game.apply(action, s)
+            #     if s.robots_positions[robot] != nex_state.robots_positions[robot]:
+            #         i += 1
+            #         s = nex_state
+            while i < max_movements or game.is_over(s):
+                valid_actions = [a for a in game.get_valid_actions_next_state_map(s) if a.robot_id == robot]
+                action = valid_actions[np.random.randint(0, len(valid_actions))]
+                s = game.apply(action, s)
+                i += 1
+
+            robots_positions = s.robots_positions
         return robots_positions
 
     def get_game_configurations(self, size):

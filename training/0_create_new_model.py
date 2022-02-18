@@ -27,5 +27,5 @@ if __name__ == '__main__':
         default='model_0',
         help='Models name'
     )
-
-    main()
+    args = parser.parse_args()
+    main(args.model_name)

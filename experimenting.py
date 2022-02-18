@@ -19,6 +19,7 @@ from src.robot_reboot.factory import RobotRebootFactory
 
 logging.getLogger().setLevel(logging.INFO)
 
+
 def experiment(seed, number_games, rounds_per_action, locate_robot_close_goal, max_movements, move_all_robots,
                max_actions_per_game):
     np.random.seed(seed)
@@ -114,8 +115,9 @@ if __name__ == '__main__':
         help='Maximum number of actions one single game can have'
     )
 
-    args = parser.parse_args()
-    locate_robot_close_goal = args.max_movements is not None
-
-    experiment(args.seed, args.number_games, args.rounds_per_action, locate_robot_close_goal, args.max_movements,
-               args.move_all_robots, args.max_actions_per_game)
+    # args = parser.parse_args()
+    # locate_robot_close_goal = args.max_movements is not None
+    #
+    # experiment(args.seed, args.number_games, args.rounds_per_action, locate_robot_close_goal, args.max_movements,
+    #            args.move_all_robots, args.max_actions_per_game)
+    experiment(26, 30, 30, True, 1, False, 100)
