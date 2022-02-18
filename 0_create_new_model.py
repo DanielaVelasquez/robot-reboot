@@ -1,4 +1,5 @@
 import argparse
+import os
 
 from keras.optimizer_v2.gradient_descent import SGD
 
@@ -9,6 +10,8 @@ from src.robot_reboot.model import get_model_v2
 
 
 def create_model(models_name):
+    model_directory = f'models/{models_name}'
+    assert os.path.isdir(model_directory)
     factory = RobotRebootFactory()
     # This configuration does not matter much at this stage. It is only to generate the encoder correctly
     game, game_state, selected_quadrants = factory.create(31, locate_robot_close_goal=True,
@@ -20,7 +23,7 @@ def create_model(models_name):
     model.compile(
         SGD(learning_rate=0.01),
         loss=['categorical_crossentropy', 'mse'])
-    model.save(f'models/{models_name}')
+    model.save(model_directory)
 
 
 if __name__ == '__main__':
