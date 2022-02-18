@@ -70,17 +70,17 @@ class RobotRebootFactory:
             if not move_all_robots:
                 valid_actions = [a for a in valid_actions if a.robot_id == robot]
 
-            # while i < max_movements or game.is_over(s):
-            #     action = valid_actions[np.random.randint(0, len(valid_actions))]
-            #     nex_state = game.apply(action, s)
-            #     if s.robots_positions[robot] != nex_state.robots_positions[robot]:
-            #         i += 1
-            #         s = nex_state
             while i < max_movements or game.is_over(s):
-                valid_actions = [a for a in game.get_valid_actions_next_state_map(s) if a.robot_id == robot]
                 action = valid_actions[np.random.randint(0, len(valid_actions))]
-                s = game.apply(action, s)
-                i += 1
+                nex_state = game.apply(action, s)
+                if s.robots_positions[robot] != nex_state.robots_positions[robot]:
+                    i += 1
+                    s = nex_state
+            # while i < max_movements or game.is_over(s):
+            #     valid_actions = [a for a in game.get_valid_actions_next_state_map(s) if a.robot_id == robot]
+            #     action = valid_actions[np.random.randint(0, len(valid_actions))]
+            #     s = game.apply(action, s)
+            #     i += 1
 
             robots_positions = s.robots_positions
         return robots_positions

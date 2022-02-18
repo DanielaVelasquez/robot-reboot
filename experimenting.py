@@ -13,7 +13,7 @@ from src.agent.alphazero import AlphaZeroAgent
 from src.encoders.maze_and_robot_positioning_encoder import MazeAndRobotPositioningEncoder
 from src.experience.alphazero_experience import AlphaZeroExperienceCollector
 from src.game_simulator.base import simulate_game
-from src.ml.model import get_model_v2
+from src.robot_reboot.model import get_model_v2
 from src.robot_reboot.classic_robot_reboot_hash import ClassicRobotRebootZobristHash
 from src.robot_reboot.factory import RobotRebootFactory
 
@@ -62,9 +62,9 @@ def experiment(seed, number_games, rounds_per_action, locate_robot_close_goal, m
         }
         results.append(result)
     logging.info('Saving experience data for experiment' + experiment_id)
-    buffer = collector.to_buffer()
-    with h5py.File(f'{experiment_id}-experience.hdf5', 'w') as experience_outf:
-        buffer.serialize(experience_outf)
+    # buffer = collector.to_buffer()
+    # with h5py.File(f'{experiment_id}-experience.hdf5', 'w') as experience_outf:
+    #     buffer.serialize(experience_outf)
 
     logging.info('Saving results for experiment' + experiment_id)
     df = pd.DataFrame(results)
@@ -115,9 +115,9 @@ if __name__ == '__main__':
         help='Maximum number of actions one single game can have'
     )
 
-    # args = parser.parse_args()
-    # locate_robot_close_goal = args.max_movements is not None
-    #
-    # experiment(args.seed, args.number_games, args.rounds_per_action, locate_robot_close_goal, args.max_movements,
-    #            args.move_all_robots, args.max_actions_per_game)
-    experiment(26, 30, 30, True, 1, False, 100)
+    args = parser.parse_args()
+    locate_robot_close_goal = args.max_movements is not None
+
+    experiment(args.seed, args.number_games, args.rounds_per_action, locate_robot_close_goal, args.max_movements,
+               args.move_all_robots, args.max_actions_per_game)
+    # experiment(26, 30, 30, True, 1, False, 100)
