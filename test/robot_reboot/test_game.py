@@ -1013,6 +1013,19 @@ class TestGame(unittest.TestCase):
         valid_actions = game.get_valid_actions_next_state_map(game_state)
         self.assertTrue(RobotRebootAction(1, Direction.North) not in valid_actions)
 
+    def test_get_valid_actions_not_empty_when_robot_on_its_house(self):
+        house = RobotRebootGoalHouse(0, (0, 2))
+        maze = np.array([[0, 1, 0, 1, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0]
+                         ])
+        game = RobotRebootGame(4, maze, house)
+        game_state = RobotRebootState(game, [(0, 2), (2, 2), (2, 0), (2, 4)],)
+        valid_actions = game.get_valid_actions_next_state_map(game_state)
+        self.assertTrue(len(valid_actions) > 0)
+
 
     def test_get_game_from_matrix(self):
         game, state, quadrants_ids = RobotRebootFactory().create(31, locate_robot_close_goal=True, max_movements=4)
