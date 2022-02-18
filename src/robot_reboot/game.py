@@ -153,7 +153,15 @@ class RobotRebootGame(Game):
         valid_actions = {}
         for action in self.actions:
             next_state = self.apply(action, state)
-            if next_state.robots_positions != state.robots_positions and \
+            next_robot_positions = next_state.robots_positions
+            is_correct_robot_goal = action.robot_id is self.goal_house.robot_id
+            is_robot_at_goal_house = self.goal_house.house in next_robot_positions
+            if state.robots_positions != next_robot_positions and \
                     next_state.zobrist_hash not in state.previous_states:
-                valid_actions[action] = next_state
+                if is_robot_at_goal_house:
+                    if is_correct_robot_goal:
+                        valid_actions[action] = next_state
+                else:
+                    valid_actions[action] = next_state
+
         return valid_actions

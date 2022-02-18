@@ -1000,6 +1000,20 @@ class TestGame(unittest.TestCase):
         # Moving robot 0 to West should not be valid because it would return to a previous state 1
         self.assertTrue(RobotRebootAction(0, Direction.West) in valid_actions)
 
+    def test_get_valid_actions_other_robots_in_goal_house_are_not_allowed(self):
+        house = RobotRebootGoalHouse(0, (0, 2))
+        maze = np.array([[0, 1, 0, 1, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0],
+                         [0, 0, 0, 0, 0]
+                         ])
+        game = RobotRebootGame(4, maze, house)
+        game_state = RobotRebootState(game, [(0, 0), (2, 2), (2, 0), (2, 4)],)
+        valid_actions = game.get_valid_actions_next_state_map(game_state)
+        self.assertTrue(RobotRebootAction(1, Direction.North) not in valid_actions)
+
+
     def test_get_game_from_matrix(self):
         game, state, quadrants_ids = RobotRebootFactory().create(31, locate_robot_close_goal=True, max_movements=4)
         encoder = MazeAndTwoPlanesPerRobotEncoder(game)
