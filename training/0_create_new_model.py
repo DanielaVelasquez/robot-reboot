@@ -6,7 +6,7 @@ from src.robot_reboot.classic_robot_reboot_hash import ClassicRobotRebootZobrist
 from src.robot_reboot.factory import RobotRebootFactory
 
 
-def main(models_name):
+def create_model(models_name):
     factory = RobotRebootFactory()
     # This configuration does not matter much at this stage. It is only to generate the encoder correctly
     game, game_state, selected_quadrants = factory.create(31, locate_robot_close_goal=True,
@@ -28,4 +28,4 @@ if __name__ == '__main__':
         help='Models name'
     )
     args = parser.parse_args()
-    main(args.model_name)
+    create_model(args.model_name)

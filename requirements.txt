@@ -20,7 +20,7 @@ google-auth==1.27.1
 google-auth-oauthlib==0.4.3
 google-pasta==0.2.0
 grpcio==1.32.0
-h5py==2.10.0
+h5py~=3.6.0
 idna==2.10
 importlib-metadata==3.7.3
 ipykernel==5.5.0
@@ -44,11 +44,11 @@ nbconvert==6.0.7
 nbformat==5.1.2
 nest-asyncio==1.5.1
 notebook==6.2.0
-numpy==1.19.5
+numpy~=1.22.2
 oauthlib==3.1.0
 opt-einsum==3.3.0
 packaging==20.9
-pandas==1.2.3
+pandas~=1.4.1
 pandocfilters==1.4.2
 parso==0.8.1
 pexpect==4.8.0
@@ -76,7 +76,7 @@ Send2Trash==1.5.0
 six==1.15.0
 tensorboard==2.4.1
 tensorboard-plugin-wit==1.8.0
-tensorflow==2.4.1
+tensorflow~=2.8.0
 tensorflow-estimator==2.4.0
 termcolor==1.1.0
 terminado==0.9.3
@@ -91,3 +91,6 @@ webencodings==0.5.1
 Werkzeug==1.0.1
 wrapt==1.12.1
 zipp==3.4.1
+
+pygame~=2.1.2
+keras~=2.8.0
