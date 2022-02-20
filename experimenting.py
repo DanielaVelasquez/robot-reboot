@@ -4,7 +4,6 @@ import sys
 import time
 import uuid
 
-import h5py
 import numpy as np
 import pandas as pd
 from keras.optimizer_v2.gradient_descent import SGD
@@ -13,9 +12,9 @@ from src.agent.alphazero import AlphaZeroAgent
 from src.encoders.maze_and_robot_positioning_encoder import MazeAndRobotPositioningEncoder
 from src.experience.alphazero_experience import AlphaZeroExperienceCollector
 from src.game_simulator.base import simulate_game
-from src.robot_reboot.model import get_model_v2
 from src.robot_reboot.classic_robot_reboot_hash import ClassicRobotRebootZobristHash
 from src.robot_reboot.factory import RobotRebootFactory
+from src.robot_reboot.model import get_model_v2
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -117,4 +116,3 @@ if __name__ == '__main__':
 
     experiment(args.seed, args.number_games, args.rounds_per_action, locate_robot_close_goal, args.max_movements,
                args.move_all_robots, args.max_actions_per_game)
-    # experiment(26, 30, 30, True, 1, False, 100)
