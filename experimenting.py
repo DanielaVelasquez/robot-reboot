@@ -19,20 +19,22 @@ from src.robot_reboot.model import get_model_v2
 logging.getLogger().setLevel(logging.INFO)
 
 
-def experiment(seed, number_games, rounds_per_action, locate_robot_close_goal, max_movements, move_all_robots,
+def experiment(seed, number_games, rounds_per_action, locate_robot_close_goal, max_movements,
                max_actions_per_game):
     np.random.seed(seed)
     factory = RobotRebootFactory()
     results = list()
     experiment_id = str(uuid.uuid4())
+    n_movement_choices = [i for i in range(1, max_movements + 1)]
     logging.info('Starting experiment' + experiment_id)
     for i in range(number_games):
         logging.info('Starting simulation' + str(i + 1) + '/' + str(number_games))
         start = time.time()
+        n_movements = np.random.choice(n_movement_choices)
         game, game_state, selected_quadrants = factory.create(31, locate_robot_close_goal=locate_robot_close_goal,
-                                                              max_movements=max_movements,
+                                                              n_movements=n_movements,
                                                               zobrist_hash_generator=ClassicRobotRebootZobristHash(),
-                                                              move_all_robots=move_all_robots)
+                                                              move_all_robots=True)
         encoder = MazeAndRobotPositioningEncoder(game)
         model = get_model_v2(encoder.shape(), len(game.actions))
         model.compile(
@@ -54,8 +56,7 @@ def experiment(seed, number_games, rounds_per_action, locate_robot_close_goal, m
             'number_games': number_games,
             'rounds_per_action': rounds_per_action,
             'locate_robot_close_goal': locate_robot_close_goal,
-            'max_movements': max_movements,
-            'move_all_robots': move_all_robots,
+            'n_movements': n_movements,
             'max_actions_per_game': max_actions_per_game,
             'time_sec': total_time_seconds,
             'value': value,
@@ -89,13 +90,6 @@ if __name__ == '__main__':
         default=None,
         help='Number of actions the robot is away from its target'
     )
-    parser.add_argument(
-        '--move_all_robots',
-        dest='move_all_robots',
-        action='store_true',
-        help='Determines if all the robots are moved when placing the robots away. This is only taken into '
-             'consideration if a max_movements parameter is provided'
-    )
     parser.set_defaults(move_all_robots=False)
     parser.add_argument(
         '--seed',
@@ -115,4 +109,4 @@ if __name__ == '__main__':
     locate_robot_close_goal = args.max_movements is not None
 
     experiment(args.seed, args.number_games, args.rounds_per_action, locate_robot_close_goal, args.max_movements,
-               args.move_all_robots, args.max_actions_per_game)
+                args.max_actions_per_game)
