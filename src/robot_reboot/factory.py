@@ -13,7 +13,7 @@ class RobotRebootFactory:
     """Factory to create Robot reboot games
     """
 
-    def create(self, size, locate_robot_close_goal=False, max_movements=5, zobrist_hash_generator=None,
+    def create(self, size, locate_robot_close_goal=False, n_movements=5, zobrist_hash_generator=None,
                move_all_robots=False):
         """Creates a robot reboot game and its initial state.
         The maze is randomly created joining different quadrants and the robots are randomly located in the maze
@@ -21,7 +21,7 @@ class RobotRebootFactory:
         Args:
             size (int): size of the maze (number of rows and cols)
             locate_robot_close_goal (boolean): determine if the robot reaching its house should be located closer to its house
-            max_movements: max number of movements away from its house if the robot is reallocated
+            n_movements: max number of movements away from its house if the robot is reallocated
             zobrist_hash_generator: if provided only unique states are allowed through out the game
         Returns:
             game: Robot reboot game
@@ -50,7 +50,7 @@ class RobotRebootFactory:
         pos = (x, y)
         goal = RobotRebootGoalHouse(selected_house_goal.robot_id, pos)
         game = RobotRebootGame(n_robots, maze, goal)
-        robots_positions = self.move_robots_backwards_from_goal(game, goal, locate_robot_close_goal, max_movements,
+        robots_positions = self.move_robots_backwards_from_goal(game, goal, locate_robot_close_goal, n_movements,
                                                                 n_robots, pos, size, move_all_robots=move_all_robots)
         state = RobotRebootState(game, robots_positions, zobrist_hash_generator=zobrist_hash_generator)
         return game, state, index[0:4]
@@ -76,11 +76,6 @@ class RobotRebootFactory:
                 if s.robots_positions[robot] != nex_state.robots_positions[robot]:
                     i += 1
                     s = nex_state
-            # while i < max_movements or game.is_over(s):
-            #     valid_actions = [a for a in game.get_valid_actions_next_state_map(s) if a.robot_id == robot]
-            #     action = valid_actions[np.random.randint(0, len(valid_actions))]
-            #     s = game.apply(action, s)
-            #     i += 1
 
             robots_positions = s.robots_positions
         return robots_positions

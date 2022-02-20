@@ -10,12 +10,12 @@ from src.robot_reboot.model import get_model_v2
 
 
 def create_model(models_name):
-    model_directory = f'models/{models_name}'
+    model_directory = f'models/'
     assert os.path.isdir(model_directory)
     factory = RobotRebootFactory()
     # This configuration does not matter much at this stage. It is only to generate the encoder correctly
     game, game_state, selected_quadrants = factory.create(31, locate_robot_close_goal=True,
-                                                          max_movements=20,
+                                                          n_movements=20,
                                                           zobrist_hash_generator=ClassicRobotRebootZobristHash(),
                                                           move_all_robots=True)
     encoder = MazeAndRobotPositioningEncoder(game)

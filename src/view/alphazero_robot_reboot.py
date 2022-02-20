@@ -15,7 +15,7 @@ from src.view.base import simulate_game_with_view
 def main():
     np.random.seed(26)
     factory = RobotRebootFactory()
-    game, game_state, selected_quadrants = factory.create(31, locate_robot_close_goal=True, max_movements=1,
+    game, game_state, selected_quadrants = factory.create(31, locate_robot_close_goal=True, n_movements=1,
                                                           zobrist_hash_generator=ClassicRobotRebootZobristHash(),
                                                           move_all_robots=True)
 

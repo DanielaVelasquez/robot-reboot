@@ -9,7 +9,7 @@ from src.view.base import simulate_game_with_view
 def main():
     np.random.seed(26)
     factory = RobotRebootFactory()
-    game, game_state, selected_quadrants = factory.create(31, locate_robot_close_goal=True, max_movements=1)
+    game, game_state, selected_quadrants = factory.create(31, locate_robot_close_goal=True, n_movements=1)
     print(game_state.robots_positions)
     print(game.goal_house)
     human_agent = HumanAgent()

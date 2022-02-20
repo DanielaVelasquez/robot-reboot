@@ -1028,7 +1028,7 @@ class TestGame(unittest.TestCase):
 
 
     def test_get_game_from_matrix(self):
-        game, state, quadrants_ids = RobotRebootFactory().create(31, locate_robot_close_goal=True, max_movements=4)
+        game, state, quadrants_ids = RobotRebootFactory().create(31, locate_robot_close_goal=True, n_movements=4)
         encoder = MazeAndTwoPlanesPerRobotEncoder(game)
         matrix = encoder.encode(state)
         result_game, result_state = get_game_from_matrix(matrix)

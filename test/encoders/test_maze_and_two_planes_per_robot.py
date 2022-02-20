@@ -25,7 +25,7 @@ class TestMazeAndTwoPlanesPerRobotEncoder(unittest.TestCase):
     def test_encode(self):
         np.random.seed(26)
         encoder = MazeAndTwoPlanesPerRobotEncoder(get_robot_reboot_game())
-        game, game_state, quadrants_ids = RobotRebootFactory().create(31, locate_robot_close_goal=True, max_movements=4)
+        game, game_state, quadrants_ids = RobotRebootFactory().create(31, locate_robot_close_goal=True, n_movements=4)
         # Robot 2 needs to get home.
         matrix = encoder.encode(game_state)
         np.testing.assert_equal(matrix[:, :, 0], game.maze)
