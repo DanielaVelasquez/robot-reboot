@@ -9,7 +9,7 @@ from src.robot_reboot.factory import RobotRebootFactory
 from src.robot_reboot.model import get_model_v2
 
 
-def create_model(models_name):
+def create_model(model_name):
     model_directory = f'models/'
     assert os.path.isdir(model_directory)
     factory = RobotRebootFactory()
@@ -23,7 +23,7 @@ def create_model(models_name):
     model.compile(
         SGD(learning_rate=0.01),
         loss=['categorical_crossentropy', 'mse'])
-    model.save(model_directory)
+    model.save(f'{model_directory}{model_name}')
 
 
 if __name__ == '__main__':
