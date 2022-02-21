@@ -5,6 +5,7 @@ __all__ = [
 ]
 
 from keras.optimizer_v2.gradient_descent import SGD
+from tensorflow import keras
 
 from src.agent.base import Agent
 
@@ -154,9 +155,17 @@ class AlphaZeroAgent(Agent):
 
         value_target = experience.rewards
 
+        checkpoint_filepath = '/tmp/checkpoint'
+        model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
+            filepath=checkpoint_filepath,
+            save_weights_only=True,
+            monitor='val_accuracy',
+            mode='max',
+            save_best_only=True)
+
         self.model.compile(
             SGD(learning_rate=learning_rate),
             loss=['categorical_crossentropy', 'mse'])
         self.model.fit(
             model_input, [action_target, value_target],
-            batch_size=batch_size)
+            batch_size=batch_size, callbacks=[model_checkpoint_callback])
