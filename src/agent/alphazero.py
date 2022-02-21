@@ -69,7 +69,7 @@ class AlphaZeroTreeNode:
 
 class AlphaZeroAgent(Agent):
 
-    def __init__(self, model, encoder, rounds_per_action=1600, c=2.0, collector=None):
+    def __init__(self, model, encoder=None, rounds_per_action=1600, c=2.0, collector=None):
         self.model = model
         self.encoder = encoder
 
@@ -155,7 +155,7 @@ class AlphaZeroAgent(Agent):
         value_target = experience.rewards
 
         self.model.compile(
-            SGD(lr=learning_rate),
+            SGD(learning_rate=learning_rate),
             loss=['categorical_crossentropy', 'mse'])
         self.model.fit(
             model_input, [action_target, value_target],
