@@ -30,7 +30,7 @@ def self_play(path_to_model, model_name, seed, number_games, rounds_per_action, 
     factory = RobotRebootFactory()
     n_movement_choices = [i for i in range(1, max_movements + 1)]
     self_play_id = str(uuid.uuid4().time)[:8]
-
+    logging.info(f'Self play id {self_play_id}')
     for i in range(number_games):
         logging.info('Starting game ' + str(i + 1) + '/' + str(number_games))
         n_movements = np.random.choice(n_movement_choices)
@@ -39,8 +39,8 @@ def self_play(path_to_model, model_name, seed, number_games, rounds_per_action, 
                                                               zobrist_hash_generator=ClassicRobotRebootZobristHash(),
                                                               move_all_robots=True)
         encoder = MazeAndRobotPositioningEncoder(game)
-        alphazero_agent = AlphaZeroAgent(model, encoder, rounds_per_action=rounds_per_action)
         collector = AlphaZeroExperienceCollector()
+        alphazero_agent = AlphaZeroAgent(model, encoder, rounds_per_action=rounds_per_action, collector=collector)
         final_state = simulate_game(game_state, alphazero_agent, collector, max_actions=max_actions_per_game)
 
         value = final_state.get_value()
@@ -49,9 +49,9 @@ def self_play(path_to_model, model_name, seed, number_games, rounds_per_action, 
                      '\nValue= ' + str(value) +
                      '\nTotal actions = ' + str(total_actions))
         buffer = collector.to_buffer()
-
-        with h5py.File(f'{experience_directory}/{self_play_id}-experience-{i}.hdf5', 'w') as experience_outf:
-            buffer.serialize(experience_outf)
+        experience_file_name = f'{experience_directory}/experience-{i}-{self_play_id}.hd5f'
+        with h5py.File(experience_file_name, 'w') as experience_out:
+            buffer.serialize(experience_out)
 
 
 if __name__ == '__main__':
@@ -106,3 +106,5 @@ if __name__ == '__main__':
 
     self_play(args.path_to_model, args.model_name, args.seed, args.number_games, args.rounds_per_action,
               locate_robot_close_goal, args.max_movements, args.max_actions_per_game)
+
+    # self_play('models/model_0', 'model_0', 26, 1, 50, True, 1, 2)
