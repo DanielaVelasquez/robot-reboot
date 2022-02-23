@@ -9,9 +9,8 @@ from src.robot_reboot.factory import RobotRebootFactory
 from src.robot_reboot.model import get_model_v2
 
 
-def create_model(model_name):
-    model_directory = f'models/'
-    assert os.path.isdir(model_directory)
+def create_model(model_path, model_name):
+    assert os.path.isdir(model_path)
     factory = RobotRebootFactory()
     # This configuration does not matter much at this stage. It is only to generate the encoder correctly
     game, game_state, selected_quadrants = factory.create(31, locate_robot_close_goal=True,
@@ -23,11 +22,18 @@ def create_model(model_name):
     model.compile(
         SGD(learning_rate=0.01),
         loss=['categorical_crossentropy', 'mse'])
-    model.save(f'{model_directory}{model_name}')
+    model.save(f'{model_path}/{model_name}')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--model_path',
+        type=str,
+        required=False,
+        default='models/',
+        help='Models name'
+    )
     parser.add_argument(
         '--model_name',
         type=str,
@@ -36,4 +42,4 @@ if __name__ == '__main__':
         help='Models name'
     )
     args = parser.parse_args()
-    create_model(args.model_name)
+    create_model(args.model_path, args.model_name)

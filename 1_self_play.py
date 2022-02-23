@@ -18,22 +18,26 @@ from src.robot_reboot.factory import RobotRebootFactory
 logging.getLogger().setLevel(logging.INFO)
 
 
-def self_play(path_to_model, model_name, seed, number_games, rounds_per_action, locate_robot_close_goal, max_movements,
+def self_play(path_to_model, path_to_results, seed, number_games, rounds_per_action, locate_robot_close_goal,
+              max_movements,
               max_actions_per_game):
-    experience_directory = f'experiences/{model_name}'
-    assert os.path.isdir(experience_directory)
+    assert os.path.isdir(path_to_results)
     assert os.path.isdir(path_to_model)
     logging.info('Loading model ' + path_to_model)
     model = keras.models.load_model(path_to_model)
 
     np.random.seed(seed)
     factory = RobotRebootFactory()
-    n_movement_choices = [i for i in range(1, max_movements + 1)]
+    if max_movements:
+        n_movement_choices = [i for i in range(1, max_movements + 1)]
     self_play_id = str(uuid.uuid4().time)[:8]
     logging.info(f'Self play id {self_play_id}')
     for i in range(number_games):
         logging.info('Starting game ' + str(i + 1) + '/' + str(number_games))
-        n_movements = np.random.choice(n_movement_choices)
+        if max_movements:
+            n_movements = np.random.choice(n_movement_choices)
+        else:
+            n_movements = None
         game, game_state, selected_quadrants = factory.create(31, locate_robot_close_goal=locate_robot_close_goal,
                                                               n_movements=n_movements,
                                                               zobrist_hash_generator=ClassicRobotRebootZobristHash(),
@@ -49,7 +53,7 @@ def self_play(path_to_model, model_name, seed, number_games, rounds_per_action, 
                      '\nValue= ' + str(value) +
                      '\nTotal actions = ' + str(total_actions))
         buffer = collector.to_buffer()
-        experience_file_name = f'{experience_directory}/experience-{i}-{self_play_id}.hd5f'
+        experience_file_name = f'{path_to_results}/experience-{i}-{self_play_id}.hdf5'
         with h5py.File(experience_file_name, 'w') as experience_out:
             buffer.serialize(experience_out)
 
@@ -63,10 +67,10 @@ if __name__ == '__main__':
         help='Path to the model'
     )
     parser.add_argument(
-        '--model_name',
+        '--path_to_results',
         type=str,
         required=True,
-        help='Name of the model to use for self-play'
+        help='Path where results will be stored'
     )
     parser.add_argument(
         '--number_games',
@@ -104,7 +108,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     locate_robot_close_goal = args.max_movements is not None
 
-    self_play(args.path_to_model, args.model_name, args.seed, args.number_games, args.rounds_per_action,
+    self_play(args.path_to_model, args.path_to_results, args.seed, args.number_games, args.rounds_per_action,
               locate_robot_close_goal, args.max_movements, args.max_actions_per_game)
 
     # self_play('models/model_0', 'model_0', 26, 1, 50, True, 1, 2)

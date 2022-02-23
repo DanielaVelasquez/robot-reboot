@@ -14,7 +14,7 @@ logging.getLogger().setLevel(logging.INFO)
 
 def get_experience_buffer(path_to_experiences):
     experiences = []
-    for hdf5_filename in glob.glob(f'{path_to_experiences}/*'):
+    for hdf5_filename in glob.glob(f'{path_to_experiences}/*.hdf5'):
         with h5py.File(hdf5_filename, 'r') as experience_hdf5:
             experience = load_experience(experience_hdf5)
             experiences.append(experience)
